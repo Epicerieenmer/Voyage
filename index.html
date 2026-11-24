@@ -15,7 +15,7 @@
       <p class="subtitle">Mes retours d'expérience et itinéraires — et ta propre carte mentale des pays parcourus.</p>
     </header>
 
-        <!-- BLOC 1 : OÙ VOYAGES-TU ? (par continent -> sous-continent -> pays) -->
+    <!-- BLOC 1 : OÙ VOYAGES-TU ? (par continent -> sous-continent -> pays) -->
     <section class="home-block" aria-labelledby="my-trips-title">
       <div class="block-header">
         <div>
@@ -24,19 +24,18 @@
         </div>
       </div>
 
-<div class="search-bar-box" id="travel-search-box">
-  <input
-    type="search"
-    id="travel-country-search"
-    class="country-search-input"
-    placeholder="Rechercher un pays directement (ex. Japon, Mexique, Polynésie...)"
-    aria-label="Rechercher un pays"
-    autocomplete="off"
-  >
-  <div class="visitor-countries-multi-list" id="travel-search-results" hidden></div>
-</div>
+      <div class="search-bar-box" id="travel-search-box">
+        <input
+          type="search"
+          id="travel-country-search"
+          class="country-search-input"
+          placeholder="Rechercher un pays directement (ex. Japon, Mexique, Polynésie...)"
+          aria-label="Rechercher un pays"
+          autocomplete="off"
+        >
+        <div class="visitor-countries-multi-list" id="travel-search-results" hidden></div>
+      </div>
 
-      
       <!-- Niveau 1 : Continents -->
       <div class="visitor-countries-grid" id="my-trips-continents-grid"></div>
 
@@ -52,27 +51,43 @@
       <div class="block-header">
         <div>
           <h2 id="visitor-check-title">Et toi, tu as visité quoi ?</h2>
-          <p class="block-desc">Clique sur un continent pour voir les pays, puis sur un pays pour cocher ses États/régions.</p>
+          <p class="block-desc">Retrouve la carte et tous les pays avec leurs points : clique sur un pays ou un point pour cocher ses lieux/régions et suivre tes statistiques.</p>
         </div>
-        <span class="visitor-counter" id="visitor-counter">0 continent à 100 %</span>
+        <span class="visitor-counter" id="visitor-counter">0 / 0 lieu (0 %)</span>
       </div>
 
       <!-- Carte interactive des pays visités -->
       <div class="sticky-map-box" id="visitor-map-box">
-        <div class="map-location-label" id="visitor-map-label">Carte : progression par pays (gris = 0 %, ambre = en cours, vert = 100 %)</div>
+        <div class="map-location-label" id="visitor-map-label">Carte : progression par pays (gris = 0 %, bleu = en cours, vert = 100 %)</div>
         <div id="visitor-world-map" class="real-map-canvas" aria-label="Carte des pays visités"></div>
       </div>
 
-      <!-- Niveau 1 : Bulles des continents -->
+      <!-- Filtres rapides continent / sous-continent -->
       <div class="visitor-countries-grid" id="visitor-continents-grid"></div>
-
-<!-- Niveau 1.5 : Bulles des sous-continents du continent sélectionné -->
       <div class="pill-row subcontinent-pills" id="visitor-subcontinents-panel" hidden></div>
-      
-      <!-- Niveau 2 : Bulles des pays du continent sélectionné (sur plusieurs lignes) -->
-      <div class="visitor-region-panel" id="visitor-countries-panel" hidden></div>
+
+      <!-- Liste complète des pays associés aux points de la carte -->
+      <div class="visitor-region-panel" id="visitor-countries-panel"></div>
     </section>
   </main>
+
+  <!-- Modale de sélection des lieux / régions à cocher -->
+  <div class="region-modal-backdrop" id="region-modal-backdrop" hidden>
+    <div class="region-modal-card" role="dialog" aria-modal="true" aria-labelledby="region-modal-title">
+      <div class="region-modal-header">
+        <div>
+          <h3 id="region-modal-title">Pays</h3>
+          <p class="region-panel-sub" id="region-modal-subtitle">0 / 0 lieu(x) coché(s) (0 %)</p>
+        </div>
+        <button type="button" class="region-close-btn" id="region-modal-close" aria-label="Fermer">✕</button>
+      </div>
+      <div class="modal-bulk-actions">
+        <button type="button" class="modal-bulk-btn" id="modal-select-all">Tout cocher</button>
+        <button type="button" class="modal-bulk-btn" id="modal-clear-all">Tout décocher</button>
+      </div>
+      <div class="region-modal-list" id="region-modal-list"></div>
+    </div>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="regions.data.js"></script>

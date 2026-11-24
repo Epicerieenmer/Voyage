@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const isMobileViewport = () => window.innerWidth <= 640;
+  const isTabletOrMobileViewport = () => window.innerWidth <= 1024;
+
   // 1. Repositionner le bouton Accueil dans l'en-tête de destination
   const stickyNavEl = document.querySelector(".sticky-nav");
   const headerBlockEl = document.querySelector(".destination-header-block");
@@ -93,6 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
     activite: "🚤 Activités & Excursions"
   };
 
+  const escapeAttr = (val) =>
+    String(val || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
   if (dynamicSectionsMount && destData && Array.isArray(destData.archipels)) {
     const themeOrder = ["rando", "parc", "point-de-vue", "monument", "marche", "activite"];
 
@@ -115,29 +125,49 @@ document.addEventListener("DOMContentLoaded", () => {
               })
               .map((tKey) => {
                 const itemsHtml = grouped[tKey]
-                  .map(
-                    (act) => `
+                  .map((act) => {
+                    const summaryText = act.summary || act.description || "";
+                    const durationText = act.duration || "";
+                    const departureText = act.departure || "";
+                    const transportText = act.transport || "";
+                    const priceText =
+                      act.priceLabel || (act.price === 0 ? "Gratuit" : `~${act.price} €/p`);
+
+                    return `
                       <label
                         class="check-item activity-item"
-                        data-subplace="${act.islandId}"
-                        data-subplace-label="${act.islandLabel}"
-                        data-theme="${tKey}"
-                        data-lat="${act.lat}"
-                        data-lng="${act.lng}"
-                        data-price="${act.price}"
-                        data-transport="${act.transport || ""}"
+                        data-subplace="${escapeAttr(act.islandId)}"
+                        data-subplace-label="${escapeAttr(act.islandLabel)}"
+                        data-theme="${escapeAttr(tKey)}"
+                        data-lat="${escapeAttr(act.lat)}"
+                        data-lng="${escapeAttr(act.lng)}"
+                        data-price="${escapeAttr(act.price)}"
+                        data-transport="${escapeAttr(transportText)}"
+                        data-duration="${escapeAttr(durationText)}"
+                        data-departure="${escapeAttr(departureText)}"
+                        data-summary="${escapeAttr(summaryText)}"
                       >
                         <input type="checkbox">
                         <div class="activity-content">
                           <span class="activity-title">${act.title}</span>
+                          <div class="activity-details">
+                            <p class="activity-summary">${summaryText || "Résumé non renseigné pour cette activité."}</p>
+                            <div class="activity-specs">
+                              ${durationText ? `<span class="activity-spec">⏱️ <strong>Temps :</strong> ${escapeAttr(durationText)}</span>` : ""}
+                              ${departureText ? `<span class="activity-spec">🚩 <strong>Départ :</strong> ${escapeAttr(departureText)}</span>` : ""}
+                              ${transportText ? `<span class="activity-spec">🧭 <strong>Accès :</strong> ${escapeAttr(transportText)}</span>` : ""}
+                              <span class="activity-spec">💶 <strong>Budget :</strong> ${escapeAttr(priceText)}</span>
+                            </div>
+                          </div>
                           <div class="activity-meta">
-                            <span class="activity-tag price-tag">${act.priceLabel || (act.price === 0 ? "Gratuit" : `~${act.price} €/p`)}</span>
-                            ${act.transport ? `<span class="activity-tag transport-tag">${act.transport}</span>` : ""}
+                            <span class="activity-tag price-tag">${priceText}</span>
+                            ${durationText ? `<span class="activity-tag duration-tag">⏱️ ${escapeAttr(durationText)}</span>` : ""}
+                            ${transportText ? `<span class="activity-tag transport-tag">${escapeAttr(transportText)}</span>` : ""}
                           </div>
                         </div>
                       </label>
-                    `
-                  )
+                    `;
+                  })
                   .join("");
 
                 return `
@@ -171,10 +201,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let syncMapWithFilters = () => {};
   let updateFilterStatus = () => {};
+  let focusActivityOnMap = () => {};
+  let previewedActivityEl = null;
 
-  // 3. Sauvegarde des cases cochées sur les pages destinations
+  const scrollItemIntoMobileComfort = (item) => {
+    if (!isMobileViewport() || !item) return;
+    const panelHeight = document.querySelector(".sticky-top-panel")?.offsetHeight || 0;
+    const targetY = item.getBoundingClientRect().top + window.scrollY - panelHeight - 14;
+    window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+  };
+
+  // 3. Sauvegarde & logique à 2 clics sur les activités des pages destinations
   const pageKey = "checklist_" + window.location.pathname;
+  const activityItems = Array.from(document.querySelectorAll(".activity-item"));
   const checkboxes = Array.from(document.querySelectorAll(".check-item input[type='checkbox']"));
+
+  const persistCheckboxes = () => {
+    localStorage.setItem(pageKey, JSON.stringify(checkboxes.map((cb) => cb.checked)));
+  };
+
+  const syncActivityVisualStates = () => {
+    activityItems.forEach((item) => {
+      const cb = item.querySelector("input[type='checkbox']");
+      const isDone = Boolean(cb?.checked);
+      item.classList.toggle("is-done", isDone);
+      if (isDone) {
+        item.classList.remove("is-preview");
+        if (previewedActivityEl === item) {
+          previewedActivityEl = null;
+        }
+      }
+    });
+  };
 
   if (checkboxes.length > 0) {
     const saved = JSON.parse(localStorage.getItem(pageKey) || "null");
@@ -185,15 +243,52 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     }
+    syncActivityVisualStates();
 
-    checkboxes.forEach((box) => {
-      box.addEventListener("change", () => {
-        const state = checkboxes.map((cb) => cb.checked);
-        localStorage.setItem(pageKey, JSON.stringify(state));
-        syncMapWithFilters();
-        updateFilterStatus();
-        if (map) {
-          requestAnimationFrame(() => map.invalidateSize());
+    activityItems.forEach((item) => {
+      const box = item.querySelector("input[type='checkbox']");
+      if (!box) return;
+
+      box.addEventListener("change", (e) => {
+        e.preventDefault();
+        box.checked = item.classList.contains("is-done");
+      });
+
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isCurrentlyDone = Boolean(box.checked);
+        const isCurrentlyPreview = item.classList.contains("is-preview");
+
+        if (isCurrentlyDone) {
+          box.checked = false;
+          item.classList.remove("is-done", "is-preview");
+          if (previewedActivityEl === item) previewedActivityEl = null;
+          persistCheckboxes();
+          syncMapWithFilters();
+          updateFilterStatus();
+          return;
+        }
+
+        if (!isCurrentlyPreview) {
+          activityItems.forEach((other) => {
+            if (other !== item) {
+              other.classList.remove("is-preview");
+            }
+          });
+          previewedActivityEl = item;
+          item.classList.add("is-preview");
+          focusActivityOnMap(item);
+          scrollItemIntoMobileComfort(item);
+        } else {
+          item.classList.remove("is-preview");
+          if (previewedActivityEl === item) previewedActivityEl = null;
+          box.checked = true;
+          item.classList.add("is-done");
+          persistCheckboxes();
+          syncMapWithFilters();
+          updateFilterStatus();
         }
       });
     });
@@ -237,6 +332,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let defaultCenter = [23.6345, -102.5528];
   let defaultZoom = 5;
 
+  const refreshMapSize = (delay = 80) => {
+    if (!map) return;
+    setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, delay);
+  };
+
   if (realMapEl && typeof L !== "undefined") {
     const isPolynesiePage =
       window.location.pathname.includes("polynesie") ||
@@ -248,7 +350,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     map = L.map("real-map", {
-      scrollWheelZoom: false
+      scrollWheelZoom: false,
+      tap: true
     }).setView(defaultCenter, defaultZoom);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -281,10 +384,36 @@ document.addEventListener("DOMContentLoaded", () => {
       map.setView(defaultCenter, defaultZoom);
     }
 
-    setTimeout(() => {
-      if (map) map.invalidateSize();
-    }, 100);
+    refreshMapSize(120);
   }
+
+  let resizeTimer = null;
+  const handleViewportResize = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, 160);
+  };
+  window.addEventListener("resize", handleViewportResize, { passive: true });
+  window.addEventListener("orientationchange", handleViewportResize, { passive: true });
+
+  focusActivityOnMap = (item) => {
+    if (!map || !item) return;
+    const lat = Number(item.getAttribute("data-lat"));
+    const lng = Number(item.getAttribute("data-lng"));
+    const title = item.querySelector(".activity-title")?.textContent?.trim() || "Activité";
+
+    syncMapWithFilters();
+
+    if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+      const targetZoom = Math.max(map.getZoom() || 11, isTabletOrMobileViewport() ? 12 : 13);
+      map.flyTo([lat, lng], targetZoom, { duration: 0.55 });
+      if (mapLabelEl) {
+        mapLabelEl.textContent = `Aperçu : ${title} (2e clic pour valider)`;
+      }
+      refreshMapSize(70);
+    }
+  };
 
   // Bouton Masquer / Afficher la carte dans le panneau collant
   const mapBox = document.querySelector(".sticky-map-box");
@@ -302,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const collapsed = mapBox.classList.toggle("is-collapsed");
       toggleBtn.textContent = collapsed ? "Afficher la carte" : "Masquer la carte";
       if (!collapsed && map) {
-        setTimeout(() => map.invalidateSize(), 260);
+        refreshMapSize(260);
       }
     });
     headerBar.appendChild(toggleBtn);
@@ -333,7 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return (theme || "activite") === activeTheme;
   };
 
-  // Déplacement fluide du bouton cliqué vers la gauche
   const movePillSmoothlyToLeft = (barEl, pillEl) => {
     if (!barEl || !pillEl) return;
 
@@ -371,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const label = sec.getAttribute("data-map-label") || sec.querySelector("h3")?.textContent?.trim() || sec.id;
 
         const pointMarker = L.circleMarker([lat, lng], {
-          radius: 7,
+          radius: isTabletOrMobileViewport() ? 8 : 7,
           fillColor: isVisited ? "#16a34a" : "#0f766e",
           color: "#ffffff",
           weight: 2,
@@ -397,9 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
         map.setView(defaultCenter, defaultZoom);
       }
 
-      setTimeout(() => {
-        if (map) map.invalidateSize();
-      }, 50);
+      refreshMapSize(60);
       return;
     }
 
@@ -458,7 +584,7 @@ document.addEventListener("DOMContentLoaded", () => {
         allCoordsToFit.push([subLat, subLng]);
 
         const islandMarker = L.circleMarker([subLat, subLng], {
-          radius: 7,
+          radius: isTabletOrMobileViewport() ? 8 : 7,
           fillColor: "#0284c7",
           color: "#ffffff",
           weight: 2,
@@ -480,6 +606,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ).filter((item) => !item.hidden);
 
     const actCoords = [];
+    let hasFocusedPreview = false;
 
     visibleActivities.forEach((item) => {
       const lat = Number(item.getAttribute("data-lat"));
@@ -491,13 +618,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const theme = item.getAttribute("data-theme") || "activite";
       const icon = themeIcons[theme] || "📍";
       const isChecked = Boolean(item.querySelector("input[type='checkbox']")?.checked);
+      const isPreview = item.classList.contains("is-preview") && !isChecked;
+
+      if (isPreview) hasFocusedPreview = true;
 
       actCoords.push([lat, lng]);
       allCoordsToFit.push([lat, lng]);
 
+      const stateClass = isChecked ? "is-done" : isPreview ? "is-preview" : "";
       const divIcon = L.divIcon({
         className: "",
-        html: `<div class="theme-pin-marker ${isChecked ? "is-done" : ""}">${icon}</div>`,
+        html: `<div class="theme-pin-marker ${stateClass}">${icon}</div>`,
         iconSize: [30, 30],
         iconAnchor: [15, 15]
       });
@@ -507,22 +638,18 @@ document.addEventListener("DOMContentLoaded", () => {
         .addTo(activityMarkersLayer);
 
       marker.on("click", () => {
-        const panelHeight = document.getElementById("sticky-map-controls")?.offsetHeight || 0;
-        const yOffset = panelHeight + 24;
-
+        item.click();
+        const panelHeight = document.querySelector(".sticky-top-panel")?.offsetHeight || 0;
+        const yOffset = panelHeight + (isMobileViewport() ? 16 : 24);
         const targetY = item.getBoundingClientRect().top + window.scrollY - yOffset;
         window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-
-        document.querySelectorAll(".activity-item.is-map-target").forEach((el) => {
-          el.classList.remove("is-map-target");
-        });
-        item.classList.add("is-map-target");
-        setTimeout(() => item.classList.remove("is-map-target"), 1800);
-
-        const checkbox = item.querySelector("input[type='checkbox']");
-        checkbox?.focus({ preventScroll: true });
       });
     });
+
+    if (hasFocusedPreview) {
+      refreshMapSize(60);
+      return;
+    }
 
     if (activeSubplace !== "all" && activeSubplaceEl) {
       const subLat = Number(activeSubplaceEl.getAttribute("data-lat"));
@@ -561,9 +688,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    setTimeout(() => {
-      if (map) map.invalidateSize();
-    }, 50);
+    refreshMapSize(60);
   };
 
   let applyDestinationFilters = () => {};
@@ -628,7 +753,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  // Barre d'état des filtres (compteur d'activités + bouton Réinitialiser)
   const stickyPanel = document.querySelector(".sticky-top-panel");
   if (stickyPanel && !document.querySelector(".filter-status-bar")) {
     const statusBar = document.createElement("div");
@@ -802,6 +926,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
         map.flyTo([lat, lng], zoom, { duration: 0.7 });
         if (mapLabelEl && label) mapLabelEl.textContent = `Lieu : ${label}`;
+        refreshMapSize(80);
       }
     });
   });
@@ -829,6 +954,24 @@ document.addEventListener("DOMContentLoaded", () => {
     card.appendChild(track);
   });
 
+  const travelContinentEmojis = {
+    "Europe": "🇪🇺",
+    "Amériques": "🌎",
+    "Amérique du Nord": "🌎",
+    "Amérique du Sud": "🏔️",
+    "Océanie": "🌏",
+    "Asie": "🏮",
+    "Afrique": "🌍",
+    "Antarctique": "🇦🇶"
+  };
+
+  const normalizeText = (str) =>
+    (str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+
   // 6. Navigation par continents & recherche sur l'accueil ("Où voyages-tu ?")
   const whereTravelContinentsGrid = document.getElementById("my-trips-continents-grid");
   const whereTravelSubcontinentsPanel = document.getElementById("my-trips-subcontinents-panel");
@@ -843,24 +986,6 @@ document.addEventListener("DOMContentLoaded", () => {
   ) {
     let activeTravelContinent = null;
     let activeTravelSubcontinent = "all";
-
-    const travelContinentEmojis = {
-      "Europe": "🇪🇺",
-      "Amériques": "🌎",
-      "Amérique du Nord": "🌎",
-      "Amérique du Sud": "🏔️",
-      "Océanie": "🌏",
-      "Asie": "🏮",
-      "Afrique": "🌍",
-      "Antarctique": "🇦🇶"
-    };
-
-    const normalizeText = (str) =>
-      (str || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim();
 
     const getDestinationUrl = (countryName) => {
       const slug = countryName
@@ -1103,513 +1228,538 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const matches = Object.entries(VISITOR_REGIONS_DATA)
-          .filter(([countryName, info]) => {
-            const haystack = normalizeText(
-              `${countryName} ${info.continent || ""} ${info.subcontinent || ""}`
+          .filter(([country, entry]) => {
+            const hay = normalizeText(
+              `${country} ${entry.continent || ""} ${entry.subcontinent || ""}`
             );
-            return haystack.includes(query);
+            return hay.includes(query);
           })
           .slice(0, 12);
 
         whereTravelContinentsGrid.hidden = true;
-        if (whereTravelSubcontinentsPanel) whereTravelSubcontinentsPanel.hidden = true;
         whereTravelCountriesPanel.hidden = true;
+        if (whereTravelSubcontinentsPanel) whereTravelSubcontinentsPanel.hidden = true;
+
         searchResultsEl.hidden = false;
 
         if (matches.length === 0) {
-          searchResultsEl.innerHTML = `<p class="region-panel-sub">Aucun pays trouvé pour « ${rawQuery} ».</p>`;
+          searchResultsEl.innerHTML = `
+            <p class="search-empty-msg">Aucune destination trouvée pour « ${rawQuery} ».</p>
+          `;
           return;
         }
 
         searchResultsEl.innerHTML = matches
-          .map(([countryName, info]) => {
-            const flag = info.flag || "🏳️";
-            const subtitle = [info.continent, info.subcontinent].filter(Boolean).join(" · ");
+          .map(([country, entry]) => {
+            const flag = entry.flag || "🏳️";
+            const sub = entry.subcontinent || entry.continent || "";
             return `
               <button
                 type="button"
                 class="visitor-bubble"
-                data-travel-country="${countryName}"
+                data-search-country="${country}"
               >
-                <span>${flag} ${countryName}${subtitle ? ` <small class="region-panel-sub">(${subtitle})</small>` : ""}</span>
+                <span>${flag} ${country}${sub ? ` · <small style="opacity:.72">${sub}</small>` : ""}</span>
                 <span class="visitor-bubble-percent">→</span>
               </button>
             `;
           })
           .join("");
 
-        searchResultsEl.querySelectorAll("[data-travel-country]").forEach((btn) => {
+        searchResultsEl.querySelectorAll("[data-search-country]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            const chosen = btn.getAttribute("data-travel-country");
+            const chosen = btn.getAttribute("data-search-country");
             openCountryDestination(chosen);
           });
         });
       };
 
-      clearBtn.addEventListener("click", () => {
-        searchInputEl.value = "";
-        renderSearchResults("");
-        searchInputEl.focus();
-      });
-
       searchInputEl.addEventListener("input", (e) => {
         renderSearchResults(e.target.value);
       });
 
-      searchInputEl.addEventListener("search", (e) => {
-        renderSearchResults(e.target.value);
-      });
-
-      searchInputEl.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          searchInputEl.value = "";
-          renderSearchResults("");
-        }
+      clearBtn.addEventListener("click", () => {
+        searchInputEl.value = "";
+        restoreTravelView();
+        searchInputEl.focus();
       });
     }
 
     renderWhereTravelContinents();
   }
 
-  // 7. Checklist visiteur mondiale & modale des régions
-  const continentsGrid = document.getElementById("visitor-continents-grid");
-  const subcontinentsPanel = document.getElementById("visitor-subcontinents-panel");
-  const countriesPanel = document.getElementById("visitor-countries-panel");
-  const visitorCounter = document.getElementById("visitor-counter");
+  // 7. Section "Et toi" : carte + marqueurs pays + tous les pays sous la carte + modale à cocher + statistiques
+  const etToiMapEl = document.getElementById("visitor-world-map");
+  const etToiMapLabelEl = document.getElementById("visitor-map-label");
+  const etToiContinentsGrid = document.getElementById("visitor-continents-grid");
+  const etToiSubcontinentsPanel = document.getElementById("visitor-subcontinents-panel");
+  const etToiCountriesPanel = document.getElementById("visitor-countries-panel");
+  const etToiCounterEl = document.getElementById("visitor-counter");
 
-  if (!continentsGrid || !countriesPanel || typeof VISITOR_REGIONS_DATA === "undefined") return;
+  const etToiModalBackdrop = document.getElementById("region-modal-backdrop");
+  const etToiModalTitle = document.getElementById("region-modal-title");
+  const etToiModalSubtitle = document.getElementById("region-modal-subtitle");
+  const etToiModalList = document.getElementById("region-modal-list");
+  const etToiModalClose = document.getElementById("region-modal-close");
+  const etToiSelectAllBtn = document.getElementById("modal-select-all");
+  const etToiClearAllBtn = document.getElementById("modal-clear-all");
 
-  let modalBackdrop = document.getElementById("region-modal-backdrop");
-  if (!modalBackdrop) {
-    modalBackdrop = document.createElement("div");
-    modalBackdrop.id = "region-modal-backdrop";
-    modalBackdrop.className = "region-modal-backdrop";
-    modalBackdrop.hidden = true;
-    document.body.appendChild(modalBackdrop);
-  }
+  if (typeof VISITOR_REGIONS_DATA !== "undefined" && (etToiMapEl || etToiCountriesPanel)) {
+    const etToiStorageKey = "et_toi_visited_places_v1";
 
-  const continentEmojis = {
-    "Europe": "🇪🇺",
-    "Amériques": "🌎",
-    "Amérique du Nord": "🌎",
-    "Amérique du Sud": "🏔️",
-    "Océanie": "🌏",
-    "Asie": "🏮",
-    "Afrique": "🌍",
-    "Antarctique": "🇦🇶"
-  };
-
-  const getContinents = () => {
-    const seen = new Set();
-    const list = [];
-    Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
-      const c = entry.continent || "Autres";
-      if (!seen.has(c)) {
-        seen.add(c);
-        list.push(c);
-      }
-    });
-    return list;
-  };
-
-  const getCountriesInContinent = (continent, subcontinent = "all") => {
-    return Object.entries(VISITOR_REGIONS_DATA)
-      .filter(([, entry]) => {
-        const matchContinent = (entry.continent || "Autres") === continent;
-        if (!matchContinent) return false;
-        if (subcontinent === "all") return true;
-        return (entry.subcontinent || "Autres") === subcontinent;
-      })
-      .map(([name]) => name);
-  };
-
-  const getSubcontinentsInContinent = (continent) => {
-    const seen = new Set();
-    const list = [];
-    Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
-      if ((entry.continent || "Autres") === continent && entry.subcontinent && !seen.has(entry.subcontinent)) {
-        seen.add(entry.subcontinent);
-        list.push(entry.subcontinent);
-      }
-    });
-    return list;
-  };
-
-  const getRegionLabel = (region) => (typeof region === "string" ? region : region.name);
-
-  const storageKey = "visitor_continents_v2";
-  const savedState = JSON.parse(localStorage.getItem(storageKey) || "{}");
-  let activeContinent = null;
-  let activeSubcontinent = "all";
-  let activeCountry = null;
-
-  const continentNames = getContinents();
-
-  Object.entries(VISITOR_REGIONS_DATA).forEach(([country, entry]) => {
-    const regions = Array.isArray(entry.regions) ? entry.regions : [];
-    const total = regions.length;
-    if (!Array.isArray(savedState[country]) || savedState[country].length !== total) {
-      savedState[country] = Array(total).fill(false);
+    let savedPlaces = {};
+    try {
+      savedPlaces = JSON.parse(localStorage.getItem(etToiStorageKey) || "{}");
+    } catch (_) {
+      savedPlaces = {};
     }
-  });
 
-  const visitorMapEl = document.getElementById("visitor-world-map");
-  const visitorMapLabel = document.getElementById("visitor-map-label");
-  let visitorMap = null;
-  const visitorCountryMarkers = {};
+    const saveEtToiPlaces = () => {
+      try {
+        localStorage.setItem(etToiStorageKey, JSON.stringify(savedPlaces));
+      } catch (_) {}
+    };
 
-  const getProgressColor = (percent) => {
-    if (percent >= 100) return "#16a34a";
-    if (percent > 0) return "#f59e0b";
-    return "#64748b";
-  };
+    const extractCountryPlaces = (countryName, entry) => {
+      if (!entry) return [{ id: `${countryName}__main`, label: countryName }];
+      const candidates = entry.regions || entry.places || entry.states || entry.islands || entry.items;
+      if (Array.isArray(candidates) && candidates.length > 0) {
+        return candidates
+          .map((item, index) => {
+            if (typeof item === "string") {
+              return { id: `${countryName}__${index}__${item}`, label: item };
+            }
+            const label = item.label || item.name || item.title || `${countryName} ${index + 1}`;
+            return {
+              id: item.id || `${countryName}__${index}__${label}`,
+              label
+            };
+          })
+          .filter((p) => Boolean(p.label));
+      }
+      return [{ id: `${countryName}__main`, label: countryName }];
+    };
 
-  const getCountryStats = (country) => {
-    const list = savedState[country] || [];
-    const total = list.length;
-    const checked = list.filter(Boolean).length;
-    const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-    const isComplete = total > 0 && checked === total;
-    return { checked, total, percent, isComplete };
-  };
+    const getCountryCoords = (entry) => {
+      if (!entry) return null;
+      const lat = Number(entry.lat ?? entry.latitude);
+      const lng = Number(entry.lng ?? entry.lon ?? entry.longitude);
+      if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+      return [lat, lng];
+    };
 
-  const getContinentStats = (continent) => {
-    const countries = getCountriesInContinent(continent, "all");
-    let totalRegions = 0;
-    let checkedRegions = 0;
+    const getCountryStats = (countryName, entry) => {
+      const places = extractCountryPlaces(countryName, entry);
+      const total = places.length;
+      const checked = places.filter((p) => Boolean(savedPlaces[p.id])).length;
+      const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+      return { places, total, checked, pct };
+    };
 
-    countries.forEach((country) => {
-      const stats = getCountryStats(country);
-      totalRegions += stats.total;
-      checkedRegions += stats.checked;
-    });
+    const updateGlobalEtToiStats = () => {
+      const entries = Object.entries(VISITOR_REGIONS_DATA);
+      let totalPlaces = 0;
+      let totalChecked = 0;
+      let countriesCompleted = 0;
 
-    const percent = totalRegions > 0 ? Math.round((checkedRegions / totalRegions) * 100) : 0;
-    const isComplete = totalRegions > 0 && checkedRegions === totalRegions;
-    return { checkedRegions, totalRegions, percent, isComplete };
-  };
+      entries.forEach(([countryName, entry]) => {
+        const { total, checked, pct } = getCountryStats(countryName, entry);
+        totalPlaces += total;
+        totalChecked += checked;
+        if (total > 0 && pct === 100) countriesCompleted += 1;
+      });
 
-  const updateVisitorMap = (focusContinent = null) => {
-    if (!visitorMapEl || typeof L === "undefined") return;
+      const globalPct = totalPlaces > 0 ? Math.round((totalChecked / totalPlaces) * 100) : 0;
+      if (etToiCounterEl) {
+        etToiCounterEl.textContent = `${totalChecked} / ${totalPlaces} lieux (${globalPct}%) · ${countriesCompleted} pays à 100 %`;
+      }
+    };
 
-    if (!visitorMap) {
-      visitorMap = L.map("visitor-world-map", { scrollWheelZoom: false }).setView([20, 10], 2);
+    let etToiMap = null;
+    let etToiMarkersLayer = null;
+
+    if (etToiMapEl && typeof L !== "undefined") {
+      etToiMap = L.map("visitor-world-map", {
+        scrollWheelZoom: false,
+        tap: true
+      }).setView([20, 0], 2);
+
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap",
         maxZoom: 18
-      }).addTo(visitorMap);
+      }).addTo(etToiMap);
 
-      const allCoords = [];
+      etToiMarkersLayer = L.layerGroup().addTo(etToiMap);
+    }
 
-      Object.entries(VISITOR_REGIONS_DATA).forEach(([country, info]) => {
-        if (typeof info.lat !== "number" || typeof info.lng !== "number") return;
-        const continent = info.continent || "Autres";
+    let activeModalCountry = null;
+    let activeModalEntry = null;
+    let activeEtToiContinent = "all";
+    let activeEtToiSubcontinent = "all";
 
-        allCoords.push([info.lat, info.lng]);
-        const marker = L.circleMarker([info.lat, info.lng], {
-          radius: 8,
+    const syncEtToiMap = (entriesList, focusCountry = null) => {
+      if (!etToiMap || !etToiMarkersLayer) return;
+      etToiMarkersLayer.clearLayers();
+
+      const bounds = [];
+      let focusedCoord = null;
+
+      entriesList.forEach(([countryName, entry]) => {
+        const coords = getCountryCoords(entry);
+        if (!coords) return;
+
+        const { checked, total, pct } = getCountryStats(countryName, entry);
+        const flag = entry.flag || "📍";
+        const isComplete = pct === 100 && total > 0;
+        const isPartial = checked > 0 && !isComplete;
+        const isFocused = focusCountry === countryName;
+
+        const fillColor = isFocused
+          ? "#f97316"
+          : isComplete
+            ? "#16a34a"
+            : isPartial
+              ? "#0284c7"
+              : "#64748b";
+
+        const marker = L.circleMarker(coords, {
+          radius: isFocused ? 10 : isTabletOrMobileViewport() ? 8 : 7,
+          fillColor,
           color: "#ffffff",
           weight: 2,
           opacity: 1,
-          fillOpacity: 0.92
-        }).addTo(visitorMap);
+          fillOpacity: 0.94
+        })
+          .bindTooltip(`${flag} ${countryName} (${checked}/${total} · ${pct}%)`, { direction: "top" })
+          .addTo(etToiMarkersLayer);
 
         marker.on("click", () => {
-          activeContinent = continent;
-          activeSubcontinent = "all";
-          activeCountry = country;
-          renderCountriesView(continent, "all");
-          renderRegionsModal(continent, country);
+          openEtToiModalForCountry(countryName, entry);
         });
 
-        visitorCountryMarkers[country] = { marker, continent, info };
-      });
-
-      if (allCoords.length > 0) {
-        visitorMap.fitBounds(L.latLngBounds(allCoords), { padding: [20, 20], maxZoom: 3 });
-      }
-    }
-
-    const continentCoords = [];
-
-    Object.entries(visitorCountryMarkers).forEach(([country, { marker, continent, info }]) => {
-      const stats = getCountryStats(country);
-      const color = getProgressColor(stats.percent);
-      const flag = info.flag || "🏳️";
-
-      marker.setStyle({
-        fillColor: color,
-        radius: stats.percent > 0 ? 9 : 7
-      });
-
-      marker.bindTooltip(`${flag} ${country} : ${stats.percent}%`, { direction: "top" });
-
-      if (focusContinent && continent === focusContinent) {
-        continentCoords.push([info.lat, info.lng]);
-      }
-    });
-
-    if (focusContinent && continentCoords.length > 0) {
-      visitorMap.fitBounds(L.latLngBounds(continentCoords), { padding: [28, 28], maxZoom: 5 });
-      if (visitorMapLabel) {
-        visitorMapLabel.textContent = `Carte : ${focusContinent}`;
-      }
-    } else if (visitorMapLabel) {
-      visitorMapLabel.textContent = "Carte : progression par pays (gris = 0 %, ambre = en cours, vert = 100 %)";
-    }
-
-    setTimeout(() => visitorMap.invalidateSize(), 0);
-  };
-
-  const saveState = () => {
-    localStorage.setItem(storageKey, JSON.stringify(savedState));
-    updateVisitorMap(activeContinent);
-  };
-
-  const closeRegionsModal = () => {
-    activeCountry = null;
-    modalBackdrop.hidden = true;
-    modalBackdrop.innerHTML = "";
-    document.body.classList.remove("modal-open");
-  };
-
-  const renderRegionsModal = (continent, country) => {
-    const info = VISITOR_REGIONS_DATA[country];
-    if (!continent || !country || !info) {
-      closeRegionsModal();
-      return;
-    }
-
-    const flag = info.flag || "🏳️";
-    const regions = Array.isArray(info.regions) ? info.regions : [];
-    const unit = info.unit || "régions";
-    const stats = getCountryStats(country);
-
-    modalBackdrop.hidden = false;
-    document.body.classList.add("modal-open");
-
-    modalBackdrop.innerHTML = `
-      <div class="region-modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-country-title">
-        <div class="region-modal-header">
-          <div>
-            <h3 id="modal-country-title">${flag} ${country}</h3>
-            <p class="region-panel-sub">${stats.checked} / ${stats.total} ${unit} cochés (${stats.percent}%)</p>
-          </div>
-          <button type="button" class="region-close-btn" id="close-regions-modal" aria-label="Fermer">✕</button>
-        </div>
-        ${
-          regions.length > 0
-            ? `<div class="modal-bulk-actions">
-                <button type="button" class="modal-bulk-btn" data-action="check-all">✓ Tout cocher</button>
-                <button type="button" class="modal-bulk-btn" data-action="uncheck-all">✕ Tout décocher</button>
-              </div>`
-            : ""
+        bounds.push(coords);
+        if (isFocused) {
+          focusedCoord = coords;
         }
-        <div class="region-modal-list">
-          ${
-            regions.length > 0
-              ? regions
-                  .map((region, idx) => {
-                    const checked = savedState[country][idx] ? "checked" : "";
-                    return `
-                      <label class="region-check-item">
-                        <input type="checkbox" data-idx="${idx}" ${checked}>
-                        <span>${getRegionLabel(region)}</span>
-                      </label>
-                    `;
-                  })
-                  .join("")
-              : `<p class="region-panel-sub">Aucune région enregistrée pour le moment dans regions.data.js.</p>`
-          }
-        </div>
-      </div>
-    `;
-
-    modalBackdrop.querySelectorAll(".modal-bulk-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const shouldCheck = btn.dataset.action === "check-all";
-        savedState[country] = savedState[country].map(() => shouldCheck);
-        saveState();
-        renderCountriesView(continent, activeSubcontinent);
-        renderRegionsModal(continent, country);
       });
-    });
 
-    modalBackdrop.querySelectorAll(".region-modal-list input[type='checkbox']").forEach((input) => {
-      input.addEventListener("change", () => {
-        const idx = Number(input.getAttribute("data-idx"));
-        savedState[country][idx] = input.checked;
-        saveState();
-        renderCountriesView(continent, activeSubcontinent);
-        renderRegionsModal(continent, country);
-      });
-    });
+      if (etToiMapLabelEl) {
+        if (focusCountry) {
+          etToiMapLabelEl.textContent = `Carte : ${focusCountry} — coche ses lieux dans la fenêtre`;
+        } else if (activeEtToiContinent !== "all") {
+          etToiMapLabelEl.textContent = `Carte : ${activeEtToiContinent}${activeEtToiSubcontinent !== "all" ? ` — ${activeEtToiSubcontinent}` : ""} (clique sur un point ou un pays)`;
+        } else {
+          etToiMapLabelEl.textContent = "Carte : progression par pays (gris = 0 %, bleu = en cours, vert = 100 %)";
+        }
+      }
 
-    document.getElementById("close-regions-modal")?.addEventListener("click", closeRegionsModal);
-  };
+      if (focusedCoord) {
+        etToiMap.flyTo(focusedCoord, Math.max(etToiMap.getZoom() || 4, 5), { duration: 0.55 });
+      } else if (bounds.length === 1) {
+        etToiMap.setView(bounds[0], 5);
+      } else if (bounds.length > 1) {
+        etToiMap.fitBounds(bounds, { padding: [24, 24], maxZoom: 5 });
+      }
 
-  modalBackdrop.addEventListener("click", (e) => {
-    if (e.target === modalBackdrop) {
-      closeRegionsModal();
+      setTimeout(() => {
+        if (etToiMap) etToiMap.invalidateSize();
+      }, 70);
+    };
+
+    const closeEtToiModal = () => {
+      if (!etToiModalBackdrop) return;
+      etToiModalBackdrop.hidden = true;
+      etToiModalBackdrop.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+      activeModalCountry = null;
+      activeModalEntry = null;
+      renderEtToiView();
+    };
+
+    const openEtToiModalForCountry = (countryName, entry) => {
+      activeModalCountry = countryName;
+      activeModalEntry = entry;
+
+      const { places, checked, total, pct } = getCountryStats(countryName, entry);
+      const flag = entry?.flag || "🏳️";
+
+      if (etToiModalTitle) {
+        etToiModalTitle.textContent = `${flag} ${countryName}`;
+      }
+      if (etToiModalSubtitle) {
+        etToiModalSubtitle.textContent = `${checked} / ${total} lieu(x) coché(s) (${pct}%)`;
+      }
+
+      if (etToiModalList) {
+        etToiModalList.innerHTML = places
+          .map((place) => {
+            const isChecked = Boolean(savedPlaces[place.id]);
+            return `
+              <label class="region-check-item">
+                <input
+                  type="checkbox"
+                  data-place-id="${escapeAttr(place.id)}"
+                  ${isChecked ? "checked" : ""}
+                >
+                <span>${escapeAttr(place.label)}</span>
+              </label>
+            `;
+          })
+          .join("");
+
+        etToiModalList.querySelectorAll("input[type='checkbox']").forEach((cb) => {
+          cb.addEventListener("change", () => {
+            const placeId = cb.getAttribute("data-place-id");
+            if (!placeId) return;
+            savedPlaces[placeId] = cb.checked;
+            saveEtToiPlaces();
+
+            const updated = getCountryStats(activeModalCountry, activeModalEntry);
+            if (etToiModalSubtitle) {
+              etToiModalSubtitle.textContent = `${updated.checked} / ${updated.total} lieu(x) coché(s) (${updated.pct}%)`;
+            }
+            updateGlobalEtToiStats();
+            renderEtToiView(activeModalCountry);
+          });
+        });
+      }
+
+      if (etToiModalBackdrop) {
+        etToiModalBackdrop.hidden = false;
+        etToiModalBackdrop.classList.add("is-open");
+        document.body.classList.add("modal-open");
+      }
+
+      renderEtToiView(countryName);
+    };
+
+    if (etToiModalClose) {
+      etToiModalClose.addEventListener("click", closeEtToiModal);
     }
-  });
-
-  const renderSubcontinentsBar = (continent) => {
-    if (!subcontinentsPanel) return;
-
-    const subcontinents = getSubcontinentsInContinent(continent);
-
-    if (subcontinents.length <= 1) {
-      subcontinentsPanel.hidden = true;
-      subcontinentsPanel.innerHTML = "";
-      return;
+    if (etToiModalBackdrop) {
+      etToiModalBackdrop.addEventListener("click", (e) => {
+        if (e.target === etToiModalBackdrop) {
+          closeEtToiModal();
+        }
+      });
+    }
+    if (etToiSelectAllBtn) {
+      etToiSelectAllBtn.addEventListener("click", () => {
+        if (!activeModalCountry || !activeModalEntry) return;
+        const { places } = getCountryStats(activeModalCountry, activeModalEntry);
+        places.forEach((p) => {
+          savedPlaces[p.id] = true;
+        });
+        saveEtToiPlaces();
+        openEtToiModalForCountry(activeModalCountry, activeModalEntry);
+        updateGlobalEtToiStats();
+      });
+    }
+    if (etToiClearAllBtn) {
+      etToiClearAllBtn.addEventListener("click", () => {
+        if (!activeModalCountry || !activeModalEntry) return;
+        const { places } = getCountryStats(activeModalCountry, activeModalEntry);
+        places.forEach((p) => {
+          delete savedPlaces[p.id];
+        });
+        saveEtToiPlaces();
+        openEtToiModalForCountry(activeModalCountry, activeModalEntry);
+        updateGlobalEtToiStats();
+      });
     }
 
-    subcontinentsPanel.hidden = false;
-    subcontinentsPanel.innerHTML = `
-      <button
-        type="button"
-        class="filter-pill ${activeSubcontinent === "all" ? "is-active" : ""}"
-        data-subcontinent="all"
-      >
-        Tous
-      </button>
-      ${subcontinents
-        .map(
-          (sub) => `
-            <button
-              type="button"
-              class="filter-pill ${activeSubcontinent === sub ? "is-active" : ""}"
-              data-subcontinent="${sub}"
-            >
-              ${sub}
-            </button>
-          `
-        )
-        .join("")}
-    `;
-
-    subcontinentsPanel.querySelectorAll("[data-subcontinent]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        activeSubcontinent = btn.getAttribute("data-subcontinent") || "all";
-        renderCountriesView(continent, activeSubcontinent);
+    const getEtToiContinents = () => {
+      const seen = new Set();
+      const list = [];
+      Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
+        const c = entry.continent || "Autres";
+        if (!seen.has(c)) {
+          seen.add(c);
+          list.push(c);
+        }
       });
-    });
-  };
+      return list;
+    };
 
-  const renderCountriesView = (continent, subcontinent = "all") => {
-    continentsGrid.hidden = true;
-    countriesPanel.hidden = false;
+    const getEtToiSubcontinents = (continent) => {
+      const seen = new Set();
+      const list = [];
+      Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
+        if ((entry.continent || "Autres") === continent && entry.subcontinent && !seen.has(entry.subcontinent)) {
+          seen.add(entry.subcontinent);
+          list.push(entry.subcontinent);
+        }
+      });
+      return list;
+    };
 
-    const emoji = continentEmojis[continent] || "🌐";
-    const continentStats = getContinentStats(continent);
+    const getFilteredEtToiEntries = () => {
+      return Object.entries(VISITOR_REGIONS_DATA).filter(([, entry]) => {
+        const cont = entry.continent || "Autres";
+        if (activeEtToiContinent !== "all" && cont !== activeEtToiContinent) return false;
+        if (activeEtToiSubcontinent !== "all" && (entry.subcontinent || "Autres") !== activeEtToiSubcontinent) {
+          return false;
+        }
+        return true;
+      });
+    };
 
-    renderSubcontinentsBar(continent);
+    const renderEtToiContinentsBar = () => {
+      if (!etToiContinentsGrid) return;
+      const continents = getEtToiContinents();
 
-    const countryNames = getCountriesInContinent(continent, subcontinent);
-
-    countriesPanel.innerHTML = `
-      <div class="countries-view-header">
-        <button type="button" class="back-continents-btn" id="back-to-continents">
-          ← Continents
+      etToiContinentsGrid.innerHTML = `
+        <button
+          type="button"
+          class="filter-pill ${activeEtToiContinent === "all" ? "is-active" : ""}"
+          data-et-continent="all"
+        >
+          Tous les continents (${Object.keys(VISITOR_REGIONS_DATA).length})
         </button>
-        <div class="countries-view-title">
-          <h3>${emoji} ${continent}${subcontinent !== "all" ? ` — ${subcontinent}` : ""}</h3>
-          <span class="region-panel-sub">${continentStats.percent}%</span>
-        </div>
-      </div>
-
-      <div class="visitor-countries-multi-list">
-        ${countryNames
-          .map((country) => {
-            const flag = VISITOR_REGIONS_DATA[country]?.flag || "🏳️";
-            const stats = getCountryStats(country);
-
+        ${continents
+          .map((continent) => {
+            const emoji = travelContinentEmojis[continent] || "🌐";
+            const count = Object.values(VISITOR_REGIONS_DATA).filter(
+              (e) => (e.continent || "Autres") === continent
+            ).length;
             return `
               <button
                 type="button"
-                class="visitor-bubble ${stats.isComplete ? "is-complete" : ""}"
-                data-country="${country}"
+                class="filter-pill ${activeEtToiContinent === continent ? "is-active" : ""}"
+                data-et-continent="${escapeAttr(continent)}"
               >
-                <span>${flag} ${country}</span>
-                <span class="visitor-bubble-percent">${stats.percent}%</span>
+                ${emoji} ${escapeAttr(continent)} (${count})
               </button>
             `;
           })
           .join("")}
-      </div>
-    `;
+      `;
 
-    document
-      .getElementById("back-to-continents")
-      ?.addEventListener("click", () => {
-        activeContinent = null;
-        activeSubcontinent = "all";
-        closeRegionsModal();
-        renderContinentsView();
+      etToiContinentsGrid.querySelectorAll("[data-et-continent]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activeEtToiContinent = btn.getAttribute("data-et-continent") || "all";
+          activeEtToiSubcontinent = "all";
+          renderEtToiView();
+        });
       });
+    };
 
-    countriesPanel.querySelectorAll(".visitor-bubble").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const country = btn.getAttribute("data-country");
-        activeCountry = country;
-        renderRegionsModal(continent, activeCountry);
+    const renderEtToiSubcontinentsBar = () => {
+      if (!etToiSubcontinentsPanel) return;
+      if (activeEtToiContinent === "all") {
+        etToiSubcontinentsPanel.hidden = true;
+        etToiSubcontinentsPanel.innerHTML = "";
+        return;
+      }
+
+      const subs = getEtToiSubcontinents(activeEtToiContinent);
+      if (subs.length <= 1) {
+        etToiSubcontinentsPanel.hidden = true;
+        etToiSubcontinentsPanel.innerHTML = "";
+        return;
+      }
+
+      etToiSubcontinentsPanel.hidden = false;
+      etToiSubcontinentsPanel.innerHTML = `
+        <button
+          type="button"
+          class="filter-pill ${activeEtToiSubcontinent === "all" ? "is-active" : ""}"
+          data-et-sub="all"
+        >
+          Tous
+        </button>
+        ${subs
+          .map(
+            (sub) => `
+              <button
+                type="button"
+                class="filter-pill ${activeEtToiSubcontinent === sub ? "is-active" : ""}"
+                data-et-sub="${escapeAttr(sub)}"
+              >
+                ${escapeAttr(sub)}
+              </button>
+            `
+          )
+          .join("")}
+      `;
+
+      etToiSubcontinentsPanel.querySelectorAll("[data-et-sub]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activeEtToiSubcontinent = btn.getAttribute("data-et-sub") || "all";
+          renderEtToiView();
+        });
       });
-    });
+    };
 
-    updateVisitorMap(continent);
-  };
+    const renderEtToiView = (focusCountry = null) => {
+      renderEtToiContinentsBar();
+      renderEtToiSubcontinentsBar();
 
-  const renderContinentsView = () => {
-    countriesPanel.hidden = true;
-    countriesPanel.innerHTML = "";
-    if (subcontinentsPanel) {
-      subcontinentsPanel.hidden = true;
-      subcontinentsPanel.innerHTML = "";
-    }
-    continentsGrid.hidden = false;
+      const entries = getFilteredEtToiEntries();
 
-    let completedContinents = 0;
+      if (etToiCountriesPanel) {
+        etToiCountriesPanel.hidden = false;
+        etToiCountriesPanel.innerHTML = `
+          <div class="visitor-countries-multi-list">
+            ${entries
+              .map(([countryName, entry]) => {
+                const { checked, total, pct } = getCountryStats(countryName, entry);
+                const flag = entry.flag || "🏳️";
+                const isComplete = pct === 100 && total > 0;
+                const isPartial = checked > 0 && !isComplete;
+                const isFocused = focusCountry === countryName;
 
-    continentsGrid.innerHTML = continentNames
-      .map((continent) => {
-        const emoji = continentEmojis[continent] || "🌐";
-        const stats = getContinentStats(continent);
-        if (stats.isComplete) completedContinents += 1;
-
-        return `
-          <button
-            type="button"
-            class="visitor-bubble ${stats.isComplete ? "is-complete" : ""}"
-            data-continent="${continent}"
-          >
-            <span>${emoji} ${continent}</span>
-            <span class="visitor-bubble-percent">${stats.percent}%</span>
-          </button>
+                return `
+                  <button
+                    type="button"
+                    class="visitor-bubble ${isComplete ? "is-complete" : ""} ${isPartial ? "is-partial" : ""} ${isFocused ? "is-active" : ""}"
+                    data-et-toi-country="${escapeAttr(countryName)}"
+                  >
+                    <span>${flag} ${escapeAttr(countryName)}</span>
+                    <span class="visitor-bubble-percent">${checked}/${total} · ${pct}%</span>
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
         `;
-      })
-      .join("");
 
-    if (visitorCounter) {
-      visitorCounter.textContent =
-        completedContinents > 0
-          ? completedContinents === 1
-            ? "1 continent à 100 %"
-            : `${completedContinents} continents à 100 %`
-          : "Progression mondiale";
-    }
+        etToiCountriesPanel.querySelectorAll("[data-et-toi-country]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const cName = btn.getAttribute("data-et-toi-country");
+            const cEntry = VISITOR_REGIONS_DATA[cName];
+            if (cName && cEntry) {
+              openEtToiModalForCountry(cName, cEntry);
+            }
+          });
+        });
+      }
 
-    continentsGrid.querySelectorAll(".visitor-bubble").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const continent = btn.getAttribute("data-continent");
-        activeContinent = continent;
-        activeSubcontinent = "all";
-        renderCountriesView(activeContinent, activeSubcontinent);
-      });
-    });
+      syncEtToiMap(entries, focusCountry);
+    };
 
-    updateVisitorMap(null);
-  };
+    window.addEventListener(
+      "resize",
+      () => {
+        if (etToiMap) {
+          setTimeout(() => etToiMap.invalidateSize(), 160);
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener(
+      "orientationchange",
+      () => {
+        if (etToiMap) {
+          setTimeout(() => etToiMap.invalidateSize(), 180);
+        }
+      },
+      { passive: true }
+    );
 
-  renderContinentsView();
+    updateGlobalEtToiStats();
+    renderEtToiView();
+  }
+
+  updateFilterStatus();
 });
