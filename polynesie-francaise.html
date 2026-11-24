@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polynésie française — Archipels, Îles & Conseils</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body data-visited="true" data-place-name="Polynésie française">
+
+  <header class="sticky-nav">
+    <a href="../index.html" class="home-link">← Accueil</a>
+  </header>
+
+  <main class="container">
+    <div class="destination-header-block">
+      <span class="destination-eyebrow">Guide de voyage</span>
+      <h1 class="destination-hero-title">Polynésie <span>française</span></h1>
+    </div>
+
+    <div class="country-overview-box">
+      <p class="country-summary-text">
+        Cinq archipels dispersés sur un vaste espace océanique entre lagons coralliens, îles hautes volcaniques, randonnées dans les vallées et plongée. Coche chaque activité faite pour la faire passer en rouge sur la carte.
+      </p>
+      <div class="practical-info-grid">
+        <div class="practical-card">
+          <h4>✈️ Transports & liaisons</h4>
+          <p>
+            Arrivée à <span class="place-mention" data-lat="-17.5567" data-lng="-149.6114" data-zoom="11" data-label="Aéroport de Tahiti-Faa'a">Tahiti (Papeete)</span>, ferries vers <span class="place-mention" data-lat="-17.5333" data-lng="-149.8333" data-zoom="11" data-label="Moorea">Moorea</span>, vols inter-îles (Air Tahiti) ou navigation en bateau/voilier entre les lagons.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>💶 Monnaie & budget</h4>
+          <p>
+            Franc Pacifique (XPF, taux fixe avec l'euro). Les sorties lagon, excursions bateau et transferts pèsent vite dans le budget : pense à filtrer par tarif.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>🌊 Météo & saisons</h4>
+          <p>
+            Saison sèche et plus fraîche de mai à octobre (passage des baleines à bosse en saison), saison plus chaude et humide de novembre à avril.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-top-panel" id="sticky-map-controls">
+      <div class="pill-row state-pills" aria-label="Filtrer par archipel">
+        <button type="button" class="filter-pill is-active" data-state="all">Tous</button>
+        <button type="button" class="filter-pill" data-state="iles-du-vent">Îles du Vent</button>
+        <button type="button" class="filter-pill" data-state="iles-sous-le-vent">Îles Sous-le-Vent</button>
+        <button type="button" class="filter-pill" data-state="tuamotu">Tuamotu</button>
+        <button type="button" class="filter-pill" data-state="marquises">Marquises</button>
+        <button type="button" class="filter-pill" data-state="australes">Australes</button>
+      </div>
+
+      <div class="pill-row subplace-pills" id="subplace-filter-bar" data-all-label="Toutes les îles" aria-label="Filtrer par île" hidden></div>
+
+      <div class="sticky-map-box" id="experience-map-box">
+        <div class="map-location-label" id="map-active-place">Lieu : Vue d'ensemble</div>
+        <div id="real-map" class="real-map-canvas" aria-label="Carte des archipels de Polynésie française"></div>
+      </div>
+
+      <div class="destination-controls">
+        <div class="pill-row budget-pills" id="budget-filter-bar" aria-label="Filtrer par budget par personne" hidden>
+          <button type="button" class="filter-pill is-active" data-budget="all">Tout</button>
+          <button type="button" class="filter-pill" data-budget="free">Gratuit</button>
+          <button type="button" class="filter-pill" data-budget="50">-50€/p</button>
+          <button type="button" class="filter-pill" data-budget="100">-100€/p</button>
+        </div>
+
+        <div class="pill-row theme-pills" id="theme-filter-bar" aria-label="Filtrer par thème" hidden>
+          <button type="button" class="filter-pill is-active" data-theme="all">Tous thèmes</button>
+          <button type="button" class="filter-pill" data-theme="rando">🥾 Rando</button>
+          <button type="button" class="filter-pill" data-theme="parc">🌿 Parc</button>
+          <button type="button" class="filter-pill" data-theme="point-de-vue">🌄 Point de vue</button>
+          <button type="button" class="filter-pill" data-theme="monument">🏛️ Monument</button>
+          <button type="button" class="filter-pill" data-theme="marche">🧺 Marché</button>
+          <button type="button" class="filter-pill" data-theme="activite">🚤 Activité</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="destination-dynamic-sections"></div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js.destinations/polynesie-francaise.data.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

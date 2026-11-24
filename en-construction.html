@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Destination en construction</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body class="landing-page">
+
+  <header class="sticky-nav">
+    <a href="../index.html" class="home-link">← Accueil</a>
+  </header>
+
+  <main class="container">
+    <div class="destination-header-block">
+      <span class="destination-eyebrow">Carnet de voyage</span>
+      <h1 class="destination-hero-title" id="wip-country-title">Destination</h1>
+    </div>
+
+    <div class="country-overview-box">
+      <p class="country-summary-text" id="wip-country-desc">
+        Cette fiche est en cours de préparation. Les spots, étapes et points GPS seront ajoutés prochainement.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const country = params.get("pays");
+    if (country) {
+      document.title = `${country} — En construction`;
+      const titleEl = document.getElementById("wip-country-title");
+      const descEl = document.getElementById("wip-country-desc");
+      if (titleEl) titleEl.textContent = country;
+      if (descEl) {
+        descEl.textContent = `La fiche de destination pour ${country} est en construction. Reviens bientôt pour découvrir ses étapes et points GPS.`;
+      }
+    }
+  </script>
+</body>
+</html>

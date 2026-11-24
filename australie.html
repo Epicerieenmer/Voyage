@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Australie — Conseils & Checklist</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body data-visited="partial" data-place-name="Australie">
+
+  <header class="sticky-nav">
+    <a href="../index.html" class="home-link">← Accueil</a>
+  </header>
+
+  <main class="container">
+    <div class="destination-header-block">
+      <span class="destination-eyebrow">Guide de voyage</span>
+      <h1 class="destination-hero-title">Austra<span>lie</span></h1>
+    </div>
+
+    <!-- RÉSUMÉ & INFOS PRATIQUES DU PAYS -->
+    <div class="country-overview-box">
+      <p class="country-summary-text">
+        Grand continent aux distances importantes entre côte est tropicale, vergers, récifs coralliens, villes côtières et déserts rouges. Sélectionne un État ou territoire pour afficher ses repérages et la carte associée.
+      </p>
+      <div class="practical-info-grid">
+        <div class="practical-card">
+          <h4>🚐 Transports & distances</h4>
+          <p>
+            Les trajets terrestres entre États sont longs : voiture, van/campervan ou vols intérieurs sont souvent nécessaires, notamment depuis <span class="place-mention" data-lat="-26.75" data-lng="152.95" data-zoom="7" data-label="Queensland">le Queensland</span>[span_4](start_span)[span_4](end_span).
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>💶 Monnaie & budget</h4>
+          <p>
+            Dollar australien (AUD). Les activités en plein air, plages et sentiers sont souvent gratuits, tandis que les sorties bateau, récif et transports pèsent davantage.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>☀️ Météo & saisons</h4>
+          <p>
+            Saisons inversées par rapport à l'hémisphère nord : le climat varie fortement entre le nord tropical, la côte est tempérée et le centre désertique.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANNEAU COLLANT : ÉTATS + CARTE -->
+    <div class="sticky-top-panel" id="sticky-map-controls">
+      <div class="pill-row state-pills" aria-label="Filtrer par État ou territoire">
+        <button type="button" class="filter-pill is-active" data-state="all">Tous</button>
+        <button type="button" class="filter-pill" data-state="qld">Queensland</button>
+        <button type="button" class="filter-pill" data-state="nsw">Nouvelle-Galles du Sud</button>
+        <button type="button" class="filter-pill" data-state="vic">Victoria</button>
+        <button type="button" class="filter-pill" data-state="wa">Australie-Occidentale</button>
+        <button type="button" class="filter-pill" data-state="nt">Territoire du Nord</button>
+      </div>
+
+      <div class="sticky-map-box" id="experience-map-box">
+        <div class="map-location-label" id="map-active-place">Lieu : Vue d'ensemble</div>
+        <div id="real-map" class="real-map-canvas" aria-label="Carte réelle des lieux visités"></div>
+      </div>
+    </div>
+
+    <!-- QUEENSLAND -->
+    <section id="qld" data-state-visited="true" data-lat="-26.75" data-lng="152.95" data-zoom="6" data-map-label="Queensland — Côte Est & Vergers" hidden>
+      <h3>État : 1. Queensland</h3>
+      <p class="state-intro">
+        Découverte de la région et des
+        <span class="place-mention" data-lat="-26.78" data-lng="152.95" data-zoom="9" data-label="Mooloolah Valley & Vergers (QLD)">vergers</span>,
+        puis cap au nord vers les
+        <span class="place-mention" data-lat="-20.25" data-lng="148.95" data-zoom="7" data-label="Whitsundays & Grande Barrière">Whitsundays</span>[span_5](start_span)[span_5](end_span).
+      </p>
+
+      <label class="check-item activity-item" data-theme="parc" data-lat="-26.78" data-lng="152.95" data-price="0" data-transport="Voiture">
+        <input type="checkbox" checked>
+        <div class="activity-content">
+          <span class="activity-title">Explorer la région et les vergers (fait sur place)</span>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">Gratuit</span>
+            <span class="activity-tag transport-tag">🚗 Voiture</span>
+          </div>
+        </div>
+      </label>
+
+      <label class="check-item activity-item" data-theme="activite" data-lat="-20.25" data-lng="148.95" data-price="95" data-transport="Bateau">
+        <input type="checkbox">
+        <div class="activity-content">
+          <span class="activity-title">Grande Barrière de corail / Whitsundays (non fait)</span>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">~95 €/p</span>
+            <span class="activity-tag transport-tag">🚤 Bateau</span>
+          </div>
+        </div>
+      </label>
+    </section>
+
+    <!-- NOUVELLE-GALLES DU SUD -->
+    <section id="nsw" data-state-visited="false" data-lat="-33.8688" data-lng="151.2093" data-zoom="6" data-map-label="Nouvelle-Galles du Sud — Sydney" hidden>
+      <h3>État : 2. Nouvelle-Galles du Sud</h3>
+      <p class="state-intro">
+        Repérage autour de
+        <span class="place-mention" data-lat="-33.8688" data-lng="151.2093" data-zoom="10" data-label="Sydney & Blue Mountains">Sydney</span>[span_6](start_span)[span_6](end_span).
+      </p>
+
+      <label class="check-item activity-item" data-theme="rando" data-lat="-33.8688" data-lng="151.2093" data-price="0" data-transport="Train / Voiture">
+        <input type="checkbox">
+        <div class="activity-content">
+          <span class="activity-title">Sydney & Blue Mountains (non fait)</span>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">Gratuit</span>
+            <span class="activity-tag transport-tag">🚂 Train / Voiture</span>
+          </div>
+        </div>
+      </label>
+    </section>
+
+    <!-- VICTORIA -->
+    <section id="vic" data-state-visited="false" data-lat="-37.8136" data-lng="144.9631" data-zoom="6" data-map-label="Victoria — Melbourne" hidden>
+      <h3>État : 3. Victoria</h3>
+      <p class="state-intro">
+        Idées d'itinéraire entre
+        <span class="place-mention" data-lat="-37.8136" data-lng="144.9631" data-zoom="9" data-label="Melbourne & Great Ocean Road">Melbourne</span>[span_7](start_span)[span_7](end_span).
+      </p>
+
+      <label class="check-item activity-item" data-theme="point-de-vue" data-lat="-37.8136" data-lng="144.9631" data-price="0" data-transport="Voiture">
+        <input type="checkbox">
+        <div class="activity-content">
+          <span class="activity-title">Melbourne & Great Ocean Road (non fait)</span>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">Gratuit</span>
+            <span class="activity-tag transport-tag">🚗 Voiture</span>
+          </div>
+        </div>
+      </label>
+    </section>
+
+    <!-- AUSTRALIE-OCCIDENTALE -->
+    <section id="wa" data-state-visited="false" data-lat="-31.9505" data-lng="115.8605" data-zoom="5" data-map-label="Australie-Occidentale — Perth" hidden>
+      <h3>État : 4. Australie-Occidentale</h3>
+      <p class="state-intro">Côte ouest sauvage, récifs coralliens et grands espaces.</p>
+
+      <label class="check-item activity-item" data-theme="activite" data-lat="-31.9505" data-lng="115.8605" data-price="85" data-transport="Voiture / Vol">
+        <input type="checkbox">
+        <div class="activity-content">
+          <span class="activity-title">Perth, Ningaloo Reef & Kimberley (non fait)</span>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">~85 €/p</span>
+            <span class="activity-tag transport-tag">✈️ Voiture / Vol</span>
+          </div>
+        </div>
+      </label>
+    </section>
+
+    <!-- TERRITOIRE DU NORD -->
+    <section id="nt" data-state-visited="false" data-lat="-25.3444" data-lng="131.0369" data-zoom="5" data-map-label="Territoire du Nord — Uluru & Darwin" hidden>
+      <h3>Territoire : 5. Territoire du Nord</h3>
+      <p class="state-intro">Centre rouge emblématique et parcs tropicaux du Top End.</p>
+
+      <label class="check-item activity-item" data-theme="point-de-vue" data-lat="-25.3444" data-lng="131.0369" data-price="45" data-transport="Voiture / Excursion">
+        <input type="checkbox">
+        <div class="activity-content">
+          <span class="activity-title">Uluru, Kakadu & Darwin (non fait)</span>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">~45 €/p</span>
+            <span class="activity-tag transport-tag">🚙 Voiture / Excursion</span>
+          </div>
+        </div>
+      </label>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

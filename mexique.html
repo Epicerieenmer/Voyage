@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mexique — Tous les États & Conseils</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body data-visited="true" data-place-name="Mexique">
+
+  <header class="sticky-nav">
+    <a href="../index.html" class="home-link">← Accueil</a>
+  </header>
+
+  <main class="container">
+    <div class="destination-header-block">
+      <span class="destination-eyebrow">Guide de voyage</span>
+      <h1 class="destination-hero-title">Mex<span>ique</span></h1>
+    </div>
+
+    <div class="country-overview-box">
+      <p class="country-summary-text">
+        Trente-deux entités entre hauts plateaux volcaniques, villes coloniales, sites archéologiques, cénotes et littoraux du Pacifique, du golfe et des Caraïbes. Sélectionne un État pour filtrer les activités par budget ou thème et les afficher sur la carte.
+      </p>
+      <div class="practical-info-grid">
+        <div class="practical-card">
+          <h4>🚌 Transports & liaisons</h4>
+          <p>
+            Réseau dense de bus longue distance (ADO, Primera Plus, ETN), colectivos locaux, métro à <span class="place-mention" data-lat="19.4326" data-lng="-99.1332" data-zoom="10" data-label="Mexico (CDMX)">Mexico</span> et vols intérieurs pour relier les régions éloignées.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>💶 Monnaie & budget</h4>
+          <p>
+            Peso mexicain (MXN). Les visites culturelles, musées et transports locaux restent abordables ; prévois davantage pour certaines excursions guidées ou réserves naturelles.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>☀️ Météo & saisons</h4>
+          <p>
+            Saison sèche généralement de novembre à avril (agréable sur les côtes et les hauts plateaux), saison plus humide et chaude de mai à octobre selon les régions.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-top-panel" id="sticky-map-controls">
+      <div class="pill-row state-pills" aria-label="Filtrer par État">
+        <button type="button" class="filter-pill is-active" data-state="all">Tous</button>
+        <button type="button" class="filter-pill" data-state="cdmx">Mexico (CDMX)</button>
+        <button type="button" class="filter-pill" data-state="estado-mexico">État de Mexico</button>
+        <button type="button" class="filter-pill" data-state="morelos">Morelos</button>
+        <button type="button" class="filter-pill" data-state="puebla">Puebla</button>
+        <button type="button" class="filter-pill" data-state="tlaxcala">Tlaxcala</button>
+        <button type="button" class="filter-pill" data-state="hidalgo">Hidalgo</button>
+        <button type="button" class="filter-pill" data-state="queretaro">Querétaro</button>
+        <button type="button" class="filter-pill" data-state="guanajuato">Guanajuato</button>
+        <button type="button" class="filter-pill" data-state="quintana-roo">Quintana Roo</button>
+        <button type="button" class="filter-pill" data-state="yucatan">Yucatán</button>
+        <button type="button" class="filter-pill" data-state="campeche">Campeche</button>
+        <button type="button" class="filter-pill" data-state="chiapas">Chiapas</button>
+        <button type="button" class="filter-pill" data-state="tabasco">Tabasco</button>
+        <button type="button" class="filter-pill" data-state="oaxaca">Oaxaca</button>
+        <button type="button" class="filter-pill" data-state="guerrero">Guerrero</button>
+        <button type="button" class="filter-pill" data-state="veracruz">Veracruz</button>
+        <button type="button" class="filter-pill" data-state="michoacan">Michoacán</button>
+        <button type="button" class="filter-pill" data-state="jalisco">Jalisco</button>
+        <button type="button" class="filter-pill" data-state="nayarit">Nayarit</button>
+        <button type="button" class="filter-pill" data-state="colima">Colima</button>
+        <button type="button" class="filter-pill" data-state="aguascalientes">Aguascalientes</button>
+        <button type="button" class="filter-pill" data-state="san-luis-potosi">San Luis Potosí</button>
+        <button type="button" class="filter-pill" data-state="zacatecas">Zacatecas</button>
+        <button type="button" class="filter-pill" data-state="baja-california">Basse-Californie</button>
+        <button type="button" class="filter-pill" data-state="baja-california-sur">Basse-Californie du Sud</button>
+        <button type="button" class="filter-pill" data-state="sonora">Sonora</button>
+        <button type="button" class="filter-pill" data-state="sinaloa">Sinaloa</button>
+        <button type="button" class="filter-pill" data-state="durango">Durango</button>
+        <button type="button" class="filter-pill" data-state="chihuahua">Chihuahua</button>
+        <button type="button" class="filter-pill" data-state="coahuila">Coahuila</button>
+        <button type="button" class="filter-pill" data-state="nuevo-leon">Nuevo León</button>
+        <button type="button" class="filter-pill" data-state="tamaulipas">Tamaulipas</button>
+      </div>
+
+      <div class="pill-row subplace-pills" id="subplace-filter-bar" data-all-label="Tous les lieux" aria-label="Filtrer par lieu" hidden></div>
+
+      <div class="sticky-map-box" id="experience-map-box">
+        <div class="map-location-label" id="map-active-place">Lieu : Vue d'ensemble</div>
+        <div id="real-map" class="real-map-canvas" aria-label="Carte réelle des États du Mexique"></div>
+      </div>
+
+      <div class="destination-controls">
+        <div class="pill-row budget-pills" id="budget-filter-bar" aria-label="Filtrer par budget par personne" hidden>
+          <button type="button" class="filter-pill is-active" data-budget="all">Tout</button>
+          <button type="button" class="filter-pill" data-budget="free">Gratuit</button>
+          <button type="button" class="filter-pill" data-budget="50">-50€/p</button>
+          <button type="button" class="filter-pill" data-budget="100">-100€/p</button>
+        </div>
+
+        <div class="pill-row theme-pills" id="theme-filter-bar" aria-label="Filtrer par thème" hidden>
+          <button type="button" class="filter-pill is-active" data-theme="all">Tous thèmes</button>
+          <button type="button" class="filter-pill" data-theme="rando">🥾 Rando</button>
+          <button type="button" class="filter-pill" data-theme="parc">🌿 Parc</button>
+          <button type="button" class="filter-pill" data-theme="point-de-vue">🌄 Point de vue</button>
+          <button type="button" class="filter-pill" data-theme="monument">🏛️ Monument</button>
+          <button type="button" class="filter-pill" data-theme="marche">🧺 Marché</button>
+          <button type="button" class="filter-pill" data-theme="activite">🚤 Activité</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="destination-dynamic-sections"></div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js.destinations/mexique.data.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>
