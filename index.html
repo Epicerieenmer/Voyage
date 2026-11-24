@@ -15,7 +15,7 @@
       <p class="subtitle">Mes retours d'expérience et itinéraires — et ta propre carte mentale des pays parcourus.</p>
     </header>
 
-    <!-- BLOC 1 : OÙ VOYAGES-TU ? (par continent -> sous-continent -> pays) -->
+    <!-- BLOC 1 : OÙ VOYAGES-TU ? (continent -> sous-continent -> pays) -->
     <section class="home-block" aria-labelledby="my-trips-title">
       <div class="block-header">
         <div>
@@ -39,19 +39,19 @@
       <!-- Niveau 1 : Continents -->
       <div class="visitor-countries-grid" id="my-trips-continents-grid"></div>
 
-      <!-- Niveau 1.5 : Sous-continents du continent sélectionné -->
-      <div class="pill-row subcontinent-pills" id="my-trips-subcontinents-panel" hidden></div>
+      <!-- Niveau 2 : Sous-continents du continent sélectionné -->
+      <div class="visitor-region-panel subcontinent-pills" id="my-trips-subcontinents-panel" hidden></div>
 
-      <!-- Niveau 2 : Pays du continent / sous-continent sélectionné -->
+      <!-- Niveau 3 : Pays du sous-continent / continent sélectionné -->
       <div class="visitor-region-panel" id="my-trips-countries-panel" hidden></div>
     </section>
 
-    <!-- BLOC 2 : CHECKLIST POUR LES VISITEURS -->
+    <!-- BLOC 2 : CHECKLIST POUR LES VISITEURS (continent -> sous-continent -> pays) -->
     <section class="home-block" aria-labelledby="visitor-check-title">
       <div class="block-header">
         <div>
           <h2 id="visitor-check-title">Et toi, tu as visité quoi ?</h2>
-          <p class="block-desc">Retrouve la carte et tous les pays avec leurs points : clique sur un pays ou un point pour cocher ses lieux/régions et suivre tes statistiques.</p>
+          <p class="block-desc">Choisis un continent puis un sous-continent et un pays — ou clique sur un point de la carte — pour cocher ce que tu as visité.</p>
         </div>
         <span class="visitor-counter" id="visitor-counter">0 / 0 lieu (0 %)</span>
       </div>
@@ -62,12 +62,14 @@
         <div id="visitor-world-map" class="real-map-canvas" aria-label="Carte des pays visités"></div>
       </div>
 
-      <!-- Filtres rapides continent / sous-continent -->
+      <!-- Niveau 1 : Continents -->
       <div class="visitor-countries-grid" id="visitor-continents-grid"></div>
-      <div class="pill-row subcontinent-pills" id="visitor-subcontinents-panel" hidden></div>
 
-      <!-- Liste complète des pays associés aux points de la carte -->
-      <div class="visitor-region-panel" id="visitor-countries-panel"></div>
+      <!-- Niveau 2 : Sous-continents du continent sélectionné -->
+      <div class="visitor-region-panel subcontinent-pills" id="visitor-subcontinents-panel" hidden></div>
+
+      <!-- Niveau 3 : Pays du sous-continent / continent sélectionné -->
+      <div class="visitor-region-panel" id="visitor-countries-panel" hidden></div>
     </section>
   </main>
 

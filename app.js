@@ -2,6 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const isMobileViewport = () => window.innerWidth <= 640;
   const isTabletOrMobileViewport = () => window.innerWidth <= 1024;
 
+  const escapeAttr = (val) =>
+    String(val ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
   // 1. Repositionner le bouton Accueil dans l'en-tête de destination
   const stickyNavEl = document.querySelector(".sticky-nav");
   const headerBlockEl = document.querySelector(".destination-header-block");
@@ -95,13 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
     marche: "🧺 Marchés & Gastronomie",
     activite: "🚤 Activités & Excursions"
   };
-
-  const escapeAttr = (val) =>
-    String(val || "")
-      .replace(/&/g, "&amp;")
-      .replace(/"/g, "&quot;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
 
   if (dynamicSectionsMount && destData && Array.isArray(destData.archipels)) {
     const themeOrder = ["rando", "parc", "point-de-vue", "monument", "marche", "activite"];
@@ -972,7 +972,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/[\u0300-\u036f]/g, "")
       .trim();
 
-  // 6. Navigation par continents & recherche sur l'accueil ("Où voyages-tu ?")
+  // 6. Bloc 1 ("Où voyages-tu ?") : Continent -> Sous-continent -> Pays
   const whereTravelContinentsGrid = document.getElementById("my-trips-continents-grid");
   const whereTravelSubcontinentsPanel = document.getElementById("my-trips-subcontinents-panel");
   const whereTravelCountriesPanel = document.getElementById("my-trips-countries-panel");
@@ -985,7 +985,8 @@ document.addEventListener("DOMContentLoaded", () => {
     typeof VISITOR_REGIONS_DATA !== "undefined"
   ) {
     let activeTravelContinent = null;
-    let activeTravelSubcontinent = "all";
+    let activeTravelSubcontinent = null;
+    let travelStep = "continents";
 
     const getDestinationUrl = (countryName) => {
       const slug = countryName
@@ -1041,74 +1042,142 @@ document.addEventListener("DOMContentLoaded", () => {
       return list;
     };
 
-    const getTravelCountries = (continent, subcontinent = "all") => {
+    const getTravelCountries = (continent, subcontinent = null) => {
       return Object.entries(VISITOR_REGIONS_DATA)
         .filter(([, entry]) => {
           const matchContinent = (entry.continent || "Autres") === continent;
           if (!matchContinent) return false;
-          if (subcontinent === "all") return true;
+          if (!subcontinent) return true;
           return (entry.subcontinent || "Autres") === subcontinent;
         })
         .map(([name]) => name);
     };
 
-    const renderWhereTravelSubcontinents = (continent) => {
-      if (!whereTravelSubcontinentsPanel) return;
+    const renderWhereTravelView = () => {
+      if (travelStep === "continents" || !activeTravelContinent) {
+        if (whereTravelSubcontinentsPanel) {
+          whereTravelSubcontinentsPanel.hidden = true;
+          whereTravelSubcontinentsPanel.innerHTML = "";
+        }
+        whereTravelCountriesPanel.hidden = true;
+        whereTravelCountriesPanel.innerHTML = "";
+        whereTravelContinentsGrid.hidden = false;
 
-      const subs = getTravelSubcontinents(continent);
-      if (subs.length <= 1) {
-        whereTravelSubcontinentsPanel.hidden = true;
-        whereTravelSubcontinentsPanel.innerHTML = "";
+        const continents = getTravelContinents();
+        whereTravelContinentsGrid.innerHTML = continents
+          .map((continent) => {
+            const emoji = travelContinentEmojis[continent] || "🌐";
+            const count = getTravelCountries(continent, null).length;
+
+            return `
+              <button
+                type="button"
+                class="visitor-bubble"
+                data-travel-continent="${escapeAttr(continent)}"
+              >
+                <span>${emoji} ${escapeAttr(continent)}</span>
+                <span class="visitor-bubble-percent">${count} pays</span>
+              </button>
+            `;
+          })
+          .join("");
+
+        whereTravelContinentsGrid.querySelectorAll("[data-travel-continent]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (searchInputEl) {
+              searchInputEl.value = "";
+              const clearBtn = searchInputEl.parentElement?.querySelector(".search-clear-btn");
+              if (clearBtn) clearBtn.hidden = true;
+            }
+            if (searchResultsEl) {
+              searchResultsEl.hidden = true;
+              searchResultsEl.innerHTML = "";
+            }
+            const chosenContinent = btn.getAttribute("data-travel-continent");
+            activeTravelContinent = chosenContinent;
+            activeTravelSubcontinent = null;
+            const subs = getTravelSubcontinents(chosenContinent);
+            travelStep = subs.length > 0 ? "subcontinents" : "countries";
+            renderWhereTravelView();
+          });
+        });
         return;
       }
 
-      whereTravelSubcontinentsPanel.hidden = false;
-      whereTravelSubcontinentsPanel.innerHTML = `
-        <button
-          type="button"
-          class="filter-pill ${activeTravelSubcontinent === "all" ? "is-active" : ""}"
-          data-travel-sub="all"
-        >
-          Tous
-        </button>
-        ${subs
-          .map(
-            (sub) => `
-              <button
-                type="button"
-                class="filter-pill ${activeTravelSubcontinent === sub ? "is-active" : ""}"
-                data-travel-sub="${sub}"
-              >
-                ${sub}
+      if (travelStep === "subcontinents") {
+        whereTravelContinentsGrid.hidden = true;
+        whereTravelCountriesPanel.hidden = true;
+        whereTravelCountriesPanel.innerHTML = "";
+
+        if (whereTravelSubcontinentsPanel) {
+          const subs = getTravelSubcontinents(activeTravelContinent);
+          const emoji = travelContinentEmojis[activeTravelContinent] || "🌐";
+          whereTravelSubcontinentsPanel.hidden = false;
+          whereTravelSubcontinentsPanel.innerHTML = `
+            <div class="countries-view-header">
+              <button type="button" class="back-continents-btn" id="travel-back-to-continents">
+                ← Continents
               </button>
-            `
-          )
-          .join("")}
-      `;
+              <div class="countries-view-title">
+                <h3>${emoji} ${escapeAttr(activeTravelContinent)}</h3>
+                <span class="region-panel-sub">Choisis un sous-continent</span>
+              </div>
+            </div>
+            <div class="visitor-countries-multi-list">
+              ${subs
+                .map((sub) => {
+                  const subCount = getTravelCountries(activeTravelContinent, sub).length;
+                  return `
+                    <button
+                      type="button"
+                      class="visitor-bubble"
+                      data-travel-sub="${escapeAttr(sub)}"
+                    >
+                      <span>${escapeAttr(sub)}</span>
+                      <span class="visitor-bubble-percent">${subCount} pays</span>
+                    </button>
+                  `;
+                })
+                .join("")}
+            </div>
+          `;
 
-      whereTravelSubcontinentsPanel.querySelectorAll("[data-travel-sub]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          activeTravelSubcontinent = btn.getAttribute("data-travel-sub") || "all";
-          renderWhereTravelCountries(continent, activeTravelSubcontinent);
-        });
-      });
-    };
+          document.getElementById("travel-back-to-continents")?.addEventListener("click", () => {
+            activeTravelContinent = null;
+            activeTravelSubcontinent = null;
+            travelStep = "continents";
+            renderWhereTravelView();
+          });
 
-    const renderWhereTravelCountries = (continent, subcontinent = "all") => {
+          whereTravelSubcontinentsPanel.querySelectorAll("[data-travel-sub]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              activeTravelSubcontinent = btn.getAttribute("data-travel-sub");
+              travelStep = "countries";
+              renderWhereTravelView();
+            });
+          });
+        }
+        return;
+      }
+
       whereTravelContinentsGrid.hidden = true;
+      if (whereTravelSubcontinentsPanel) {
+        whereTravelSubcontinentsPanel.hidden = true;
+        whereTravelSubcontinentsPanel.innerHTML = "";
+      }
       whereTravelCountriesPanel.hidden = false;
-      renderWhereTravelSubcontinents(continent);
 
-      const emoji = travelContinentEmojis[continent] || "🌐";
-      const countries = getTravelCountries(continent, subcontinent);
+      const emoji = travelContinentEmojis[activeTravelContinent] || "🌐";
+      const countries = getTravelCountries(activeTravelContinent, activeTravelSubcontinent);
+      const hasSubs = getTravelSubcontinents(activeTravelContinent).length > 0;
 
       whereTravelCountriesPanel.innerHTML = `
         <div class="countries-view-header">
-          <button type="button" class="back-continents-btn" id="back-to-travel-continents">
-            ← Continents
+          <button type="button" class="back-continents-btn" id="travel-back-from-countries">
+            ${hasSubs && activeTravelSubcontinent ? "← Sous-continents" : "← Continents"}
           </button>
           <div class="countries-view-title">
-            <h3>${emoji} ${continent}${subcontinent !== "all" ? ` — ${subcontinent}` : ""}</h3>
+            <h3>${emoji} ${escapeAttr(activeTravelContinent)}${activeTravelSubcontinent ? ` — ${escapeAttr(activeTravelSubcontinent)}` : ""}</h3>
             <span class="region-panel-sub">Clique sur un pays pour ouvrir sa fiche</span>
           </div>
         </div>
@@ -1121,9 +1190,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button
                   type="button"
                   class="visitor-bubble"
-                  data-travel-country="${country}"
+                  data-travel-country="${escapeAttr(country)}"
                 >
-                  <span>${flag} ${country}</span>
+                  <span>${flag} ${escapeAttr(country)}</span>
                   <span class="visitor-bubble-percent">→</span>
                 </button>
               `;
@@ -1132,13 +1201,17 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      document
-        .getElementById("back-to-travel-continents")
-        ?.addEventListener("click", () => {
+      document.getElementById("travel-back-from-countries")?.addEventListener("click", () => {
+        if (hasSubs && activeTravelSubcontinent) {
+          activeTravelSubcontinent = null;
+          travelStep = "subcontinents";
+        } else {
           activeTravelContinent = null;
-          activeTravelSubcontinent = "all";
-          renderWhereTravelContinents();
-        });
+          activeTravelSubcontinent = null;
+          travelStep = "continents";
+        }
+        renderWhereTravelView();
+      });
 
       whereTravelCountriesPanel.querySelectorAll("[data-travel-country]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -1148,55 +1221,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     };
 
-    const renderWhereTravelContinents = () => {
-      whereTravelCountriesPanel.hidden = true;
-      whereTravelCountriesPanel.innerHTML = "";
-      if (whereTravelSubcontinentsPanel) {
-        whereTravelSubcontinentsPanel.hidden = true;
-        whereTravelSubcontinentsPanel.innerHTML = "";
-      }
-      whereTravelContinentsGrid.hidden = false;
-
-      const continents = getTravelContinents();
-      whereTravelContinentsGrid.innerHTML = continents
-        .map((continent) => {
-          const emoji = travelContinentEmojis[continent] || "🌐";
-          const count = getTravelCountries(continent, "all").length;
-
-          return `
-            <button
-              type="button"
-              class="visitor-bubble"
-              data-travel-continent="${continent}"
-            >
-              <span>${emoji} ${continent}</span>
-              <span class="visitor-bubble-percent">${count} pays</span>
-            </button>
-          `;
-        })
-        .join("");
-
-      whereTravelContinentsGrid.querySelectorAll("[data-travel-continent]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          if (searchInputEl) {
-            searchInputEl.value = "";
-            const clearBtn = searchInputEl.parentElement.querySelector(".search-clear-btn");
-            if (clearBtn) clearBtn.hidden = true;
-          }
-          if (searchResultsEl) {
-            searchResultsEl.hidden = true;
-            searchResultsEl.innerHTML = "";
-          }
-          activeTravelContinent = btn.getAttribute("data-travel-continent");
-          activeTravelSubcontinent = "all";
-          renderWhereTravelCountries(activeTravelContinent, activeTravelSubcontinent);
-        });
-      });
-    };
-
     if (searchInputEl && searchResultsEl) {
-      let clearBtn = searchInputEl.parentElement.querySelector(".search-clear-btn");
-      if (!clearBtn) {
+      let clearBtn = searchInputEl.parentElement?.querySelector(".search-clear-btn");
+      if (!clearBtn && searchInputEl.parentElement) {
         clearBtn = document.createElement("button");
         clearBtn.type = "button";
         clearBtn.className = "search-clear-btn";
@@ -1209,17 +1236,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const restoreTravelView = () => {
         searchResultsEl.hidden = true;
         searchResultsEl.innerHTML = "";
-        clearBtn.hidden = true;
-
-        if (activeTravelContinent) {
-          renderWhereTravelCountries(activeTravelContinent, activeTravelSubcontinent);
-        } else {
-          renderWhereTravelContinents();
-        }
+        if (clearBtn) clearBtn.hidden = true;
+        renderWhereTravelView();
       };
 
       const renderSearchResults = (rawQuery) => {
-        clearBtn.hidden = !rawQuery;
+        if (clearBtn) clearBtn.hidden = !rawQuery;
         const query = normalizeText(rawQuery);
 
         if (!query) {
@@ -1244,7 +1266,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (matches.length === 0) {
           searchResultsEl.innerHTML = `
-            <p class="search-empty-msg">Aucune destination trouvée pour « ${rawQuery} ».</p>
+            <p class="search-empty-msg">Aucune destination trouvée pour « ${escapeAttr(rawQuery)} ».</p>
           `;
           return;
         }
@@ -1257,9 +1279,9 @@ document.addEventListener("DOMContentLoaded", () => {
               <button
                 type="button"
                 class="visitor-bubble"
-                data-search-country="${country}"
+                data-search-country="${escapeAttr(country)}"
               >
-                <span>${flag} ${country}${sub ? ` · <small style="opacity:.72">${sub}</small>` : ""}</span>
+                <span>${flag} ${escapeAttr(country)}${sub ? ` · <small style="opacity:.72">${escapeAttr(sub)}</small>` : ""}</span>
                 <span class="visitor-bubble-percent">→</span>
               </button>
             `;
@@ -1278,17 +1300,17 @@ document.addEventListener("DOMContentLoaded", () => {
         renderSearchResults(e.target.value);
       });
 
-      clearBtn.addEventListener("click", () => {
+      clearBtn?.addEventListener("click", () => {
         searchInputEl.value = "";
         restoreTravelView();
         searchInputEl.focus();
       });
     }
 
-    renderWhereTravelContinents();
+    renderWhereTravelView();
   }
 
-  // 7. Section "Et toi" : carte + marqueurs pays + tous les pays sous la carte + modale à cocher + statistiques
+  // 7. Bloc 2 ("Et toi") : Continent -> Sous-continent -> Pays + carte + modale à cocher
   const etToiMapEl = document.getElementById("visitor-world-map");
   const etToiMapLabelEl = document.getElementById("visitor-map-label");
   const etToiContinentsGrid = document.getElementById("visitor-continents-grid");
@@ -1394,8 +1416,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let activeModalCountry = null;
     let activeModalEntry = null;
-    let activeEtToiContinent = "all";
-    let activeEtToiSubcontinent = "all";
+    let activeEtToiContinent = null;
+    let activeEtToiSubcontinent = null;
+    let etToiStep = "continents";
+
+    const getEtToiContinents = () => {
+      const seen = new Set();
+      const list = [];
+      Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
+        const c = entry.continent || "Autres";
+        if (!seen.has(c)) {
+          seen.add(c);
+          list.push(c);
+        }
+      });
+      return list;
+    };
+
+    const getEtToiSubcontinents = (continent) => {
+      const seen = new Set();
+      const list = [];
+      Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
+        if ((entry.continent || "Autres") === continent && entry.subcontinent && !seen.has(entry.subcontinent)) {
+          seen.add(entry.subcontinent);
+          list.push(entry.subcontinent);
+        }
+      });
+      return list;
+    };
+
+    const getMapEntriesForCurrentState = () => {
+      return Object.entries(VISITOR_REGIONS_DATA).filter(([, entry]) => {
+        const cont = entry.continent || "Autres";
+        if (activeEtToiContinent && cont !== activeEtToiContinent) return false;
+        if (activeEtToiSubcontinent && (entry.subcontinent || "Autres") !== activeEtToiSubcontinent) {
+          return false;
+        }
+        return true;
+      });
+    };
 
     const syncEtToiMap = (entriesList, focusCountry = null) => {
       if (!etToiMap || !etToiMarkersLayer) return;
@@ -1434,6 +1493,10 @@ document.addEventListener("DOMContentLoaded", () => {
           .addTo(etToiMarkersLayer);
 
         marker.on("click", () => {
+          const cont = entry.continent || "Autres";
+          activeEtToiContinent = cont;
+          activeEtToiSubcontinent = entry.subcontinent || null;
+          etToiStep = "countries";
           openEtToiModalForCountry(countryName, entry);
         });
 
@@ -1446,8 +1509,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (etToiMapLabelEl) {
         if (focusCountry) {
           etToiMapLabelEl.textContent = `Carte : ${focusCountry} — coche ses lieux dans la fenêtre`;
-        } else if (activeEtToiContinent !== "all") {
-          etToiMapLabelEl.textContent = `Carte : ${activeEtToiContinent}${activeEtToiSubcontinent !== "all" ? ` — ${activeEtToiSubcontinent}` : ""} (clique sur un point ou un pays)`;
+        } else if (activeEtToiSubcontinent) {
+          etToiMapLabelEl.textContent = `Carte : ${activeEtToiContinent} — ${activeEtToiSubcontinent}`;
+        } else if (activeEtToiContinent) {
+          etToiMapLabelEl.textContent = `Carte : ${activeEtToiContinent}`;
         } else {
           etToiMapLabelEl.textContent = "Carte : progression par pays (gris = 0 %, bleu = en cours, vert = 100 %)";
         }
@@ -1568,138 +1633,139 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    const getEtToiContinents = () => {
-      const seen = new Set();
-      const list = [];
-      Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
-        const c = entry.continent || "Autres";
-        if (!seen.has(c)) {
-          seen.add(c);
-          list.push(c);
-        }
-      });
-      return list;
-    };
-
-    const getEtToiSubcontinents = (continent) => {
-      const seen = new Set();
-      const list = [];
-      Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
-        if ((entry.continent || "Autres") === continent && entry.subcontinent && !seen.has(entry.subcontinent)) {
-          seen.add(entry.subcontinent);
-          list.push(entry.subcontinent);
-        }
-      });
-      return list;
-    };
-
-    const getFilteredEtToiEntries = () => {
-      return Object.entries(VISITOR_REGIONS_DATA).filter(([, entry]) => {
-        const cont = entry.continent || "Autres";
-        if (activeEtToiContinent !== "all" && cont !== activeEtToiContinent) return false;
-        if (activeEtToiSubcontinent !== "all" && (entry.subcontinent || "Autres") !== activeEtToiSubcontinent) {
-          return false;
-        }
-        return true;
-      });
-    };
-
-    const renderEtToiContinentsBar = () => {
-      if (!etToiContinentsGrid) return;
-      const continents = getEtToiContinents();
-
-      etToiContinentsGrid.innerHTML = `
-        <button
-          type="button"
-          class="filter-pill ${activeEtToiContinent === "all" ? "is-active" : ""}"
-          data-et-continent="all"
-        >
-          Tous les continents (${Object.keys(VISITOR_REGIONS_DATA).length})
-        </button>
-        ${continents
-          .map((continent) => {
-            const emoji = travelContinentEmojis[continent] || "🌐";
-            const count = Object.values(VISITOR_REGIONS_DATA).filter(
-              (e) => (e.continent || "Autres") === continent
-            ).length;
-            return `
-              <button
-                type="button"
-                class="filter-pill ${activeEtToiContinent === continent ? "is-active" : ""}"
-                data-et-continent="${escapeAttr(continent)}"
-              >
-                ${emoji} ${escapeAttr(continent)} (${count})
-              </button>
-            `;
-          })
-          .join("")}
-      `;
-
-      etToiContinentsGrid.querySelectorAll("[data-et-continent]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          activeEtToiContinent = btn.getAttribute("data-et-continent") || "all";
-          activeEtToiSubcontinent = "all";
-          renderEtToiView();
-        });
-      });
-    };
-
-    const renderEtToiSubcontinentsBar = () => {
-      if (!etToiSubcontinentsPanel) return;
-      if (activeEtToiContinent === "all") {
-        etToiSubcontinentsPanel.hidden = true;
-        etToiSubcontinentsPanel.innerHTML = "";
-        return;
-      }
-
-      const subs = getEtToiSubcontinents(activeEtToiContinent);
-      if (subs.length <= 1) {
-        etToiSubcontinentsPanel.hidden = true;
-        etToiSubcontinentsPanel.innerHTML = "";
-        return;
-      }
-
-      etToiSubcontinentsPanel.hidden = false;
-      etToiSubcontinentsPanel.innerHTML = `
-        <button
-          type="button"
-          class="filter-pill ${activeEtToiSubcontinent === "all" ? "is-active" : ""}"
-          data-et-sub="all"
-        >
-          Tous
-        </button>
-        ${subs
-          .map(
-            (sub) => `
-              <button
-                type="button"
-                class="filter-pill ${activeEtToiSubcontinent === sub ? "is-active" : ""}"
-                data-et-sub="${escapeAttr(sub)}"
-              >
-                ${escapeAttr(sub)}
-              </button>
-            `
-          )
-          .join("")}
-      `;
-
-      etToiSubcontinentsPanel.querySelectorAll("[data-et-sub]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          activeEtToiSubcontinent = btn.getAttribute("data-et-sub") || "all";
-          renderEtToiView();
-        });
-      });
-    };
-
     const renderEtToiView = (focusCountry = null) => {
-      renderEtToiContinentsBar();
-      renderEtToiSubcontinentsBar();
+      if (etToiStep === "continents" || !activeEtToiContinent) {
+        if (etToiSubcontinentsPanel) {
+          etToiSubcontinentsPanel.hidden = true;
+          etToiSubcontinentsPanel.innerHTML = "";
+        }
+        if (etToiCountriesPanel) {
+          etToiCountriesPanel.hidden = true;
+          etToiCountriesPanel.innerHTML = "";
+        }
+        if (etToiContinentsGrid) {
+          etToiContinentsGrid.hidden = false;
+          const continents = getEtToiContinents();
+          etToiContinentsGrid.innerHTML = continents
+            .map((continent) => {
+              const emoji = travelContinentEmojis[continent] || "🌐";
+              const count = Object.values(VISITOR_REGIONS_DATA).filter(
+                (e) => (e.continent || "Autres") === continent
+              ).length;
+              return `
+                <button
+                  type="button"
+                  class="visitor-bubble"
+                  data-et-continent="${escapeAttr(continent)}"
+                >
+                  <span>${emoji} ${escapeAttr(continent)}</span>
+                  <span class="visitor-bubble-percent">${count} pays</span>
+                </button>
+              `;
+            })
+            .join("");
 
-      const entries = getFilteredEtToiEntries();
+          etToiContinentsGrid.querySelectorAll("[data-et-continent]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const chosenContinent = btn.getAttribute("data-et-continent");
+              activeEtToiContinent = chosenContinent;
+              activeEtToiSubcontinent = null;
+              const subs = getEtToiSubcontinents(chosenContinent);
+              etToiStep = subs.length > 0 ? "subcontinents" : "countries";
+              renderEtToiView();
+            });
+          });
+        }
+        syncEtToiMap(getMapEntriesForCurrentState(), focusCountry);
+        return;
+      }
+
+      if (etToiStep === "subcontinents") {
+        if (etToiContinentsGrid) {
+          etToiContinentsGrid.hidden = true;
+        }
+        if (etToiCountriesPanel) {
+          etToiCountriesPanel.hidden = true;
+          etToiCountriesPanel.innerHTML = "";
+        }
+        if (etToiSubcontinentsPanel) {
+          const subs = getEtToiSubcontinents(activeEtToiContinent);
+          const emoji = travelContinentEmojis[activeEtToiContinent] || "🌐";
+          etToiSubcontinentsPanel.hidden = false;
+          etToiSubcontinentsPanel.innerHTML = `
+            <div class="countries-view-header">
+              <button type="button" class="back-continents-btn" id="et-back-to-continents">
+                ← Continents
+              </button>
+              <div class="countries-view-title">
+                <h3>${emoji} ${escapeAttr(activeEtToiContinent)}</h3>
+                <span class="region-panel-sub">Choisis un sous-continent</span>
+              </div>
+            </div>
+            <div class="visitor-countries-multi-list">
+              ${subs
+                .map((sub) => {
+                  const subCount = Object.values(VISITOR_REGIONS_DATA).filter(
+                    (e) => (e.continent || "Autres") === activeEtToiContinent && e.subcontinent === sub
+                  ).length;
+                  return `
+                    <button
+                      type="button"
+                      class="visitor-bubble"
+                      data-et-sub="${escapeAttr(sub)}"
+                    >
+                      <span>${escapeAttr(sub)}</span>
+                      <span class="visitor-bubble-percent">${subCount} pays</span>
+                    </button>
+                  `;
+                })
+                .join("")}
+            </div>
+          `;
+
+          document.getElementById("et-back-to-continents")?.addEventListener("click", () => {
+            activeEtToiContinent = null;
+            activeEtToiSubcontinent = null;
+            etToiStep = "continents";
+            renderEtToiView();
+          });
+
+          etToiSubcontinentsPanel.querySelectorAll("[data-et-sub]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              activeEtToiSubcontinent = btn.getAttribute("data-et-sub");
+              etToiStep = "countries";
+              renderEtToiView();
+            });
+          });
+        }
+        syncEtToiMap(getMapEntriesForCurrentState(), focusCountry);
+        return;
+      }
+
+      if (etToiContinentsGrid) {
+        etToiContinentsGrid.hidden = true;
+      }
+      if (etToiSubcontinentsPanel) {
+        etToiSubcontinentsPanel.hidden = true;
+        etToiSubcontinentsPanel.innerHTML = "";
+      }
+
+      const entries = getMapEntriesForCurrentState();
+      const emoji = travelContinentEmojis[activeEtToiContinent] || "🌐";
+      const hasSubs = getEtToiSubcontinents(activeEtToiContinent).length > 0;
 
       if (etToiCountriesPanel) {
         etToiCountriesPanel.hidden = false;
         etToiCountriesPanel.innerHTML = `
+          <div class="countries-view-header">
+            <button type="button" class="back-continents-btn" id="et-back-from-countries">
+              ${hasSubs && activeEtToiSubcontinent ? "← Sous-continents" : "← Continents"}
+            </button>
+            <div class="countries-view-title">
+              <h3>${emoji} ${escapeAttr(activeEtToiContinent)}${activeEtToiSubcontinent ? ` — ${escapeAttr(activeEtToiSubcontinent)}` : ""}</h3>
+              <span class="region-panel-sub">Clique sur un pays pour cocher ses lieux</span>
+            </div>
+          </div>
           <div class="visitor-countries-multi-list">
             ${entries
               .map(([countryName, entry]) => {
@@ -1723,6 +1789,18 @@ document.addEventListener("DOMContentLoaded", () => {
               .join("")}
           </div>
         `;
+
+        document.getElementById("et-back-from-countries")?.addEventListener("click", () => {
+          if (hasSubs && activeEtToiSubcontinent) {
+            activeEtToiSubcontinent = null;
+            etToiStep = "subcontinents";
+          } else {
+            activeEtToiContinent = null;
+            activeEtToiSubcontinent = null;
+            etToiStep = "continents";
+          }
+          renderEtToiView();
+        });
 
         etToiCountriesPanel.querySelectorAll("[data-et-toi-country]").forEach((btn) => {
           btn.addEventListener("click", () => {
