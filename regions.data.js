@@ -8,6 +8,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 133.7751,
     zoom: 4,
     unit: "États / territoires",
+    ready: true,
     regions: [
       { name: "Queensland (QLD)", lat: -26.75, lng: 152.95 },
       { name: "Nouvelle-Galles du Sud (NSW)", lat: -33.8688, lng: 151.2093 },
@@ -27,6 +28,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 174.886,
     zoom: 5,
     unit: "régions / îles",
+    ready: false,
     regions: [
       { name: "Northland", lat: -35.426, lng: 173.926 },
       { name: "Auckland", lat: -36.8485, lng: 174.7633 },
@@ -54,6 +56,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 178.065,
     zoom: 7,
     unit: "divisions / îles",
+    ready: false,
     regions: [
       { name: "Division centrale (Viti Levu)", lat: -18.1416, lng: 178.4419 },
       { name: "Division occidentale (Nadi / Yasawa / Mamanuca)", lat: -17.7765, lng: 177.4356 },
@@ -70,6 +73,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 165.618,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Province Sud (Nouméa / Île des Pins)", lat: -22.2758, lng: 166.458 },
       { name: "Province Nord (Koné / Poindimié)", lat: -20.956, lng: 164.862 },
@@ -84,6 +88,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 143.9555,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Central", lat: -9.4438, lng: 147.1803 },
       { name: "Eastern Highlands", lat: -6.5833, lng: 145.6667 },
@@ -115,6 +120,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 160.1562,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Guadalcanal (Honiara)", lat: -9.4333, lng: 159.95 },
       { name: "Province occidentale (Gizo / Munda)", lat: -8.103, lng: 156.8419 },
@@ -135,6 +141,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 166.9592,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Shéfa (Éfaté / Port-Vila)", lat: -17.7333, lng: 168.3167 },
       { name: "Sanma (Espiritu Santo / Luganville)", lat: -15.519, lng: 167.162 },
@@ -152,6 +159,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -157.3629,
     zoom: 4,
     unit: "groupes d'îles",
+    ready: false,
     regions: [
       { name: "Îles Gilbert (Tarawa)", lat: 1.329, lng: 172.979 },
       { name: "Îles de la Ligne (Kiritimati)", lat: 1.8721, lng: -157.4278 },
@@ -166,6 +174,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 171.1845,
     zoom: 5,
     unit: "atolls / îles",
+    ready: false,
     regions: [
       { name: "Majuro", lat: 7.0897, lng: 171.3803 },
       { name: "Kwajalein", lat: 8.7167, lng: 167.7333 },
@@ -182,6 +191,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 150.5508,
     zoom: 5,
     unit: "États",
+    ready: false,
     regions: [
       { name: "Pohnpei (Palikir)", lat: 6.9167, lng: 158.1833 },
       { name: "Chuuk", lat: 7.4256, lng: 151.786 },
@@ -197,6 +207,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 166.9315,
     zoom: 12,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Yaren", lat: -0.5467, lng: 166.9211 },
       { name: "Aiwo", lat: -0.5333, lng: 166.9133 },
@@ -212,6 +223,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 134.5825,
     zoom: 8,
     unit: "États",
+    ready: false,
     regions: [
       { name: "Koror", lat: 7.3426, lng: 134.4789 },
       { name: "Babeldaob (Melekeok / Ngerulmud)", lat: 7.5004, lng: 134.6236 },
@@ -227,6 +239,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -149.4068,
     zoom: 5,
     unit: "archipels",
+    ready: true,
     regions: [
       { name: "Îles du Vent (Tahiti, Moorea)", lat: -17.6797, lng: -149.4068 },
       { name: "Îles Sous-le-Vent (Bora Bora, Raiatea, Huahine)", lat: -16.5004, lng: -151.7415 },
@@ -243,6 +256,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -172.1046,
     zoom: 8,
     unit: "îles / districts",
+    ready: false,
     regions: [
       { name: "Upolu (Apia)", lat: -13.8333, lng: -171.75 },
       { name: "Savai'i", lat: -13.6, lng: -172.4167 },
@@ -257,6 +271,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -175.1982,
     zoom: 7,
     unit: "divisions",
+    ready: false,
     regions: [
       { name: "Tongatapu (Nuku'alofa)", lat: -21.2114, lng: -175.1506 },
       { name: "Vava'u", lat: -18.65, lng: -173.9833 },
@@ -273,6 +288,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 177.6493,
     zoom: 7,
     unit: "îles / atolls",
+    ready: false,
     regions: [
       { name: "Funafuti", lat: -8.5211, lng: 179.1962 },
       { name: "Nanumea", lat: -5.6833, lng: 176.1167 },
@@ -291,6 +307,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -63.0686,
     zoom: 11,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Anguilla", lat: 18.2206, lng: -63.0686 }
     ]
@@ -303,6 +320,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -63.0501,
     zoom: 11,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Saint-Martin (partie française)", lat: 18.0731, lng: -63.0497 },
       { name: "Sint Maarten (partie néerlandaise)", lat: 18.0425, lng: -63.0548 }
@@ -316,6 +334,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -62.8333,
     zoom: 12,
     unit: "quartiers / secteurs",
+    ready: false,
     regions: [
       { name: "Saint-Barthélemy", lat: 17.9000, lng: -62.8333 }
     ]
@@ -328,6 +347,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -64.6400,
     zoom: 10,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Îles Vierges britanniques", lat: 18.4207, lng: -64.6400 }
     ]
@@ -340,6 +360,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -64.8963,
     zoom: 10,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Îles Vierges des États-Unis", lat: 18.3358, lng: -64.8963 }
     ]
@@ -352,6 +373,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -81.2546,
     zoom: 10,
     unit: "îles / districts",
+    ready: false,
     regions: [
       { name: "Îles Caïmans", lat: 19.3133, lng: -81.2546 }
     ]
@@ -364,6 +386,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -71.7979,
     zoom: 9,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Îles Turques-et-Caïques", lat: 21.6940, lng: -71.7979 }
     ]
@@ -376,6 +399,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -69.9683,
     zoom: 11,
     unit: "régions / secteurs",
+    ready: false,
     regions: [
       { name: "Aruba", lat: 12.5211, lng: -69.9683 }
     ]
@@ -388,6 +412,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -68.9900,
     zoom: 11,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Curaçao", lat: 12.1696, lng: -68.9900 }
     ]
@@ -400,6 +425,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -68.2385,
     zoom: 10,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Bonaire / Pays-Bas caribéens", lat: 12.1784, lng: -68.2385 }
     ]
@@ -412,6 +438,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -62.1874,
     zoom: 11,
     unit: "paroisses / secteurs",
+    ready: false,
     regions: [
       { name: "Montserrat", lat: 16.7425, lng: -62.1874 }
     ]
@@ -424,6 +451,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -64.7505,
     zoom: 11,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Bermudes", lat: 32.3078, lng: -64.7505 }
     ]
@@ -436,6 +464,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -56.3159,
     zoom: 10,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Saint-Pierre-et-Miquelon", lat: 46.8852, lng: -56.3159 }
     ]
@@ -448,6 +477,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -59.5236,
     zoom: 7,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Îles Malouines / Falkland", lat: -51.7963, lng: -59.5236 }
     ]
@@ -462,6 +492,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -155.5828,
     zoom: 7,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Oʻahu (Honolulu / Waikīkī)", lat: 21.3069, lng: -157.8583 },
       { name: "Maui (Haleakalā / Hāna)", lat: 20.7984, lng: -156.3319 },
@@ -478,6 +509,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -109.3497,
     zoom: 11,
     unit: "secteurs / sites",
+    ready: false,
     regions: [
       { name: "Hanga Roa", lat: -27.1533, lng: -109.4272 },
       { name: "Rano Raraku (Carrière des Moaï)", lat: -27.1258, lng: -109.2869 },
@@ -495,6 +527,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 144.7937,
     zoom: 10,
     unit: "villages / secteurs",
+    ready: false,
     regions: [
       { name: "Guam", lat: 13.4443, lng: 144.7937 }
     ]
@@ -507,6 +540,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 145.6739,
     zoom: 8,
     unit: "municipalités / îles",
+    ready: false,
     regions: [
       { name: "Îles Mariannes du Nord", lat: 15.0979, lng: 145.6739 }
     ]
@@ -519,6 +553,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -170.1322,
     zoom: 9,
     unit: "districts / îles",
+    ready: false,
     regions: [
       { name: "Samoa américaines", lat: -14.2710, lng: -170.1322 }
     ]
@@ -531,6 +566,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -159.7777,
     zoom: 7,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Îles Cook", lat: -21.2367, lng: -159.7777 }
     ]
@@ -543,6 +579,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -169.8672,
     zoom: 11,
     unit: "villages",
+    ready: false,
     regions: [
       { name: "Niue", lat: -19.0544, lng: -169.8672 }
     ]
@@ -555,6 +592,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -171.8484,
     zoom: 9,
     unit: "atolls",
+    ready: false,
     regions: [
       { name: "Tokelau", lat: -9.2002, lng: -171.8484 }
     ]
@@ -567,6 +605,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -177.1561,
     zoom: 9,
     unit: "îles / circonscriptions",
+    ready: false,
     regions: [
       { name: "Wallis-et-Futuna", lat: -13.7688, lng: -177.1561 }
     ]
@@ -579,6 +618,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -127.4393,
     zoom: 9,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Îles Pitcairn", lat: -24.7036, lng: -127.4393 }
     ]
@@ -591,6 +631,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 167.9547,
     zoom: 11,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Île Norfolk", lat: -29.0408, lng: 167.9547 }
     ]
@@ -605,6 +646,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -6.9118,
     zoom: 8,
     unit: "îles / régions",
+    ready: false,
     regions: [
       { name: "Îles Féroé", lat: 61.8926, lng: -6.9118 }
     ]
@@ -617,6 +659,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -5.3536,
     zoom: 13,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Gibraltar", lat: 36.1408, lng: -5.3536 }
     ]
@@ -629,6 +672,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -4.5481,
     zoom: 10,
     unit: "sheaddings / régions",
+    ready: false,
     regions: [
       { name: "Île de Man", lat: 54.2361, lng: -4.5481 }
     ]
@@ -641,6 +685,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -2.1313,
     zoom: 11,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Jersey", lat: 49.2144, lng: -2.1313 }
     ]
@@ -653,6 +698,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -2.5853,
     zoom: 11,
     unit: "paroisses / îles",
+    ready: false,
     regions: [
       { name: "Guernesey", lat: 49.4657, lng: -2.5853 }
     ]
@@ -665,6 +711,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 19.9156,
     zoom: 9,
     unit: "municipalités / îles",
+    ready: false,
     regions: [
       { name: "Îles Åland", lat: 60.1785, lng: 19.9156 }
     ]
@@ -679,6 +726,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 114.1694,
     zoom: 10,
     unit: "districts / îles",
+    ready: false,
     regions: [
       { name: "Hong Kong", lat: 22.3193, lng: 114.1694 }
     ]
@@ -691,6 +739,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 113.5439,
     zoom: 12,
     unit: "zones / îles",
+    ready: false,
     regions: [
       { name: "Macao", lat: 22.1987, lng: 113.5439 }
     ]
@@ -705,6 +754,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 45.1662,
     zoom: 10,
     unit: "communes / secteurs",
+    ready: false,
     regions: [
       { name: "Mayotte", lat: -12.8275, lng: 45.1662 }
     ]
@@ -717,6 +767,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -5.7160,
     zoom: 8,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Sainte-Hélène, Ascension et Tristan da Cunha", lat: -15.9650, lng: -5.7160 }
     ]
@@ -731,6 +782,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -106.3468,
     zoom: 3,
     unit: "provinces / territoires",
+    ready: false,
     regions: [
       { name: "Colombie-Britannique", lat: 53.7267, lng: -127.6476 },
       { name: "Alberta", lat: 53.9333, lng: -116.5765 },
@@ -755,6 +807,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -95.7129,
     zoom: 4,
     unit: "États",
+    ready: false,
     regions: [
       { name: "Alabama", lat: 32.3182, lng: -86.9023 },
       { name: "Alaska", lat: 64.2008, lng: -149.4937 },
@@ -816,6 +869,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -42.6043,
     zoom: 4,
     unit: "municipalités",
+    ready: false,
     regions: [
       { name: "Sermersooq (Nuuk / Tasiilaq)", lat: 64.1814, lng: -51.6941 },
       { name: "Avannaata (Ilulissat / Qaanaaq)", lat: 69.2198, lng: -51.0986 },
@@ -832,6 +886,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -102.5528,
     zoom: 5,
     unit: "États",
+    ready: true,
     regions: [
       { name: "Mexico (CDMX)", lat: 19.4326, lng: -99.1332 },
       { name: "Aguascalientes", lat: 21.8853, lng: -102.2916 },
@@ -875,6 +930,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -88.4976,
     zoom: 7,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Belize (Belize City / Ambergris Caye)", lat: 17.5046, lng: -88.1962 },
       { name: "Cayo (Belmopan / San Ignacio)", lat: 17.251, lng: -88.759 },
@@ -892,6 +948,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -83.7534,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "San José", lat: 9.9281, lng: -84.0907 },
       { name: "Alajuela (La Fortuna / Arenal)", lat: 10.0162, lng: -84.2116 },
@@ -910,6 +967,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -90.2308,
     zoom: 7,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Guatemala", lat: 14.6349, lng: -90.5069 },
       { name: "Sacatepéquez (Antigua)", lat: 14.5586, lng: -90.7339 },
@@ -931,6 +989,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -86.2419,
     zoom: 7,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Francisco Morazán (Tegucigalpa)", lat: 14.0723, lng: -87.1921 },
       { name: "Cortés (San Pedro Sula)", lat: 15.5, lng: -88.0333 },
@@ -949,6 +1008,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -85.2072,
     zoom: 7,
     unit: "départements / régions",
+    ready: false,
     regions: [
       { name: "Managua", lat: 12.115, lng: -86.2362 },
       { name: "Granada", lat: 11.9299, lng: -85.956 },
@@ -968,6 +1028,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -80.7821,
     zoom: 7,
     unit: "provinces / comarques",
+    ready: false,
     regions: [
       { name: "Panamá", lat: 8.9824, lng: -79.5199 },
       { name: "Panamá Oeste", lat: 8.88, lng: -79.78 },
@@ -988,6 +1049,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -88.8965,
     zoom: 8,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "San Salvador", lat: 13.6929, lng: -89.2182 },
       { name: "La Libertad (El Tunco)", lat: 13.4883, lng: -89.3222 },
@@ -1006,6 +1068,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.7964,
     zoom: 10,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint John (Saint John's)", lat: 17.1275, lng: -61.8468 },
       { name: "Saint Paul (English Harbour)", lat: 17.0167, lng: -61.7667 },
@@ -1022,6 +1085,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -77.3963,
     zoom: 6,
     unit: "districts / îles",
+    ready: false,
     regions: [
       { name: "New Providence (Nassau)", lat: 25.0343, lng: -77.3963 },
       { name: "Grand Bahama (Freeport)", lat: 26.65, lng: -78.5167 },
@@ -1039,6 +1103,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -59.5432,
     zoom: 10,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint Michael (Bridgetown)", lat: 13.1132, lng: -59.5988 },
       { name: "Christ Church (Oistins)", lat: 13.0767, lng: -59.5433 },
@@ -1055,6 +1120,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -77.7812,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "La Havane", lat: 23.1136, lng: -82.3666 },
       { name: "Pinar del Río (Viñales)", lat: 22.4175, lng: -83.6981 },
@@ -1076,6 +1142,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.371,
     zoom: 10,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint George (Roseau)", lat: 15.3017, lng: -61.3881 },
       { name: "Saint John (Portsmouth)", lat: 15.5833, lng: -61.4667 },
@@ -1092,6 +1159,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.679,
     zoom: 10,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint George (Saint-Georges)", lat: 12.0561, lng: -61.7488 },
       { name: "Saint Andrew (Grenville)", lat: 12.1167, lng: -61.6167 },
@@ -1107,6 +1175,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.551,
     zoom: 9,
     unit: "îles / secteurs",
+    ready: false,
     regions: [
       { name: "Grande-Terre (Pointe-à-Pitre / Sainte-Anne)", lat: 16.32, lng: -61.4 },
       { name: "Basse-Terre (Bouillante / Soufrière)", lat: 16.0833, lng: -61.7 },
@@ -1123,6 +1192,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -72.2852,
     zoom: 8,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Ouest (Port-au-Prince / Jacmel)", lat: 18.5434, lng: -72.3388 },
       { name: "Nord (Cap-Haïtien)", lat: 19.7578, lng: -72.2042 },
@@ -1139,6 +1209,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -77.2975,
     zoom: 8,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint Andrew / Kingston", lat: 18.0179, lng: -76.8099 },
       { name: "Saint James (Montego Bay)", lat: 18.4762, lng: -77.8939 },
@@ -1155,6 +1226,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.0242,
     zoom: 10,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Centre (Fort-de-France / Lamentin)", lat: 14.6161, lng: -61.0588 },
       { name: "Sud Caraïbe (Les Anses-d'Arlet / Sainte-Anne)", lat: 14.4833, lng: -61.0667 },
@@ -1171,6 +1243,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -66.5901,
     zoom: 9,
     unit: "municipalités / régions",
+    ready: false,
     regions: [
       { name: "San Juan (Métropole)", lat: 18.4655, lng: -66.1057 },
       { name: "Région Est (El Yunque / Vieques / Culebra)", lat: 18.3, lng: -65.75 },
@@ -1187,6 +1260,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -70.1627,
     zoom: 8,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Distrito Nacional / Saint-Domingue", lat: 18.4861, lng: -69.9312 },
       { name: "La Altagracia (Punta Cana / Higüey)", lat: 18.582, lng: -68.4055 },
@@ -1205,6 +1279,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -62.783,
     zoom: 10,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint-Christophe (Basseterre)", lat: 17.3026, lng: -62.7177 },
       { name: "Niévès (Charlestown)", lat: 17.1333, lng: -62.5833 }
@@ -1218,6 +1293,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -60.9789,
     zoom: 10,
     unit: "quartiers",
+    ready: false,
     regions: [
       { name: "Castries", lat: 14.0101, lng: -60.9875 },
       { name: "Soufrière (Les Pitons)", lat: 13.8567, lng: -61.0567 },
@@ -1233,6 +1309,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.2872,
     zoom: 9,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Saint George (Kingstown)", lat: 13.1587, lng: -61.2248 },
       { name: "Les Grenadines (Bequia / Mustique / Tobago Cays)", lat: 12.65, lng: -61.35 },
@@ -1247,6 +1324,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -61.2225,
     zoom: 9,
     unit: "régions / arrondissements",
+    ready: false,
     regions: [
       { name: "Trinité Nord (Port-d'Espagne / Maracas)", lat: 10.6549, lng: -61.5019 },
       { name: "Trinité Centre / Sud (San Fernando)", lat: 10.2797, lng: -61.4683 },
@@ -1261,6 +1339,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -63.6167,
     zoom: 4,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Buenos Aires (Ville & Province)", lat: -34.6037, lng: -58.3816 },
       { name: "Córdoba", lat: -31.4201, lng: -64.1888 },
@@ -1284,6 +1363,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -63.5887,
     zoom: 5,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "La Paz (Lac Titicaca)", lat: -16.5, lng: -68.1193 },
       { name: "Santa Cruz", lat: -17.8146, lng: -63.1561 },
@@ -1304,6 +1384,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -51.9253,
     zoom: 4,
     unit: "États",
+    ready: false,
     regions: [
       { name: "Rio de Janeiro", lat: -22.9068, lng: -43.1729 },
       { name: "São Paulo", lat: -23.5505, lng: -46.6333 },
@@ -1328,6 +1409,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -71.543,
     zoom: 4,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Métropolitaine de Santiago", lat: -33.4489, lng: -70.6693 },
       { name: "Valparaíso (Île de Pâques)", lat: -33.0472, lng: -71.6127 },
@@ -1347,6 +1429,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -74.2973,
     zoom: 5,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Bogotá / Cundinamarca", lat: 4.711, lng: -74.0721 },
       { name: "Bolívar (Carthagène)", lat: 10.391, lng: -75.4794 },
@@ -1366,6 +1449,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -78.1834,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Pichincha (Quito / Mitad del Mundo)", lat: -0.1807, lng: -78.4678 },
       { name: "Galápagos", lat: -0.9538, lng: -90.9656 },
@@ -1384,6 +1468,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -58.9302,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Demerara-Mahaica (Georgetown)", lat: 6.8013, lng: -58.1551 },
       { name: "Potaro-Siparuni (Chutes de Kaieteur)", lat: 5.175, lng: -59.4833 },
@@ -1399,6 +1484,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -53.2778,
     zoom: 7,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Littoral central (Cayenne / Rémire-Montjoly)", lat: 4.9224, lng: -52.3135 },
       { name: "Kourou & Îles du Salut", lat: 5.1597, lng: -52.6503 },
@@ -1414,6 +1500,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -58.4438,
     zoom: 6,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Asunción / Central", lat: -25.2637, lng: -57.5759 },
       { name: "Alto Paraná (Ciudad del Este)", lat: -25.5097, lng: -54.6111 },
@@ -1430,6 +1517,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -75.0152,
     zoom: 5,
     unit: "départements / régions",
+    ready: false,
     regions: [
       { name: "Lima", lat: -12.0464, lng: -77.0428 },
       { name: "Cusco (Machu Picchu / Vallée sacrée)", lat: -13.5319, lng: -71.9675 },
@@ -1449,6 +1537,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -56.0278,
     zoom: 7,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Paramaribo", lat: 5.852, lng: -55.2038 },
       { name: "Commewijne", lat: 5.8833, lng: -54.9167 },
@@ -1465,6 +1554,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -55.7658,
     zoom: 7,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Montevideo", lat: -34.9011, lng: -56.1645 },
       { name: "Maldonado (Punta del Este)", lat: -34.9, lng: -54.95 },
@@ -1481,6 +1571,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -66.5897,
     zoom: 6,
     unit: "États",
+    ready: false,
     regions: [
       { name: "District capital (Caracas)", lat: 10.4806, lng: -66.9036 },
       { name: "Bolívar (Salto Ángel / Gran Sabana)", lat: 6.2, lng: -63.0 },
@@ -1499,6 +1590,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 9.5018,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Hovedstaden (Copenhague / Bornholm)", lat: 55.6761, lng: 12.5683 },
       { name: "Jutland central (Aarhus)", lat: 56.1629, lng: 10.2039 },
@@ -1515,6 +1607,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 25.0136,
     zoom: 7,
     unit: "comtés",
+    ready: false,
     regions: [
       { name: "Harju (Tallinn)", lat: 59.437, lng: 24.7536 },
       { name: "Tartu", lat: 58.3776, lng: 26.729 },
@@ -1531,6 +1624,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 25.7482,
     zoom: 5,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Uusimaa (Helsinki)", lat: 60.1699, lng: 24.9384 },
       { name: "Laponie (Rovaniemi)", lat: 66.5039, lng: 25.7294 },
@@ -1549,6 +1643,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -7.6921,
     zoom: 7,
     unit: "comtés / provinces",
+    ready: false,
     regions: [
       { name: "Dublin", lat: 53.3498, lng: -6.2603 },
       { name: "Galway (Connemara)", lat: 53.2707, lng: -9.0568 },
@@ -1566,6 +1661,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -19.0208,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Région de la capitale (Reykjavík)", lat: 64.1466, lng: -21.9426 },
       { name: "Suðurland (Cercle d'or / Côte sud)", lat: 63.9333, lng: -20.1 },
@@ -1583,6 +1679,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 24.6032,
     zoom: 7,
     unit: "municipalités",
+    ready: false,
     regions: [
       { name: "Riga", lat: 56.9496, lng: 24.1052 },
       { name: "Jūrmala", lat: 56.968, lng: 23.7704 },
@@ -1599,6 +1696,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 23.8813,
     zoom: 7,
     unit: "comtés",
+    ready: false,
     regions: [
       { name: "Vilnius", lat: 54.6872, lng: 25.2797 },
       { name: "Kaunas", lat: 54.8985, lng: 23.9036 },
@@ -1615,6 +1713,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 8.4689,
     zoom: 5,
     unit: "comtés",
+    ready: false,
     regions: [
       { name: "Oslo", lat: 59.9139, lng: 10.7522 },
       { name: "Vestland (Bergen / Fjords)", lat: 60.3913, lng: 5.3221 },
@@ -1634,6 +1733,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -3.436,
     zoom: 5,
     unit: "nations / régions",
+    ready: false,
     regions: [
       { name: "Londres (Angleterre)", lat: 51.5074, lng: -0.1278 },
       { name: "Sud-Ouest de l'Angleterre (Cornouailles / Bath)", lat: 50.7184, lng: -3.5339 },
@@ -1651,6 +1751,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 18.6435,
     zoom: 5,
     unit: "comtés",
+    ready: false,
     regions: [
       { name: "Stockholm", lat: 59.3293, lng: 18.0686 },
       { name: "Västra Götaland (Göteborg)", lat: 57.7089, lng: 11.9746 },
@@ -1668,6 +1769,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 10.4515,
     zoom: 6,
     unit: "Länder",
+    ready: false,
     regions: [
       { name: "Bavière (Munich)", lat: 48.1351, lng: 11.582 },
       { name: "Berlin", lat: 52.52, lng: 13.405 },
@@ -1687,6 +1789,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 14.5501,
     zoom: 7,
     unit: "Länder",
+    ready: false,
     regions: [
       { name: "Vienne", lat: 48.2082, lng: 16.3738 },
       { name: "Tyrol (Innsbruck)", lat: 47.2692, lng: 11.4041 },
@@ -1705,6 +1808,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 4.4699,
     zoom: 8,
     unit: "régions / provinces",
+    ready: false,
     regions: [
       { name: "Région de Bruxelles-Capitale", lat: 50.8503, lng: 4.3517 },
       { name: "Flandre (Bruges / Gand / Anvers)", lat: 51.2093, lng: 3.2247 },
@@ -1719,6 +1823,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 1.8883,
     zoom: 5,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Nouvelle-Aquitaine (Bassin d'Arcachon / Bordeaux)", lat: 44.8378, lng: -0.5792 },
       { name: "Île-de-France (Paris)", lat: 48.8566, lng: 2.3522 },
@@ -1743,6 +1848,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 9.5554,
     zoom: 11,
     unit: "communes",
+    ready: false,
     regions: [
       { name: "Vaduz", lat: 47.141, lng: 9.5209 },
       { name: "Triesenberg / Malbun", lat: 47.1167, lng: 9.55 },
@@ -1758,6 +1864,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 6.1296,
     zoom: 9,
     unit: "cantons",
+    ready: false,
     regions: [
       { name: "Luxembourg-Ville", lat: 49.6116, lng: 6.1319 },
       { name: "Esch-sur-Alzette", lat: 49.4958, lng: 5.9806 },
@@ -1773,6 +1880,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 7.4246,
     zoom: 13,
     unit: "quartiers",
+    ready: false,
     regions: [
       { name: "Monte-Carlo", lat: 43.7396, lng: 7.4261 },
       { name: "Monaco-Ville (Le Rocher)", lat: 43.7311, lng: 7.4206 },
@@ -1788,6 +1896,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 5.2913,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Hollande-Septentrionale (Amsterdam)", lat: 52.3676, lng: 4.9041 },
       { name: "Hollande-Méridionale (Rotterdam / La Haye)", lat: 52.0705, lng: 4.3007 },
@@ -1806,6 +1915,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 8.2275,
     zoom: 7,
     unit: "cantons",
+    ready: false,
     regions: [
       { name: "Valais (Zermatt / Verbier)", lat: 46.229, lng: 7.359 },
       { name: "Berne (Interlaken / Jungfrau)", lat: 46.948, lng: 7.4474 },
@@ -1825,6 +1935,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 27.9534,
     zoom: 6,
     unit: "voblast",
+    ready: false,
     regions: [
       { name: "Minsk (Ville & Voblast)", lat: 53.9006, lng: 27.559 },
       { name: "Brest", lat: 52.0976, lng: 23.7341 },
@@ -1842,6 +1953,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 25.4858,
     zoom: 7,
     unit: "oblast",
+    ready: false,
     regions: [
       { name: "Sofia", lat: 42.6977, lng: 23.3219 },
       { name: "Plovdiv", lat: 42.1354, lng: 24.7453 },
@@ -1859,6 +1971,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 19.5033,
     zoom: 7,
     unit: "comitats",
+    ready: false,
     regions: [
       { name: "Budapest", lat: 47.4979, lng: 19.0402 },
       { name: "Pest", lat: 47.35, lng: 19.3 },
@@ -1876,6 +1989,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 28.3699,
     zoom: 7,
     unit: "raions / unités",
+    ready: false,
     regions: [
       { name: "Chișinău", lat: 47.0105, lng: 28.8638 },
       { name: "Orhei (Orheiul Vechi)", lat: 47.3833, lng: 28.8167 },
@@ -1891,6 +2005,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 19.1451,
     zoom: 6,
     unit: "voïvodies",
+    ready: false,
     regions: [
       { name: "Petite-Pologne (Cracovie / Zakopane)", lat: 50.0647, lng: 19.945 },
       { name: "Mazovie (Varsovie)", lat: 52.2297, lng: 21.0122 },
@@ -1908,6 +2023,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 15.473,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Prague", lat: 50.0755, lng: 14.4378 },
       { name: "Bohême-du-Sud (Český Krumlov)", lat: 48.8127, lng: 14.3175 },
@@ -1924,6 +2040,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 24.9668,
     zoom: 6,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Bucarest", lat: 44.4268, lng: 26.1025 },
       { name: "Brașov (Transylvanie)", lat: 45.6427, lng: 25.5887 },
@@ -1942,6 +2059,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 105.3188,
     zoom: 3,
     unit: "sujets fédéraux",
+    ready: false,
     regions: [
       { name: "Moscou", lat: 55.7558, lng: 37.6173 },
       { name: "Saint-Pétersbourg", lat: 59.9343, lng: 30.3351 },
@@ -1960,6 +2078,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 19.699,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Bratislava", lat: 48.1486, lng: 17.1077 },
       { name: "Prešov (Hautes Tatras)", lat: 49.0, lng: 21.2333 },
@@ -1976,6 +2095,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 31.1656,
     zoom: 6,
     unit: "oblasts",
+    ready: false,
     regions: [
       { name: "Kyiv", lat: 50.4501, lng: 30.5234 },
       { name: "Lviv", lat: 49.8397, lng: 24.0297 },
@@ -1992,6 +2112,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 20.1683,
     zoom: 7,
     unit: "préfectures",
+    ready: false,
     regions: [
       { name: "Tirana", lat: 41.3275, lng: 19.8187 },
       { name: "Vlorë (Riviera albanaise / Ksamil)", lat: 40.4667, lng: 19.4833 },
@@ -2009,6 +2130,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 1.5218,
     zoom: 11,
     unit: "paroisses",
+    ready: false,
     regions: [
       { name: "Andorre-la-Vieille", lat: 42.5063, lng: 1.5218 },
       { name: "Canillo (Grandvalira)", lat: 42.5678, lng: 1.5989 },
@@ -2025,6 +2147,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 17.6791,
     zoom: 7,
     unit: "entités / cantons",
+    ready: false,
     regions: [
       { name: "Sarajevo", lat: 43.8563, lng: 18.4131 },
       { name: "Herzégovine-Neretva (Mostar)", lat: 43.3438, lng: 17.8078 },
@@ -2040,6 +2163,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 15.2,
     zoom: 7,
     unit: "comitats",
+    ready: false,
     regions: [
       { name: "Dubrovnik-Neretva (Dubrovnik / Korčula)", lat: 42.6507, lng: 18.0944 },
       { name: "Split-Dalmatie (Split / Hvar)", lat: 43.5081, lng: 16.4402 },
@@ -2058,6 +2182,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -3.7492,
     zoom: 6,
     unit: "communautés autonomes",
+    ready: false,
     regions: [
       { name: "Catalogne (Barcelone / Costa Brava)", lat: 41.3851, lng: 2.1734 },
       { name: "Andalousie (Séville / Grenade / Málaga)", lat: 37.3891, lng: -5.9845 },
@@ -2080,6 +2205,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 21.8243,
     zoom: 6,
     unit: "périphéries",
+    ready: false,
     regions: [
       { name: "Attique (Athènes)", lat: 37.9838, lng: 23.7275 },
       { name: "Égée-Méridionale (Santorin / Mykonos / Rhodes)", lat: 36.3932, lng: 25.4615 },
@@ -2098,6 +2224,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 12.5674,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Latium (Rome)", lat: 41.9028, lng: 12.4964 },
       { name: "Toscane (Florence / Sienne / Val d'Orcia)", lat: 43.7696, lng: 11.2558 },
@@ -2121,6 +2248,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 21.7453,
     zoom: 8,
     unit: "régions statistiques",
+    ready: false,
     regions: [
       { name: "Skopje", lat: 41.9973, lng: 21.428 },
       { name: "Sud-Ouest (Lac d'Ohrid)", lat: 41.1231, lng: 20.8016 },
@@ -2136,6 +2264,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 14.3754,
     zoom: 11,
     unit: "régions / îles",
+    ready: false,
     regions: [
       { name: "Malte (La Valette / Mdina / Sud)", lat: 35.8989, lng: 14.5146 },
       { name: "Gozo (Victoria)", lat: 36.0444, lng: 14.2397 },
@@ -2150,6 +2279,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 19.3744,
     zoom: 8,
     unit: "municipalités",
+    ready: false,
     regions: [
       { name: "Kotor / Bouches de Kotor", lat: 42.4247, lng: 18.7712 },
       { name: "Budva (Riviera)", lat: 42.2911, lng: 18.8403 },
@@ -2166,6 +2296,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -8.2245,
     zoom: 7,
     unit: "régions / districts",
+    ready: false,
     regions: [
       { name: "Grand Lisbonne / Lisbonne", lat: 38.7223, lng: -9.1393 },
       { name: "Nord (Porto / Vallée du Douro)", lat: 41.1579, lng: -8.6291 },
@@ -2184,6 +2315,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 12.4578,
     zoom: 12,
     unit: "châteaux",
+    ready: false,
     regions: [
       { name: "Saint-Marin (Ville)", lat: 43.9366, lng: 12.4463 },
       { name: "Borgo Maggiore", lat: 43.9417, lng: 12.4486 },
@@ -2198,6 +2330,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 21.0059,
     zoom: 7,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Belgrade", lat: 44.7866, lng: 20.4489 },
       { name: "Voïvodine (Novi Sad)", lat: 45.2671, lng: 19.8335 },
@@ -2213,6 +2346,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 14.9955,
     zoom: 8,
     unit: "régions statistiques",
+    ready: false,
     regions: [
       { name: "Slovénie centrale (Ljubljana)", lat: 46.0569, lng: 14.5058 },
       { name: "Haute-Carniole (Lac de Bled / Alpes juliennes)", lat: 46.3683, lng: 14.1146 },
@@ -2229,6 +2363,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 12.4534,
     zoom: 15,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Place et Basilique Saint-Pierre", lat: 41.9022, lng: 12.4539 },
       { name: "Musées du Vatican & Jardins", lat: 41.9065, lng: 12.4536 }
@@ -2243,6 +2378,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 66.9237,
     zoom: 4,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Almaty (Ville & Région / Monts Tian Shan)", lat: 43.222, lng: 76.8512 },
       { name: "Astana", lat: 51.1694, lng: 71.4491 },
@@ -2259,6 +2395,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 74.7661,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Tchouï (Bichkek)", lat: 42.8746, lng: 74.5698 },
       { name: "Yssyk-Köl (Lac Yssyk-Köl / Karakol)", lat: 42.4907, lng: 78.3936 },
@@ -2275,6 +2412,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 64.5853,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Samarcande", lat: 39.6542, lng: 66.9597 },
       { name: "Boukhara", lat: 39.7681, lng: 64.4556 },
@@ -2292,6 +2430,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 71.2761,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Douchanbé", lat: 38.5598, lng: 68.787 },
       { name: "Haut-Badakhchan (Route du Pamir)", lat: 37.4966, lng: 71.5456 },
@@ -2307,6 +2446,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 59.5563,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Achgabat / Ahal (Darvaza)", lat: 37.9601, lng: 58.3261 },
       { name: "Mary (Mérou)", lat: 37.5938, lng: 61.8303 },
@@ -2322,6 +2462,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 104.1954,
     zoom: 4,
     unit: "provinces / régions",
+    ready: false,
     regions: [
       { name: "Pékin", lat: 39.9042, lng: 116.4074 },
       { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
@@ -2343,6 +2484,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 127.5101,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Pyongyang", lat: 39.0392, lng: 125.7625 },
       { name: "Hwanghae du Nord (Kaesong)", lat: 37.97, lng: 126.554 },
@@ -2358,6 +2500,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 127.7669,
     zoom: 7,
     unit: "provinces / villes métropolitaines",
+    ready: false,
     regions: [
       { name: "Séoul", lat: 37.5665, lng: 126.978 },
       { name: "Pusan", lat: 35.1796, lng: 129.0756 },
@@ -2375,6 +2518,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 138.2529,
     zoom: 5,
     unit: "préfectures",
+    ready: false,
     regions: [
       { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
       { name: "Kyoto", lat: 35.0116, lng: 135.7681 },
@@ -2396,6 +2540,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 103.8467,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Oulan-Bator", lat: 47.8864, lng: 106.9057 },
       { name: "Ömnögovi (Désert de Gobi)", lat: 43.57, lng: 104.425 },
@@ -2412,6 +2557,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 120.9605,
     zoom: 7,
     unit: "comtés / villes",
+    ready: false,
     regions: [
       { name: "Taipei / Nouveau Taipei", lat: 25.033, lng: 121.5654 },
       { name: "Hualien (Gorges de Taroko)", lat: 23.9872, lng: 121.6016 },
@@ -2429,6 +2575,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 67.71,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Kaboul", lat: 34.5553, lng: 69.2075 },
       { name: "Bâmiyân", lat: 34.81, lng: 67.8211 },
@@ -2444,6 +2591,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 90.3563,
     zoom: 7,
     unit: "divisions",
+    ready: false,
     regions: [
       { name: "Dacca", lat: 23.8103, lng: 90.4125 },
       { name: "Chittagong (Cox's Bazar)", lat: 22.3569, lng: 91.7832 },
@@ -2460,6 +2608,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 90.4336,
     zoom: 8,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Thimphou", lat: 27.4728, lng: 89.639 },
       { name: "Paro (Nid du Tigre)", lat: 27.429, lng: 89.4143 },
@@ -2475,6 +2624,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 78.9629,
     zoom: 4,
     unit: "États / territoires",
+    ready: false,
     regions: [
       { name: "Rajasthan (Jaipur / Udaipur / Jodhpur)", lat: 26.9124, lng: 75.7873 },
       { name: "Kerala (Backwaters / Kochi / Munnar)", lat: 10.8505, lng: 76.2711 },
@@ -2496,6 +2646,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 73.2207,
     zoom: 7,
     unit: "atolls",
+    ready: false,
     regions: [
       { name: "Atoll de Malé (Kaafu)", lat: 4.1755, lng: 73.5093 },
       { name: "Atoll d'Ari (Alifu)", lat: 3.8667, lng: 72.8333 },
@@ -2512,6 +2663,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 84.124,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Bagmati (Katmandou / Bhaktapur / Langtang)", lat: 27.7172, lng: 85.324 },
       { name: "Gandaki (Pokhara / Annapurna)", lat: 28.2096, lng: 83.9856 },
@@ -2527,6 +2679,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 69.3451,
     zoom: 5,
     unit: "provinces / territoires",
+    ready: false,
     regions: [
       { name: "Gilgit-Baltistan (Hunza / Skardu)", lat: 35.8026, lng: 74.9832 },
       { name: "Pendjab (Lahore / Islamabad)", lat: 31.5204, lng: 74.3587 },
@@ -2542,6 +2695,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 80.7718,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Province du Centre (Kandy / Nuwara Eliya)", lat: 7.2906, lng: 80.6337 },
       { name: "Province du Sud (Galle / Mirissa / Yala)", lat: 6.0535, lng: 80.221 },
@@ -2558,6 +2712,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 95.956,
     zoom: 6,
     unit: "régions / États",
+    ready: false,
     regions: [
       { name: "Mandalay (Bagan)", lat: 21.9588, lng: 96.0891 },
       { name: "Rangoun (Yangon)", lat: 16.8661, lng: 96.1951 },
@@ -2573,6 +2728,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 114.7277,
     zoom: 9,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Brunei-Muara (Bandar Seri Begawan)", lat: 4.9031, lng: 114.9398 },
       { name: "Temburong (Ulu Temburong)", lat: 4.6167, lng: 115.0833 },
@@ -2588,6 +2744,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 104.991,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Siem Reap (Angkor)", lat: 13.3633, lng: 103.8564 },
       { name: "Phnom Penh", lat: 11.5564, lng: 104.9282 },
@@ -2605,6 +2762,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 113.9213,
     zoom: 4,
     unit: "provinces / îles",
+    ready: false,
     regions: [
       { name: "Bali", lat: -8.4095, lng: 115.1889 },
       { name: "Java (Yogyakarta / Bromo / Jakarta)", lat: -7.7956, lng: 110.3695 },
@@ -2624,6 +2782,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 102.4955,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Luang Prabang", lat: 19.8856, lng: 102.1347 },
       { name: "Vientiane", lat: 17.9757, lng: 102.6331 },
@@ -2640,6 +2799,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 101.9758,
     zoom: 6,
     unit: "États / territoires",
+    ready: false,
     regions: [
       { name: "Kuala Lumpur", lat: 3.139, lng: 101.6869 },
       { name: "Penang (George Town)", lat: 5.4141, lng: 100.3288 },
@@ -2658,6 +2818,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 121.774,
     zoom: 5,
     unit: "régions / îles",
+    ready: false,
     regions: [
       { name: "Palawan (El Nido / Coron)", lat: 11.1949, lng: 119.4013 },
       { name: "Visayas centrales (Cebu / Bohol)", lat: 10.3157, lng: 123.8854 },
@@ -2674,6 +2835,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 103.8198,
     zoom: 11,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Région centrale (Marina Bay / Chinatown)", lat: 1.2834, lng: 103.8607 },
       { name: "Sentosa", lat: 1.2494, lng: 103.8303 },
@@ -2689,6 +2851,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 100.9925,
     zoom: 6,
     unit: "provinces / régions",
+    ready: true,
     regions: [
       { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
       { name: "Chiang Mai (Nord)", lat: 18.7883, lng: 98.9853 },
@@ -2707,6 +2870,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 125.7275,
     zoom: 8,
     unit: "municipalités",
+    ready: false,
     regions: [
       { name: "Díli (Île d'Atauro)", lat: -8.5569, lng: 125.5603 },
       { name: "Baucau", lat: -8.4756, lng: 126.4581 },
@@ -2722,6 +2886,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 108.2772,
     zoom: 6,
     unit: "provinces / régions",
+    ready: false,
     regions: [
       { name: "Nord (Hanoï / Baie d'Ha Long / Sapa)", lat: 21.0285, lng: 105.8542 },
       { name: "Centre (Hội An / Huê / Đà Nẵng)", lat: 15.8801, lng: 108.338 },
@@ -2739,6 +2904,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 45.0792,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Médine (Al-Ula)", lat: 26.6167, lng: 37.9167 },
       { name: "Riyad", lat: 24.7136, lng: 46.6753 },
@@ -2755,6 +2921,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 45.0382,
     zoom: 8,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Erevan", lat: 40.1792, lng: 44.4991 },
       { name: "Gegharkunik (Lac Sevan)", lat: 40.5569, lng: 44.9585 },
@@ -2771,6 +2938,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 47.5769,
     zoom: 7,
     unit: "régions économiques",
+    ready: false,
     regions: [
       { name: "Bakou / Abchéron", lat: 40.4093, lng: 49.8671 },
       { name: "Chéki-Zagatala (Chéki)", lat: 41.1919, lng: 47.1706 },
@@ -2787,6 +2955,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 50.5577,
     zoom: 10,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Capitale (Manama)", lat: 26.2285, lng: 50.586 },
       { name: "Muharraq", lat: 26.2572, lng: 50.6119 },
@@ -2802,6 +2971,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 33.4299,
     zoom: 8,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Paphos", lat: 34.7754, lng: 32.4245 },
       { name: "Limassol", lat: 34.6841, lng: 33.0379 },
@@ -2818,6 +2988,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 53.8478,
     zoom: 7,
     unit: "émirats",
+    ready: false,
     regions: [
       { name: "Dubaï", lat: 25.2048, lng: 55.2708 },
       { name: "Abou Dabi (Al Ain)", lat: 24.4539, lng: 54.3773 },
@@ -2834,6 +3005,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 43.3569,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Tbilissi", lat: 41.7151, lng: 44.8271 },
       { name: "Mtskheta-Mtianeti (Kazbegi / Stepantsminda)", lat: 42.6596, lng: 44.6422 },
@@ -2851,6 +3023,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 43.6793,
     zoom: 6,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Bagdad", lat: 33.3152, lng: 44.3661 },
       { name: "Erbil (Kurdistan irakien)", lat: 36.1911, lng: 44.0092 },
@@ -2867,6 +3040,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 53.688,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Fars (Chiraz / Persépolis)", lat: 29.5918, lng: 52.5837 },
       { name: "Ispahan", lat: 32.6539, lng: 51.666 },
@@ -2885,6 +3059,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 34.8516,
     zoom: 7,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Tel Aviv", lat: 32.0853, lng: 34.7818 },
       { name: "Jérusalem", lat: 31.7683, lng: 35.2137 },
@@ -2901,6 +3076,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 36.2384,
     zoom: 7,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Amman", lat: 31.9454, lng: 35.9284 },
       { name: "Ma'an (Pétra)", lat: 30.3285, lng: 35.4444 },
@@ -2917,6 +3093,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 47.4818,
     zoom: 9,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Al Asimah (Koweït City)", lat: 29.3759, lng: 47.9774 },
       { name: "Hawalli", lat: 29.3328, lng: 48.0286 },
@@ -2932,6 +3109,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 35.8623,
     zoom: 8,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Beyrouth", lat: 33.8938, lng: 35.5018 },
       { name: "Mont-Liban (Byblos / Chouf)", lat: 34.1236, lng: 35.6511 },
@@ -2948,6 +3126,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 55.9754,
     zoom: 6,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Mascate", lat: 23.588, lng: 58.3829 },
       { name: "Ad Dakhiliyah (Nizwa / Djebel Akhdar)", lat: 22.9333, lng: 57.5333 },
@@ -2964,6 +3143,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 35.2332,
     zoom: 9,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Bethléem", lat: 31.7054, lng: 35.2024 },
       { name: "Ramallah et Al-Bireh", lat: 31.9038, lng: 35.2034 },
@@ -2980,6 +3160,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 51.1839,
     zoom: 9,
     unit: "municipalités",
+    ready: false,
     regions: [
       { name: "Doha", lat: 25.2854, lng: 51.531 },
       { name: "Al Wakrah", lat: 25.1715, lng: 51.6034 },
@@ -2995,6 +3176,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 38.9968,
     zoom: 7,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Damas", lat: 33.5138, lng: 36.2765 },
       { name: "Alep", lat: 36.2021, lng: 37.1343 },
@@ -3010,6 +3192,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 35.2433,
     zoom: 6,
     unit: "provinces / régions",
+    ready: false,
     regions: [
       { name: "Istanbul", lat: 41.0082, lng: 28.9784 },
       { name: "Nevşehir (Cappadoce)", lat: 38.6431, lng: 34.6857 },
@@ -3029,6 +3212,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 48.5164,
     zoom: 6,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Sanaa", lat: 15.3694, lng: 44.191 },
       { name: "Socotra", lat: 12.4634, lng: 53.8237 },
@@ -3047,6 +3231,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 105.6904,
     zoom: 11,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Flying Fish Cove (The Settlement)", lat: -10.4228, lng: 105.6789 },
       { name: "Poon Saan", lat: -10.4333, lng: 105.6833 },
@@ -3061,6 +3246,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 96.871,
     zoom: 11,
     unit: "atolls / îles",
+    ready: false,
     regions: [
       { name: "West Island", lat: -12.1886, lng: 96.8294 },
       { name: "Home Island (Bantam)", lat: -12.1922, lng: 96.8939 },
@@ -3075,6 +3261,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 166.647,
     zoom: 4,
     unit: "îles / atolls",
+    ready: false,
     regions: [
       { name: "Atoll de Midway", lat: 28.2072, lng: -177.3735 },
       { name: "Île de Wake", lat: 19.2796, lng: 166.6499 },
@@ -3091,6 +3278,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 73.5042,
     zoom: 8,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Île Heard (Big Ben)", lat: -53.1086, lng: 73.5133 },
       { name: "Îles McDonald", lat: -53.0333, lng: 72.6 }
@@ -3104,6 +3292,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 23.6703,
     zoom: 5,
     unit: "îles / secteurs",
+    ready: false,
     regions: [
       { name: "Spitsberg (Longyearbyen / Ny-Ålesund)", lat: 78.2232, lng: 15.6267 },
       { name: "Nordaustlandet", lat: 79.6333, lng: 22.0 },
@@ -3119,6 +3308,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -2.3611,
     zoom: 13,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Grand Sercq", lat: 49.4319, lng: -2.3611 },
       { name: "Petit Sercq", lat: 49.4175, lng: -2.3667 }
@@ -3132,6 +3322,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 20.903,
     zoom: 8,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Pristina", lat: 42.6629, lng: 21.1655 },
       { name: "Prizren", lat: 42.2139, lng: 20.7397 },
@@ -3148,6 +3339,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -12.8858,
     zoom: 6,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Laâyoune", lat: 27.1536, lng: -13.2033 },
       { name: "Dakhla", lat: 23.6848, lng: -15.957 },
@@ -3163,6 +3355,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 69.3486,
     zoom: 5,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Archipel des Kerguelen (Port-aux-Français)", lat: -49.3511, lng: 70.2189 },
       { name: "Archipel Crozet", lat: -46.4167, lng: 51.75 },
@@ -3178,6 +3371,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 72.4229,
     zoom: 8,
     unit: "atolls",
+    ready: false,
     regions: [
       { name: "Diego Garcia", lat: -7.3133, lng: 72.4222 },
       { name: "Atoll d'Egmont", lat: -6.65, lng: 71.35 },
@@ -3193,6 +3387,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 3.3464,
     zoom: 10,
     unit: "secteurs",
+    ready: false,
     regions: [
       { name: "Bouvetøya (Calotte glaciaire)", lat: -54.4208, lng: 3.3464 }
     ]
@@ -3205,6 +3400,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -36.5879,
     zoom: 6,
     unit: "archipels / sites",
+    ready: false,
     regions: [
       { name: "Géorgie du Sud (Grytviken / Cumberland Bay)", lat: -54.2817, lng: -36.5092 },
       { name: "Îles Sandwich du Sud", lat: -57.7, lng: -26.45 }
@@ -3218,6 +3414,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -90.9656,
     zoom: 8,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Santa Cruz (Puerto Ayora)", lat: -0.7421, lng: -90.3138 },
       { name: "Isabela (Puerto Villamil)", lat: -0.9556, lng: -90.9667 },
@@ -3233,6 +3430,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -16.6291,
     zoom: 7,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Tenerife (Teide / Santa Cruz)", lat: 28.2916, lng: -16.6291 },
       { name: "Grande Canarie (Las Palmas)", lat: 27.9202, lng: -15.5474 },
@@ -3249,6 +3447,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 2.6502,
     zoom: 8,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Majorque (Palma / Serra de Tramuntana)", lat: 39.6953, lng: 3.0176 },
       { name: "Ibiza", lat: 38.9067, lng: 1.4206 },
@@ -3264,6 +3463,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -25.6756,
     zoom: 7,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "São Miguel (Ponta Delgada / Sete Cidades)", lat: 37.7833, lng: -25.5833 },
       { name: "Terceira (Angra do Heroísmo)", lat: 38.7239, lng: -27.2197 },
@@ -3279,6 +3479,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -16.9595,
     zoom: 10,
     unit: "îles / secteurs",
+    ready: false,
     regions: [
       { name: "Funchal & Côte Sud", lat: 32.6669, lng: -16.9241 },
       { name: "Pico Ruivo / Santana / Nord", lat: 32.7639, lng: -16.9422 },
@@ -3293,6 +3494,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 39.2026,
     zoom: 9,
     unit: "îles / zones",
+    ready: false,
     regions: [
       { name: "Unguja (Stone Town / Nungwi / Paje)", lat: -6.1659, lng: 39.2026 },
       { name: "Pemba", lat: -5.0333, lng: 39.7667 }
@@ -3306,6 +3508,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 53.8237,
     zoom: 9,
     unit: "îles / zones",
+    ready: false,
     regions: [
       { name: "Hadiboh", lat: 12.6506, lng: 54.0256 },
       { name: "Qalansiyah & Detwah", lat: 12.6878, lng: 53.4856 },
@@ -3323,6 +3526,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 1.6596,
     zoom: 5,
     unit: "wilayas",
+    ready: false,
     regions: [
       { name: "Alger", lat: 36.7538, lng: 3.0588 },
       { name: "Oran", lat: 35.6971, lng: -0.6308 },
@@ -3340,6 +3544,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 30.8025,
     zoom: 6,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Le Caire & Gizeh", lat: 30.0444, lng: 31.2357 },
       { name: "Louxor", lat: 25.6872, lng: 32.6396 },
@@ -3357,6 +3562,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 17.2283,
     zoom: 5,
     unit: "districts",
+    ready: false,
     regions: [
       { name: "Tripoli", lat: 32.8872, lng: 13.1913 },
       { name: "Ghat (Akakus)", lat: 24.9633, lng: 10.1803 },
@@ -3372,6 +3578,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -7.0926,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Marrakech-Safi (Marrakech / Essaouira)", lat: 31.6295, lng: -7.9811 },
       { name: "Fès-Meknès (Fès / Meknès)", lat: 34.0181, lng: -5.0078 },
@@ -3390,6 +3597,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 30.2176,
     zoom: 5,
     unit: "États",
+    ready: false,
     regions: [
       { name: "Khartoum", lat: 15.5007, lng: 32.5599 },
       { name: "Nord (Méru / Kerma)", lat: 18.4833, lng: 31.8167 },
@@ -3405,6 +3613,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 9.5375,
     zoom: 7,
     unit: "gouvernorats",
+    ready: false,
     regions: [
       { name: "Tunis (Carthage / Sidi Bou Saïd)", lat: 36.8065, lng: 10.1815 },
       { name: "Médenine (Djerba / Tataouine)", lat: 33.8076, lng: 10.8451 },
@@ -3422,6 +3631,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 2.3158,
     zoom: 7,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Littoral (Cotonou)", lat: 6.3654, lng: 2.4183 },
       { name: "Atlantique (Ouidah / Lac Nokoué)", lat: 6.3667, lng: 2.0833 },
@@ -3438,6 +3648,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -1.5616,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Centre (Ouagadougou)", lat: 12.3714, lng: -1.5197 },
       { name: "Hauts-Bassins (Bobo-Dioulasso)", lat: 11.1771, lng: -4.2979 },
@@ -3454,6 +3665,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -24.0132,
     zoom: 8,
     unit: "îles / municipalités",
+    ready: false,
     regions: [
       { name: "Santiago (Praia / Cidade Velha)", lat: 14.9177, lng: -23.5092 },
       { name: "Santo Antão", lat: 17.0667, lng: -25.1667 },
@@ -3471,6 +3683,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -5.5471,
     zoom: 7,
     unit: "districts / régions",
+    ready: false,
     regions: [
       { name: "District d'Abidjan", lat: 5.36, lng: -4.0083 },
       { name: "Yamoussoukro", lat: 6.8276, lng: -5.2893 },
@@ -3488,6 +3701,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -15.3101,
     zoom: 9,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Banjul / Côte Atlantique", lat: 13.4549, lng: -16.579 },
       { name: "West Coast (Serekunda / Gunjur)", lat: 13.3, lng: -16.5 },
@@ -3503,6 +3717,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -1.0232,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Greater Accra (Accra)", lat: 5.6037, lng: -0.187 },
       { name: "Ashanti (Kumasi)", lat: 6.6885, lng: -1.6244 },
@@ -3520,6 +3735,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -9.6966,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Conakry (Îles de Los)", lat: 9.6412, lng: -13.5784 },
       { name: "Mamou / Labé (Fouta-Djalon)", lat: 11.318, lng: -12.2833 },
@@ -3536,6 +3752,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -15.1804,
     zoom: 8,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Bissau", lat: 11.8636, lng: -15.5984 },
       { name: "Bolama (Archipel des Bijagos)", lat: 11.25, lng: -16.1667 },
@@ -3551,6 +3768,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -9.4295,
     zoom: 7,
     unit: "comtés",
+    ready: false,
     regions: [
       { name: "Montserrado (Monrovia)", lat: 6.3004, lng: -10.7969 },
       { name: "Grand Bassa (Buchanan)", lat: 5.8769, lng: -10.0497 },
@@ -3566,6 +3784,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -3.9962,
     zoom: 5,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Bamako", lat: 12.6392, lng: -8.0029 },
       { name: "Mopti (Pays dogon / Djenné)", lat: 14.4843, lng: -4.1829 },
@@ -3582,6 +3801,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -10.9408,
     zoom: 5,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Nouakchott", lat: 18.0735, lng: -15.9582 },
       { name: "Adrar (Atar / Chinguetti)", lat: 20.5167, lng: -13.05 },
@@ -3597,6 +3817,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 8.0817,
     zoom: 5,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Niamey", lat: 13.5116, lng: 2.1254 },
       { name: "Agadez (Aïr / Ténéré)", lat: 16.9739, lng: 7.9908 },
@@ -3612,6 +3833,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 8.6753,
     zoom: 6,
     unit: "États",
+    ready: false,
     regions: [
       { name: "Lagos", lat: 6.5244, lng: 3.3792 },
       { name: "Territoire de la capitale fédérale (Abuja)", lat: 9.0765, lng: 7.3986 },
@@ -3628,6 +3850,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -14.4524,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Dakar (Gorée / Lac Rose)", lat: 14.7167, lng: -17.4677 },
       { name: "Saint-Louis (Delta du Sénégal)", lat: 16.0179, lng: -16.4896 },
@@ -3645,6 +3868,7 @@ const VISITOR_REGIONS_DATA = {
     lng: -11.7799,
     zoom: 8,
     unit: "provinces / districts",
+    ready: false,
     regions: [
       { name: "Western Area (Freetown / Péninsule)", lat: 8.4657, lng: -13.2317 },
       { name: "Southern (Bonthe / Île de Turtle)", lat: 7.5264, lng: -12.505 },
@@ -3660,6 +3884,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 0.8248,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Maritime (Lomé / Lac Togo)", lat: 6.1319, lng: 1.2228 },
       { name: "Plateaux (Kpalimé / Atakpamé)", lat: 6.9, lng: 0.6333 },
@@ -3675,6 +3900,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 17.8739,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Luanda", lat: -8.839, lng: 13.2894 },
       { name: "Namibe (Désert du Namib / Tombwa)", lat: -15.1961, lng: 12.1522 },
@@ -3691,6 +3917,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 12.3547,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Centre (Yaoundé)", lat: 3.848, lng: 11.5021 },
       { name: "Littoral (Douala)", lat: 4.0511, lng: 9.7679 },
@@ -3708,6 +3935,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 20.9394,
     zoom: 6,
     unit: "préfectures",
+    ready: false,
     regions: [
       { name: "Bangui", lat: 4.3947, lng: 18.5582 },
       { name: "Sangha-Mbaéré (Dzanga-Sangha)", lat: 2.9667, lng: 16.1833 },
@@ -3723,6 +3951,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 15.8277,
     zoom: 6,
     unit: "départements",
+    ready: false,
     regions: [
       { name: "Brazzaville", lat: -4.2634, lng: 15.2429 },
       { name: "Pointe-Noire", lat: -4.7692, lng: 11.8636 },
@@ -3738,6 +3967,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 21.7587,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Kinshasa", lat: -4.4419, lng: 15.2663 },
       { name: "Nord-Kivu (Goma / Virunga)", lat: -1.6792, lng: 29.2228 },
@@ -3754,6 +3984,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 11.6094,
     zoom: 7,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Estuaire (Libreville)", lat: 0.4162, lng: 9.4673 },
       { name: "Ogooué-Maritime (Port-Gentil / Parc de Loango)", lat: -0.7193, lng: 8.7815 },
@@ -3769,6 +4000,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 10.2679,
     zoom: 8,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Bioko Norte (Malabo)", lat: 3.7504, lng: 8.7371 },
       { name: "Litoral (Bata)", lat: 1.8639, lng: 9.7658 },
@@ -3784,6 +4016,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 6.6131,
     zoom: 10,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Île de São Tomé", lat: 0.25, lng: 6.6 },
       { name: "Province autonome de Príncipe", lat: 1.6139, lng: 7.4056 }
@@ -3797,6 +4030,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 18.7322,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "N'Djamena", lat: 12.1348, lng: 15.0557 },
       { name: "Ennedi Est / Ouest", lat: 17.2, lng: 21.85 },
@@ -3812,6 +4046,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 29.9189,
     zoom: 8,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Bujumbura Mairie / Rural (Lac Tanganyika)", lat: -3.3614, lng: 29.3599 },
       { name: "Gitega", lat: -3.4264, lng: 29.9306 },
@@ -3827,6 +4062,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 43.8722,
     zoom: 8,
     unit: "îles",
+    ready: false,
     regions: [
       { name: "Grande Comore / Ngazidja (Moroni / Karthala)", lat: -11.7172, lng: 43.2473 },
       { name: "Anjouan / Nzwani (Mutsamudu)", lat: -12.1667, lng: 44.4 },
@@ -3841,6 +4077,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 42.5903,
     zoom: 9,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Djibouti-Ville", lat: 11.5721, lng: 43.1456 },
       { name: "Tadjourah (Lac Assal / Lac Abbé)", lat: 11.7878, lng: 42.8822 },
@@ -3857,6 +4094,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 39.7823,
     zoom: 7,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Maekel (Asmara)", lat: 15.3229, lng: 38.9251 },
       { name: "Mer Rouge Septentrionale (Massaoua / Dahlak)", lat: 15.6081, lng: 39.4746 },
@@ -3872,6 +4110,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 40.4897,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Addis-Abeba", lat: 9.03, lng: 38.74 },
       { name: "Amhara (Gondar / Lac Tana / Lalibela / Simien)", lat: 12.0333, lng: 37.7333 },
@@ -3889,6 +4128,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 37.9062,
     zoom: 6,
     unit: "comtés",
+    ready: false,
     regions: [
       { name: "Nairobi", lat: -1.2921, lng: 36.8219 },
       { name: "Narok (Maasai Mara)", lat: -1.4061, lng: 35.008 },
@@ -3906,6 +4146,7 @@ const VISITOR_REGIONS_DATA = {
     lng: 55.5364,
     zoom: 9,
     unit: "secteurs / cirques",
+    ready: false,
     regions: [
       { name: "Cirque de Mafate", lat: -21.0667, lng: 55.4167 },
       { name: "Cirque de Cilaos (Piton des Neiges)", lat: -21.1333, lng: 55.4667 },
@@ -3923,13 +4164,14 @@ const VISITOR_REGIONS_DATA = {
     lng: 46.8691,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Analamanga (Antananarivo)", lat: -18.8792, lng: 47.5079 },
       { name: "Menabe (Allée des Baobabs / Morondava)", lat: -20.2833, lng: 44.2833 },
       { name: "Analanjirofo (Île Sainte-Marie)", lat: -16.9, lng: 49.9 },
       { name: "Haute Matsiatra (Fianarantsoa / Isalo)", lat: -21.4527, lng: 47.0857 },
       { name: "Diana (Nosy Be / Diego Suarez)", lat: -13.3167, lng: 48.2667 },
-      { name: "Atsimo-Andrefana (Tuléar / Ifaty)", lat: -23.35, lng: 43.6667 }
+      { name: "Anosy (Fort-Dauphin)", lat: -25.0325, lng: 46.9967 }
     ]
   },
   "Malawi": {
@@ -3939,13 +4181,13 @@ const VISITOR_REGIONS_DATA = {
     lat: -13.2543,
     lng: 34.3015,
     zoom: 7,
-    unit: "districts / régions",
+    unit: "régions / districts",
+    ready: false,
     regions: [
+      { name: "Mangochi / Lac Malawi", lat: -14.4781, lng: 35.2645 },
       { name: "Lilongwe", lat: -13.9626, lng: 33.7741 },
-      { name: "Mangochi (Lac Malawi Sud)", lat: -14.4781, lng: 35.2645 },
-      { name: "Nkhata Bay (Lac Malawi Nord)", lat: -11.6067, lng: 34.29 },
-      { name: "Zomba / Mont Mulanje", lat: -15.3833, lng: 35.3333 },
-      { name: "Blantyre", lat: -15.7861, lng: 35.0058 }
+      { name: "Blantyre / Zomba", lat: -15.7861, lng: 35.0058 },
+      { name: "Nkhatabay (Nord du Lac Malawi)", lat: -11.6066, lng: 34.2949 }
     ]
   },
   "Maurice": {
@@ -3954,13 +4196,14 @@ const VISITOR_REGIONS_DATA = {
     subcontinent: "Afrique de l'Est",
     lat: -20.3484,
     lng: 57.5522,
-    zoom: 9,
-    unit: "districts / îles",
+    zoom: 10,
+    unit: "régions / districts",
+    ready: false,
     regions: [
-      { name: "Rivière Noire (Le Morne / Chamarel)", lat: -20.36, lng: 57.3667 },
-      { name: "Pamplemousses / Rivière du Rempart (Nord)", lat: -20.1, lng: 57.5833 },
-      { name: "Flacq (Île aux Cerfs)", lat: -20.2167, lng: 57.7167 },
-      { name: "Port-Louis", lat: -20.1609, lng: 57.5012 },
+      { name: "Nord (Grand Baie / Port-Louis / Pamplemousses)", lat: -20.0131, lng: 57.5819 },
+      { name: "Sud-Ouest (Le Morne / Chamarel / Bel Ombre)", lat: -20.45, lng: 57.3667 },
+      { name: "Est (Belle Mare / Île aux Cerfs)", lat: -20.2167, lng: 57.7667 },
+      { name: "Ouest (Flic-en-Flac / Tamarin)", lat: -20.2961, lng: 57.3653 },
       { name: "Rodrigues", lat: -19.7245, lng: 63.4272 }
     ]
   },
@@ -3972,12 +4215,12 @@ const VISITOR_REGIONS_DATA = {
     lng: 35.5296,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
-      { name: "Inhambane (Tofo / Vilankulo / Bazaruto)", lat: -23.865, lng: 35.3833 },
-      { name: "Maputo", lat: -25.9692, lng: 32.5732 },
-      { name: "Cabo Delgado (Archipel des Quirimbas)", lat: -12.3333, lng: 39.3333 },
-      { name: "Sofala (Gorongosa)", lat: -19.8333, lng: 34.85 },
-      { name: "Nampula (Île de Mozambique)", lat: -15.0342, lng: 40.7358 }
+      { name: "Inhambane (Tofo / Archipel de Bazaruto)", lat: -23.865, lng: 35.3833 },
+      { name: "Maputo (Ville & Province)", lat: -25.9692, lng: 32.5732 },
+      { name: "Cabo Delgado (Archipel des Quirimbas / Pemba)", lat: -12.9739, lng: 40.5178 },
+      { name: "Sofala (Beira / Parc de Gorongosa)", lat: -19.8436, lng: 34.8389 }
     ]
   },
   "Ouganda": {
@@ -3988,11 +4231,12 @@ const VISITOR_REGIONS_DATA = {
     lng: 32.2903,
     zoom: 7,
     unit: "régions / districts",
+    ready: false,
     regions: [
       { name: "Région centrale (Kampala / Entebbe)", lat: 0.3476, lng: 32.5825 },
-      { name: "Région occidentale (Bwindi / Queen Elizabeth / Fort Portal)", lat: -1.0486, lng: 29.7775 },
-      { name: "Région septentrionale (Murchison Falls / Kidepo)", lat: 2.25, lng: 31.7833 },
-      { name: "Région orientale (Jinja / Source du Nil)", lat: 0.4244, lng: 33.2041 }
+      { name: "Sud-Ouest (Bwindi / Lac Bunyonyi / Queen Elizabeth)", lat: -1.0486, lng: 29.7794 },
+      { name: "Nord-Ouest (Murchison Falls)", lat: 2.25, lng: 31.7833 },
+      { name: "Est (Jinja / Source du Nil / Sipi Falls)", lat: 0.4244, lng: 33.2042 }
     ]
   },
   "Rwanda": {
@@ -4003,12 +4247,12 @@ const VISITOR_REGIONS_DATA = {
     lng: 29.8739,
     zoom: 8,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Kigali", lat: -1.9441, lng: 30.0619 },
-      { name: "Province du Nord (Volcans / Musanze)", lat: -1.4998, lng: 29.635 },
-      { name: "Province de l'Est (Akagera)", lat: -1.95, lng: 30.5 },
-      { name: "Province de l'Ouest (Lac Kivu / Rubavu)", lat: -1.7028, lng: 29.2564 },
-      { name: "Province du Sud (Nyungwe / Huye)", lat: -2.4833, lng: 29.5833 }
+      { name: "Nord (Volcans / Musanze)", lat: -1.4998, lng: 29.635 },
+      { name: "Ouest (Lac Kivu / Rubavu / Nyungwe)", lat: -2.4833, lng: 29.1167 },
+      { name: "Est (Parc de l'Akagera)", lat: -1.95, lng: 30.5 }
     ]
   },
   "Seychelles": {
@@ -4018,12 +4262,12 @@ const VISITOR_REGIONS_DATA = {
     lat: -4.6796,
     lng: 55.492,
     zoom: 9,
-    unit: "îles / districts",
+    unit: "îles",
+    ready: false,
     regions: [
-      { name: "Mahé (Victoria)", lat: -4.6191, lng: 55.4513 },
-      { name: "Praslin (Vallée de Mai)", lat: -4.3196, lng: 55.7361 },
-      { name: "La Digue (Anse Source d'Argent)", lat: -4.3583, lng: 55.8286 },
-      { name: "Îles extérieures (Aldabra)", lat: -9.4167, lng: 46.3333 }
+      { name: "Mahé (Victoria / Beau Vallon)", lat: -4.6796, lng: 55.492 },
+      { name: "Praslin (Vallée de Mai)", lat: -4.3197, lng: 55.7367 },
+      { name: "La Digue", lat: -4.35, lng: 55.8333 }
     ]
   },
   "Somalie": {
@@ -4034,10 +4278,10 @@ const VISITOR_REGIONS_DATA = {
     lng: 46.1996,
     zoom: 6,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Banaadir (Mogadiscio)", lat: 2.0469, lng: 45.3182 },
-      { name: "Woqooyi Galbeed (Hargeisa / Laas Geel)", lat: 9.56, lng: 44.065 },
-      { name: "Bari (Bossasso)", lat: 11.2842, lng: 49.1816 }
+      { name: "Woqooyi Galbeed / Somaliland (Hargeisa / Berbera)", lat: 9.56, lng: 44.065 }
     ]
   },
   "Soudan du Sud": {
@@ -4048,10 +4292,10 @@ const VISITOR_REGIONS_DATA = {
     lng: 31.307,
     zoom: 6,
     unit: "États",
+    ready: false,
     regions: [
-      { name: "Équatoria-Central (Djouba)", lat: 4.8594, lng: 31.5713 },
-      { name: "Jonglei (Sudd)", lat: 7.5, lng: 31.5 },
-      { name: "Équatoria-Oriental (Torit)", lat: 4.4119, lng: 32.5706 }
+      { name: "Équatoria-Central (Djouba)", lat: 4.8517, lng: 31.5825 },
+      { name: "Jonglei / Haut-Nil", lat: 7.5, lng: 31.5 }
     ]
   },
   "Tanzanie": {
@@ -4061,14 +4305,15 @@ const VISITOR_REGIONS_DATA = {
     lat: -6.369,
     lng: 34.8888,
     zoom: 6,
-    unit: "régions",
+    unit: "régions / îles",
+    ready: false,
     regions: [
-      { name: "Arusha (Ngorongoro / Parc d'Arusha)", lat: -3.3869, lng: 36.683 },
-      { name: "Mara (Serengeti)", lat: -2.3333, lng: 34.8333 },
+      { name: "Arusha (Serengeti / Cratère du Ngorongoro)", lat: -3.3869, lng: 36.683 },
+      { name: "Zanzibar (Unguja / Pemba)", lat: -6.1659, lng: 39.2026 },
       { name: "Kilimandjaro (Moshi)", lat: -3.0674, lng: 37.3556 },
-      { name: "Zanzibar (Stone Town / Nungwi)", lat: -6.1659, lng: 39.2026 },
       { name: "Dar es Salaam", lat: -6.7924, lng: 39.2083 },
-      { name: "Iringa (Ruaha)", lat: -7.7667, lng: 35.7 }
+      { name: "Manyara (Lac Manyara / Tarangire)", lat: -3.5833, lng: 35.8333 },
+      { name: "Iringa / Ruaha", lat: -7.7667, lng: 35.7 }
     ]
   },
   "Zambie": {
@@ -4079,11 +4324,12 @@ const VISITOR_REGIONS_DATA = {
     lng: 27.8493,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
-      { name: "Province méridionale (Livingstone / Chutes Victoria)", lat: -17.8419, lng: 25.8543 },
+      { name: "Province Méridionale (Livingstone / Chutes Victoria)", lat: -17.8419, lng: 25.8543 },
       { name: "Lusaka", lat: -15.3875, lng: 28.3228 },
-      { name: "Province orientale (South Luangwa)", lat: -13.6333, lng: 32.65 },
-      { name: "Province septentrionale", lat: -10.2167, lng: 31.1833 }
+      { name: "Province Orientale (South Luangwa)", lat: -13.6333, lng: 32.65 },
+      { name: "Province du Nord (Lac Tanganyika)", lat: -10.1667, lng: 31.1667 }
     ]
   },
   "Zimbabwe": {
@@ -4094,12 +4340,12 @@ const VISITOR_REGIONS_DATA = {
     lng: 29.1549,
     zoom: 6,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Matabeleland Nord (Chutes Victoria / Parc de Hwange)", lat: -17.9243, lng: 25.8572 },
+      { name: "Masvingo (Grand Zimbabwe / Lac Mutirikwi)", lat: -20.0637, lng: 30.8277 },
       { name: "Harare", lat: -17.8252, lng: 31.0335 },
-      { name: "Manicaland (Montagnes de Chimanimani / Nyanga)", lat: -18.9167, lng: 32.4 },
-      { name: "Matabeleland Sud (Matobo)", lat: -20.55, lng: 28.5 },
-      { name: "Masvingo (Grand Zimbabwe)", lat: -20.2742, lng: 30.9348 }
+      { name: "Manicaland (Montagnes de Nyanga)", lat: -18.972, lng: 32.669 }
     ]
   },
   "Afrique du Sud": {
@@ -4110,14 +4356,14 @@ const VISITOR_REGIONS_DATA = {
     lng: 22.9375,
     zoom: 5,
     unit: "provinces",
+    ready: false,
     regions: [
       { name: "Cap-Occidental (Le Cap / Route des Jardins / Stellenbosch)", lat: -33.9249, lng: 18.4241 },
-      { name: "Mpumalanga (Parc national Kruger / Blyde River Canyon)", lat: -25.4753, lng: 30.9694 },
+      { name: "Mpumalanga (Parc Kruger / Blyde River Canyon)", lat: -25.4753, lng: 30.9694 },
+      { name: "KwaZulu-Natal (Drakensberg / Sainte-Lucie / Durban)", lat: -28.5306, lng: 30.8958 },
       { name: "Gauteng (Johannesburg / Pretoria)", lat: -26.2041, lng: 28.0473 },
-      { name: "KwaZulu-Natal (Durban / Drakensberg)", lat: -29.8587, lng: 31.0218 },
       { name: "Cap-Oriental", lat: -32.2968, lng: 26.4194 },
-      { name: "Cap-Nord", lat: -29.0467, lng: 21.8569 },
-      { name: "Limpopo", lat: -23.4013, lng: 29.4179 }
+      { name: "Cap-Nord (Kalahari / Namaqualand)", lat: -29.0467, lng: 21.8569 }
     ]
   },
   "Botswana": {
@@ -4128,12 +4374,12 @@ const VISITOR_REGIONS_DATA = {
     lng: 24.6849,
     zoom: 6,
     unit: "districts",
+    ready: false,
     regions: [
-      { name: "Nord-Ouest (Delta de l'Okavango / Maun)", lat: -19.9833, lng: 23.4167 },
-      { name: "Chobe (Kasane / Parc de Chobe)", lat: -17.8167, lng: 25.15 },
-      { name: "Sud-Est (Gaborone)", lat: -24.6282, lng: 25.9231 },
-      { name: "Central (Makgadikgadi)", lat: -20.75, lng: 25.5 },
-      { name: "Ghanzi (Kalahari central)", lat: -21.6978, lng: 21.6458 }
+      { name: "Ngamiland / Nord-Ouest (Delta de l'Okavango / Maun)", lat: -19.9833, lng: 23.4167 },
+      { name: "Chobe (Kasane / Parc de Chobe)", lat: -18.2, lng: 24.5 },
+      { name: "Central (Makgadikgadi)", lat: -21.5, lng: 25.5 },
+      { name: "Sud-Est (Gaborone)", lat: -24.6282, lng: 25.9231 }
     ]
   },
   "Eswatini": {
@@ -4142,13 +4388,14 @@ const VISITOR_REGIONS_DATA = {
     subcontinent: "Afrique australe",
     lat: -26.5225,
     lng: 31.4659,
-    zoom: 8,
+    zoom: 9,
     unit: "régions",
+    ready: false,
     regions: [
-      { name: "Hhohho (Mbabane)", lat: -26.3054, lng: 31.1367 },
+      { name: "Hhohho (Mbabane / Vallée d'Ezulwini)", lat: -26.3054, lng: 31.1367 },
       { name: "Manzini", lat: -26.4988, lng: 31.38 },
-      { name: "Lubombo (Hlane)", lat: -26.25, lng: 31.9 },
-      { name: "Shiselweni", lat: -27.1167, lng: 31.2 }
+      { name: "Lubombo (Hlane)", lat: -26.5, lng: 31.8333 },
+      { name: "Shiselweni", lat: -27.0, lng: 31.3333 }
     ]
   },
   "Lesotho": {
@@ -4159,11 +4406,11 @@ const VISITOR_REGIONS_DATA = {
     lng: 28.2336,
     zoom: 8,
     unit: "districts",
+    ready: false,
     regions: [
-      { name: "Maseru", lat: -29.31, lng: 27.4782 },
-      { name: "Thaba-Tseka (Maletsunyane / Hautes Terres)", lat: -29.5228, lng: 28.6083 },
-      { name: "Mokhotlong (Sani Pass)", lat: -29.2894, lng: 29.0675 },
-      { name: "Berea", lat: -29.1667, lng: 27.75 }
+      { name: "Maseru", lat: -29.31, lng: 27.48 },
+      { name: "Thaba-Tseka / Hautes Terres", lat: -29.5228, lng: 28.6075 },
+      { name: "Mokhotlong (Sani Pass)", lat: -29.2894, lng: 29.0675 }
     ]
   },
   "Namibie": {
@@ -4172,32 +4419,16 @@ const VISITOR_REGIONS_DATA = {
     subcontinent: "Afrique australe",
     lat: -22.9576,
     lng: 18.4904,
-    zoom: 6,
+    zoom: 5,
     unit: "régions",
+    ready: false,
     regions: [
       { name: "Erongo (Swakopmund / Walvis Bay / Spitzkoppe)", lat: -22.6784, lng: 14.5266 },
       { name: "Hardap (Sossusvlei / Désert du Namib)", lat: -24.7275, lng: 15.2919 },
-      { name: "Kunene (Damaraland / Kaokoland / Côte des Squelettes)", lat: -20.3667, lng: 14.3 },
+      { name: "Kunene (Damaraland / Côte des Squelettes / Kaokoland)", lat: -19.5, lng: 14.5 },
+      { name: "Oshikoto / Oshana (Parc d'Etosha)", lat: -18.8556, lng: 16.3293 },
       { name: "Khomas (Windhoek)", lat: -22.5609, lng: 17.0658 },
-      { name: "Otjozondjupa (Parc national d'Etosha)", lat: -18.8556, lng: 16.3293 },
-      { name: "Zambèze (Caprivi)", lat: -17.5033, lng: 24.2756 }
-    ]
-  },
-  // ==================== ANTARCTIQUE ====================
-  "Antarctique": {
-    flag: "🇦🇶",
-    continent: "Antarctique",
-    subcontinent: "Antarctique",
-    lat: -82.8628,
-    lng: 135.0,
-    zoom: 3,
-    unit: "secteurs / bases",
-    regions: [
-      { name: "Péninsule Antarctique", lat: -64.7742, lng: -64.0531 },
-      { name: "Mer de Ross (Station McMurdo)", lat: -77.8419, lng: 166.6863 },
-      { name: "Terre Adélie (Base Dumont d'Urville)", lat: -66.6628, lng: 140.0014 },
-      { name: "Pôle Sud (Amundsen-Scott)", lat: -90.0, lng: 0.0 }
+      { name: "Karas (Fish River Canyon / Lüderitz)", lat: -26.6481, lng: 15.1594 }
     ]
   }
 };
-  

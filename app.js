@@ -1092,7 +1092,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Antarctique": "🇦🇶"
   };
 
-  // 6. Bloc 1 ("Où voyages-tu ?") : Continent -> Sous-continent -> Pays
+  // 6. Bloc 1 ("Où voyages-tu ?") : Continent -> Sous-continent -> Pays (filtré sur ready: true)
   const whereTravelContinentsGrid = document.getElementById("my-trips-continents-grid");
   const whereTravelSubcontinentsPanel = document.getElementById("my-trips-subcontinents-panel");
   const whereTravelCountriesPanel = document.getElementById("my-trips-countries-panel");
@@ -1107,6 +1107,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let activeTravelContinent = null;
     let activeTravelSubcontinent = null;
     let travelStep = "continents";
+
+    const hasReadySheet = (entry) => Boolean(entry && entry.ready);
 
     const getDestinationUrl = (countryName) => {
       const slug = countryName
@@ -1141,6 +1143,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const seen = new Set();
       const list = [];
       Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
+        if (!hasReadySheet(entry)) return;
         const c = entry.continent || "Autres";
         if (!seen.has(c)) {
           seen.add(c);
@@ -1154,6 +1157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const seen = new Set();
       const list = [];
       Object.values(VISITOR_REGIONS_DATA).forEach((entry) => {
+        if (!hasReadySheet(entry)) return;
         if ((entry.continent || "Autres") === continent && entry.subcontinent && !seen.has(entry.subcontinent)) {
           seen.add(entry.subcontinent);
           list.push(entry.subcontinent);
@@ -1165,6 +1169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const getTravelCountries = (continent, subcontinent = null) => {
       return Object.entries(VISITOR_REGIONS_DATA)
         .filter(([, entry]) => {
+          if (!hasReadySheet(entry)) return false;
           const matchContinent = (entry.continent || "Autres") === continent;
           if (!matchContinent) return false;
           if (!subcontinent) return true;
@@ -1379,6 +1384,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const matches = Object.entries(VISITOR_REGIONS_DATA)
           .filter(([country, entry]) => {
+            if (!hasReadySheet(entry)) return false;
             const hay = normalizeText(
               `${country} ${entry.continent || ""} ${entry.subcontinent || ""}`
             );
@@ -1444,7 +1450,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderWhereTravelView();
   }
 
-  // 7. Bloc 2 ("Et toi") : Continent -> Sous-continent -> Pays + carte + modale à cocher
+  // 7. Bloc 2 ("Et toi") : Continent -> Sous-continent -> Pays + carte + modale à cocher (tout affiché)
   const etToiMapEl = document.getElementById("visitor-world-map");
   const etToiMapLabelEl = document.getElementById("visitor-map-label");
   const etToiContinentsGrid = document.getElementById("visitor-continents-grid");
