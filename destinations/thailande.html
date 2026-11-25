@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thaïlande — Toutes les Provinces & Conseils</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body data-visited="true" data-place-name="Thaïlande">
+
+  <header class="sticky-nav">
+    <a href="../index.html" class="home-link">← Accueil</a>
+  </header>
+
+  <main class="container">
+    <div class="destination-header-block">
+      <span class="destination-eyebrow">Guide de voyage</span>
+      <h1 class="destination-hero-title">Thaï<span>lande</span></h1>
+    </div>
+
+    <div class="country-overview-box">
+      <p class="country-summary-text">
+        Entre temples dorés de Bangkok, ruines historiques d'Ayutthaya et Sukhothai, montagnes et forêts du Nord, parcs nationaux et plages ou îles de la mer d'Andaman et du golfe de Thaïlande. Sélectionne une province pour filtrer les activités par budget ou thème et les afficher sur la carte.
+      </p>
+      <div class="practical-info-grid">
+        <div class="practical-card">
+          <h4>🚌 Transports & liaisons</h4>
+          <p>
+            Réseau très pratique de trains de nuit et de jour, bus longue distance, songthaews, ferries vers les îles, métro/BTS/bateaux fluviaux à <span class="place-mention" data-lat="13.7563" data-lng="100.5018" data-zoom="11" data-label="Bangkok">Bangkok</span> et nombreux vols intérieurs.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>💶 Monnaie & budget</h4>
+          <p>
+            Baht thaïlandais (THB). La cuisine de rue, les marchés locaux et les transports du quotidien restent abordables ; prévois un budget plus élevé pour les sorties en bateau privées, parcs marins ou excursions organisées.
+          </p>
+        </div>
+        <div class="practical-card">
+          <h4>☀️ Météo & saisons</h4>
+          <p>
+            Saison sèche et fraîche généralement de novembre à février, période chaude de mars à mai, et mousson plus humide de juin à octobre selon les côtes (golfe vs mer d'Andaman).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-top-panel" id="sticky-map-controls">
+      <div class="pill-row state-pills" aria-label="Filtrer par province">
+        <button type="button" class="filter-pill is-active" data-state="all">Tous</button>
+        <button type="button" class="filter-pill" data-state="bangkok">Bangkok</button>
+        <button type="button" class="filter-pill" data-state="ayutthaya">Ayutthaya</button>
+        <button type="button" class="filter-pill" data-state="kanchanaburi">Kanchanaburi</button>
+        <button type="button" class="filter-pill" data-state="ratchaburi-phetchaburi">Ratchaburi & Phetchaburi</button>
+        <button type="button" class="filter-pill" data-state="chiang-mai">Chiang Mai</button>
+        <button type="button" class="filter-pill" data-state="chiang-rai">Chiang Rai</button>
+        <button type="button" class="filter-pill" data-state="mae-hong-son">Mae Hong Son</button>
+        <button type="button" class="filter-pill" data-state="sukhothai">Sukhothai</button>
+        <button type="button" class="filter-pill" data-state="nakhon-ratchasima">Nakhon Ratchasima (Khao Yai)</button>
+        <button type="button" class="filter-pill" data-state="chonburi">Chonburi</button>
+        <button type="button" class="filter-pill" data-state="trat">Trat (Koh Chang & Koh Kood)</button>
+        <button type="button" class="filter-pill" data-state="prachuap-khiri-khan">Prachuap Khiri Khan</button>
+        <button type="button" class="filter-pill" data-state="surat-thani">Surat Thani (Khao Sok & Golfe)</button>
+        <button type="button" class="filter-pill" data-state="phang-nga">Phang Nga</button>
+        <button type="button" class="filter-pill" data-state="phuket">Phuket</button>
+        <button type="button" class="filter-pill" data-state="krabi">Krabi</button>
+        <button type="button" class="filter-pill" data-state="trang">Trang</button>
+        <button type="button" class="filter-pill" data-state="satun">Satun (Koh Lipe)</button>
+      </div>
+
+      <div class="pill-row subplace-pills" id="subplace-filter-bar" data-all-label="Tous les lieux" aria-label="Filtrer par lieu" hidden></div>
+
+      <div class="sticky-map-box" id="experience-map-box">
+        <div class="map-location-label" id="map-active-place">Lieu : Vue d'ensemble</div>
+        <div id="real-map" class="real-map-canvas" aria-label="Carte réelle des provinces de Thaïlande"></div>
+      </div>
+
+      <div class="destination-controls">
+        <div class="pill-row budget-pills" id="budget-filter-bar" aria-label="Filtrer par budget par personne" hidden>
+          <button type="button" class="filter-pill is-active" data-budget="all">Tout</button>
+          <button type="button" class="filter-pill" data-budget="free">Gratuit</button>
+          <button type="button" class="filter-pill" data-budget="50">-50€/p</button>
+          <button type="button" class="filter-pill" data-budget="100">-100€/p</button>
+        </div>
+
+        <div class="pill-row theme-pills" id="theme-filter-bar" aria-label="Filtrer par thème" hidden>
+          <button type="button" class="filter-pill is-active" data-theme="all">Tous thèmes</button>
+          <button type="button" class="filter-pill" data-theme="rando">🥾 Rando</button>
+          <button type="button" class="filter-pill" data-theme="parc">🌿 Parc</button>
+          <button type="button" class="filter-pill" data-theme="point-de-vue">🌄 Point de vue</button>
+          <button type="button" class="filter-pill" data-theme="monument">🏛️ Monument</button>
+          <button type="button" class="filter-pill" data-theme="marche">🧺 Marché</button>
+          <button type="button" class="filter-pill" data-theme="activite">🚤 Activité</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="destination-dynamic-sections"></div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js.destinations/thailande.data.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>
