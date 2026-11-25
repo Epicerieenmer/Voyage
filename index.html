@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carnet de Voyage — Mes voyages & ta checklist</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body class="landing-page">
+
+  <main class="home-container">
+    <header class="hero">
+      <h1>Carnet de Voyage</h1>
+      <p class="subtitle">Mes retours d'expérience et itinéraires — et ta propre carte mentale des pays parcourus.</p>
+    </header>
+
+    <!-- BLOC 1 : OÙ VOYAGES-TU ? (continent -> sous-continent -> pays) -->
+    <section class="home-block" aria-labelledby="my-trips-title">
+      <div class="block-header">
+        <div>
+          <h2 id="my-trips-title">Où voyages-tu ?</h2>
+          <p class="block-desc">Choisis un continent, un sous-continent et un pays pour préparer ou repérer un voyage.</p>
+        </div>
+      </div>
+
+      <div class="search-bar-box" id="travel-search-box">
+        <input
+          type="search"
+          id="travel-country-search"
+          class="country-search-input"
+          placeholder="Rechercher un pays directement (ex. Japon, Mexique, Polynésie...)"
+          aria-label="Rechercher un pays"
+          autocomplete="off"
+        >
+        <div class="visitor-countries-multi-list" id="travel-search-results" hidden></div>
+      </div>
+
+      <!-- Niveau 1 : Continents -->
+      <div class="visitor-countries-grid" id="my-trips-continents-grid"></div>
+
+      <!-- Niveau 2 : Sous-continents du continent sélectionné -->
+      <div class="visitor-region-panel subcontinent-pills" id="my-trips-subcontinents-panel" hidden></div>
+
+      <!-- Niveau 3 : Pays du sous-continent / continent sélectionné -->
+      <div class="visitor-region-panel" id="my-trips-countries-panel" hidden></div>
+    </section>
+
+    <!-- BLOC 2 : CHECKLIST POUR LES VISITEURS (continent -> sous-continent -> pays) -->
+    <section class="home-block" aria-labelledby="visitor-check-title">
+      <div class="block-header">
+        <div>
+          <h2 id="visitor-check-title">Et toi, tu as visité quoi ?</h2>
+          <p class="block-desc">Choisis un continent puis un sous-continent et un pays — ou clique sur un point de la carte — pour cocher ce que tu as visité.</p>
+        </div>
+        <span class="visitor-counter" id="visitor-counter">0 / 0 lieu (0 %)</span>
+      </div>
+
+      <!-- Carte interactive des pays visités -->
+      <div class="sticky-map-box" id="visitor-map-box">
+        <div class="map-location-label" id="visitor-map-label">Carte : progression par pays (gris = 0 %, bleu = en cours, vert = 100 %)</div>
+        <div id="visitor-world-map" class="real-map-canvas" aria-label="Carte des pays visités"></div>
+      </div>
+
+      <!-- Niveau 1 : Continents -->
+      <div class="visitor-countries-grid" id="visitor-continents-grid"></div>
+
+      <!-- Niveau 2 : Sous-continents du continent sélectionné -->
+      <div class="visitor-region-panel subcontinent-pills" id="visitor-subcontinents-panel" hidden></div>
+
+      <!-- Niveau 3 : Pays du sous-continent / continent sélectionné -->
+      <div class="visitor-region-panel" id="visitor-countries-panel" hidden></div>
+    </section>
+  </main>
+
+  <!-- Modale de sélection des lieux / régions à cocher -->
+  <div class="region-modal-backdrop" id="region-modal-backdrop" hidden>
+    <div class="region-modal-card" role="dialog" aria-modal="true" aria-labelledby="region-modal-title">
+      <div class="region-modal-header">
+        <div>
+          <h3 id="region-modal-title">Pays</h3>
+          <p class="region-panel-sub" id="region-modal-subtitle">0 / 0 lieu(x) coché(s) (0 %)</p>
+        </div>
+        <button type="button" class="region-close-btn" id="region-modal-close" aria-label="Fermer">✕</button>
+      </div>
+      <div class="modal-bulk-actions">
+        <button type="button" class="modal-bulk-btn" id="modal-select-all">Tout cocher</button>
+        <button type="button" class="modal-bulk-btn" id="modal-clear-all">Tout décocher</button>
+      </div>
+      <div class="region-modal-list" id="region-modal-list"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="regions.data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
