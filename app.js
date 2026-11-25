@@ -9,11 +9,28 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
+  const normalizeText = (str) =>
+    (str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+
   // 1. Repositionner le bouton Accueil dans l'en-tête de destination
   const stickyNavEl = document.querySelector(".sticky-nav");
   const headerBlockEl = document.querySelector(".destination-header-block");
   if (stickyNavEl && headerBlockEl) {
     headerBlockEl.insertBefore(stickyNavEl, headerBlockEl.firstChild);
+
+    const eyebrowEl = headerBlockEl.querySelector(".destination-eyebrow");
+    if (eyebrowEl) eyebrowEl.remove();
+
+    const heroTitleEl = headerBlockEl.querySelector(".destination-hero-title");
+    if (heroTitleEl) {
+      heroTitleEl.innerHTML = heroTitleEl.innerHTML
+        .replace(/guide\s+de\s+voyage\s*[:\-–—]?\s*/gi, "")
+        .trim();
+    }
   }
 
   // Placer le panneau (avec la carte et les filtres) juste sous le titre et au-dessus du résumé
@@ -202,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let syncMapWithFilters = () => {};
   let updateFilterStatus = () => {};
   let focusActivityOnMap = () => {};
+  let syncPanelShortcutsUI = () => {};
   let previewedActivityEl = null;
 
   const scrollItemIntoMobileComfort = (item) => {
@@ -255,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       item.addEventListener("click", (e) => {
+        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn")) return;
         e.preventDefault();
         e.stopPropagation();
 
@@ -441,6 +460,111 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeSubplace = "all";
   let activeBudget = "all";
   let activeTheme = "all";
+
+  // Raccourcis d'affichage dans le panneau de destination
+  let showMapInPanel = true;
+  let showPriceInPanel = false;
+  let showFiltersInPanel = false;
+  let isPanelMinimized = false;
+
+  if (stickyTopPanelEl && !stickyTopPanelEl.querySelector(".panel-shortcuts-bar")) {
+    const mapBoxShortcutEl =
+      stickyTopPanelEl.querySelector(".sticky-map-box") || document.querySelector(".sticky-map-box");
+    const budgetBarShortcutEl =
+      document.getElementById("budget-filter-bar") || document.querySelector(".budget-pills");
+    const themeBarShortcutEl =
+      document.getElementById("theme-filter-bar") || document.querySelector(".theme-pills");
+
+    const shortcutsBar = document.createElement("div");
+    shortcutsBar.className = "panel-shortcuts-bar";
+    shortcutsBar.innerHTML = `
+      <div class="panel-shortcuts-group">
+        <button type="button" class="panel-shortcut-btn" data-shortcut="map">🗺️ Carte</button>
+        <button type="button" class="panel-shortcut-btn" data-shortcut="price">💶 Prix</button>
+        <button type="button" class="panel-shortcut-btn" data-shortcut="filters">🏷️ Filtres</button>
+      </div>
+      <button type="button" class="panel-collapse-btn" id="toggle-full-panel-btn" hidden>
+        ⬆ Réduire
+      </button>
+    `;
+
+    if (mapBoxShortcutEl && mapBoxShortcutEl.parentNode === stickyTopPanelEl) {
+      stickyTopPanelEl.insertBefore(shortcutsBar, mapBoxShortcutEl);
+    } else {
+      stickyTopPanelEl.prepend(shortcutsBar);
+    }
+
+    const mapShortcutBtn = shortcutsBar.querySelector('[data-shortcut="map"]');
+    const priceShortcutBtn = shortcutsBar.querySelector('[data-shortcut="price"]');
+    const filtersShortcutBtn = shortcutsBar.querySelector('[data-shortcut="filters"]');
+    const collapsePanelBtn = document.getElementById("toggle-full-panel-btn");
+
+    syncPanelShortcutsUI = () => {
+      const hasSelectedPlace = activeState !== "all";
+
+      if (collapsePanelBtn) {
+        collapsePanelBtn.hidden = !hasSelectedPlace;
+        collapsePanelBtn.textContent = isPanelMinimized ? "⬇ Déplier" : "⬆ Réduire";
+      }
+
+      stickyTopPanelEl.classList.toggle("is-panel-minimized", hasSelectedPlace && isPanelMinimized);
+
+      const hideDetails = hasSelectedPlace && isPanelMinimized;
+
+      if (mapBoxShortcutEl) {
+        const shouldShowMap = !hideDetails && showMapInPanel;
+        mapBoxShortcutEl.hidden = !shouldShowMap;
+        mapBoxShortcutEl.classList.toggle("is-collapsed", !shouldShowMap);
+        if (mapShortcutBtn) {
+          mapShortcutBtn.classList.toggle("is-active", showMapInPanel && !hideDetails);
+        }
+        if (shouldShowMap) {
+          refreshMapSize(100);
+        }
+      }
+
+      if (budgetBarShortcutEl) {
+        const shouldShowPrice = !hideDetails && hasSelectedPlace && showPriceInPanel;
+        budgetBarShortcutEl.hidden = !shouldShowPrice;
+        if (priceShortcutBtn) {
+          const hasBudget = activeBudget !== "all";
+          priceShortcutBtn.classList.toggle("is-active", shouldShowPrice || hasBudget);
+        }
+      }
+
+      if (themeBarShortcutEl) {
+        const shouldShowFilters = !hideDetails && hasSelectedPlace && showFiltersInPanel;
+        themeBarShortcutEl.hidden = !shouldShowFilters;
+        if (filtersShortcutBtn) {
+          const hasTheme = activeTheme !== "all";
+          filtersShortcutBtn.classList.toggle("is-active", shouldShowFilters || hasTheme);
+        }
+      }
+    };
+
+    mapShortcutBtn?.addEventListener("click", () => {
+      isPanelMinimized = false;
+      showMapInPanel = !showMapInPanel;
+      syncPanelShortcutsUI();
+    });
+
+    priceShortcutBtn?.addEventListener("click", () => {
+      isPanelMinimized = false;
+      showPriceInPanel = !showPriceInPanel;
+      syncPanelShortcutsUI();
+    });
+
+    filtersShortcutBtn?.addEventListener("click", () => {
+      isPanelMinimized = false;
+      showFiltersInPanel = !showFiltersInPanel;
+      syncPanelShortcutsUI();
+    });
+
+    collapsePanelBtn?.addEventListener("click", () => {
+      isPanelMinimized = !isPanelMinimized;
+      syncPanelShortcutsUI();
+    });
+  }
 
   const getSubplaceId = (el) => el.getAttribute("data-subplace") || el.getAttribute("data-island") || "";
 
@@ -823,8 +947,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (overviewBoxEl) overviewBoxEl.hidden = hasSelectedPlace;
-      if (budgetBarEl) budgetBarEl.hidden = !hasSelectedPlace;
-      if (themeBarEl) themeBarEl.hidden = !hasSelectedPlace;
+      if (budgetBarEl) budgetBarEl.hidden = !hasSelectedPlace || !showPriceInPanel || isPanelMinimized;
+      if (themeBarEl) themeBarEl.hidden = !hasSelectedPlace || !showFiltersInPanel || isPanelMinimized;
 
       renderSubplacePillsForSection(currentSection);
 
@@ -881,6 +1005,7 @@ document.addEventListener("DOMContentLoaded", () => {
         movePillSmoothlyToLeft(subplaceBarEl, activeSubBtn);
       }
 
+      syncPanelShortcutsUI();
       syncMapWithFilters();
       updateFilterStatus();
       if (map) {
@@ -893,6 +1018,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const clicked = btn.getAttribute("data-state") || "all";
         activeState = clicked === activeState && clicked !== "all" ? "all" : clicked;
         activeSubplace = "all";
+        isPanelMinimized = false;
         applyDestinationFilters({ scrollStateToStart: true, scrollSubplaceToStart: true });
       });
     });
@@ -924,6 +1050,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const zoom = Number(mention.getAttribute("data-zoom")) || 8;
       const label = mention.getAttribute("data-label") || mention.textContent.trim();
       if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+        isPanelMinimized = false;
+        showMapInPanel = true;
+        syncPanelShortcutsUI();
         map.flyTo([lat, lng], zoom, { duration: 0.7 });
         if (mapLabelEl && label) mapLabelEl.textContent = `Lieu : ${label}`;
         refreshMapSize(80);
@@ -964,13 +1093,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "Afrique": "🌍",
     "Antarctique": "🇦🇶"
   };
-
-  const normalizeText = (str) =>
-    (str || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim();
 
   // 6. Bloc 1 ("Où voyages-tu ?") : Continent -> Sous-continent -> Pays
   const whereTravelContinentsGrid = document.getElementById("my-trips-continents-grid");
@@ -1837,6 +1959,700 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateGlobalEtToiStats();
     renderEtToiView();
+  }
+
+  // --- 8. Ajout depuis la carte, validation (3/3), masquage croix si vérifié & signalement masqué ---
+  const REPORT_WEBHOOK_URL = "";
+
+  const reportsStorageKey = "admin_poi_reports_v1";
+  let adminReports = [];
+  try {
+    adminReports = JSON.parse(localStorage.getItem(reportsStorageKey) || "[]");
+  } catch (_) {
+    adminReports = [];
+  }
+
+  const persistAdminReports = () => {
+    try {
+      localStorage.setItem(reportsStorageKey, JSON.stringify(adminReports));
+    } catch (_) {}
+  };
+
+  const submitActivityMessage = async (reportPayload) => {
+    adminReports.unshift(reportPayload);
+    persistAdminReports();
+
+    if (REPORT_WEBHOOK_URL) {
+      try {
+        const res = await fetch(REPORT_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(reportPayload)
+        });
+        if (res.ok) {
+          return { sent: true };
+        }
+      } catch (_) {}
+    }
+
+    return { sent: false };
+  };
+
+    let reportModalBackdrop = document.getElementById("report-poi-modal-backdrop");
+  if (!reportModalBackdrop) {
+    reportModalBackdrop = document.createElement("div");
+    reportModalBackdrop.id = "report-poi-modal-backdrop";
+    reportModalBackdrop.className = "region-modal-backdrop";
+    reportModalBackdrop.hidden = true;
+    reportModalBackdrop.innerHTML = `
+      <div class="region-modal-card poi-modal-card report-modal-card" role="dialog" aria-modal="true" aria-labelledby="report-poi-title">
+        <div class="region-modal-header">
+          <div>
+            <h3 id="report-poi-title">🚩 Signaler un lieu ou une activité</h3>
+            <p class="region-panel-sub" id="report-poi-target">—</p>
+          </div>
+          <button type="button" class="region-close-btn" id="report-poi-close" aria-label="Fermer">✕</button>
+        </div>
+        <form id="report-poi-form" class="poi-form">
+          <label class="poi-field">
+            <span>Ton message *</span>
+            <textarea
+              id="report-poi-message"
+              rows="3"
+              required
+              placeholder="Ex. Lieu fermé, accès modifié, erreur de tarif ou de coordonnées..."
+            ></textarea>
+          </label>
+          <p class="report-modal-feedback" id="report-poi-feedback" hidden></p>
+          <div class="poi-actions">
+            <button type="button" class="modal-bulk-btn" id="report-poi-cancel">Annuler</button>
+            <button type="submit" class="poi-submit-btn report-submit-btn" id="report-poi-submit">Envoyer</button>
+          </div>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(reportModalBackdrop);
+  }
+
+  const reportTargetEl = document.getElementById("report-poi-target");
+  const reportForm = document.getElementById("report-poi-form");
+  const reportMessageInput = document.getElementById("report-poi-message");
+  const reportFeedbackEl = document.getElementById("report-poi-feedback");
+  const reportSubmitBtn = document.getElementById("report-poi-submit");
+
+  let activeReportContext = null;
+
+  const closeReportModal = () => {
+    reportModalBackdrop.hidden = true;
+    reportModalBackdrop.classList.remove("is-open");
+    document.body.classList.remove("modal-open");
+    activeReportContext = null;
+    if (reportFeedbackEl) {
+      reportFeedbackEl.hidden = true;
+      reportFeedbackEl.textContent = "";
+    }
+  };
+
+  document.getElementById("report-poi-close")?.addEventListener("click", closeReportModal);
+  document.getElementById("report-poi-cancel")?.addEventListener("click", closeReportModal);
+  reportModalBackdrop.addEventListener("click", (e) => {
+    if (e.target === reportModalBackdrop) closeReportModal();
+  });
+
+  reportForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!activeReportContext) return;
+
+    const cleanMessage = reportMessageInput?.value?.trim() || "";
+    if (!cleanMessage) {
+      if (reportFeedbackEl) {
+        reportFeedbackEl.textContent = "Merci d'écrire un message avant d'envoyer.";
+        reportFeedbackEl.hidden = false;
+      }
+      return;
+    }
+
+    if (reportSubmitBtn) reportSubmitBtn.disabled = true;
+
+    const { btn, metaInfo } = activeReportContext;
+    const payload = {
+      id: "msg_" + Date.now(),
+      createdAt: new Date().toISOString(),
+      page: window.location.pathname,
+      activityId: metaInfo.activityId || null,
+      customId: metaInfo.customId || null,
+      activityTitle: metaInfo.title,
+      lat: metaInfo.lat ?? null,
+      lng: metaInfo.lng ?? null,
+      confirmations: metaInfo.confirmations ?? null,
+      message: cleanMessage
+    };
+
+    const result = await submitActivityMessage(payload);
+
+    if (btn) {
+      btn.classList.add("is-reported");
+      btn.textContent = "🚩 Envoyé";
+    }
+
+    if (reportFeedbackEl) {
+      reportFeedbackEl.textContent = result.sent
+        ? "✓ Merci, ton message a bien été envoyé."
+        : "✓ Message enregistré en local (ajoute REPORT_WEBHOOK_URL pour l'envoi distant).";
+      reportFeedbackEl.hidden = false;
+    }
+
+    if (reportSubmitBtn) reportSubmitBtn.disabled = false;
+
+    setTimeout(() => {
+      closeReportModal();
+    }, 900);
+  });
+
+  const handleReportButtonClick = (e, metaInfo) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    activeReportContext = {
+      btn: e.currentTarget,
+      metaInfo
+    };
+
+    if (reportTargetEl) {
+      reportTargetEl.textContent = `Concernant : ${metaInfo.title}`;
+    }
+    if (reportMessageInput) {
+      reportMessageInput.value = "";
+    }
+    if (reportFeedbackEl) {
+      reportFeedbackEl.hidden = true;
+      reportFeedbackEl.textContent = "";
+    }
+
+    reportModalBackdrop.hidden = false;
+    reportModalBackdrop.classList.add("is-open");
+    document.body.classList.add("modal-open");
+    setTimeout(() => reportMessageInput?.focus(), 50);
+  };
+
+
+  // Ajout du bouton "Signaler" sur les activités existantes de la page
+  document.querySelectorAll(".activity-item:not(.is-user-added)").forEach((item, idx) => {
+    const contentEl = item.querySelector(".activity-content");
+    const titleEl = item.querySelector(".activity-title");
+    if (!contentEl || !titleEl || item.querySelector(".report-activity-btn")) return;
+
+    const activityId =
+      item.getAttribute("data-activity-id") ||
+      `page_act_${idx}_${normalizeText(titleEl.textContent).slice(0, 24)}`;
+    item.setAttribute("data-activity-id", activityId);
+
+    let titleRow = item.querySelector(".activity-title-row");
+    if (!titleRow) {
+      titleRow = document.createElement("div");
+      titleRow.className = "activity-title-row";
+      titleEl.parentNode.insertBefore(titleRow, titleEl);
+      titleRow.appendChild(titleEl);
+    }
+
+    let actionsBox = titleRow.querySelector(".poi-item-actions");
+    if (!actionsBox) {
+      actionsBox = document.createElement("div");
+      actionsBox.className = "poi-item-actions";
+      titleRow.appendChild(actionsBox);
+    }
+
+    const reportBtn = document.createElement("button");
+    reportBtn.type = "button";
+    reportBtn.className = "report-activity-btn";
+    reportBtn.title = "Envoyer un message sur cette activité";
+    reportBtn.textContent = "🚩 Signaler";
+    actionsBox.appendChild(reportBtn);
+
+    reportBtn.addEventListener("click", (e) => {
+      handleReportButtonClick(e, {
+        activityId,
+        title: titleEl.textContent.trim(),
+        lat: item.getAttribute("data-lat"),
+        lng: item.getAttribute("data-lng")
+      });
+    });
+  });
+
+  if (map && typeof L !== "undefined" && destinationSections.length > 0) {
+    const customActivitiesKey = "custom_activities_" + window.location.pathname;
+    const confirmationsKey = "poi_confirmed_ids_" + window.location.pathname;
+    const REQUIRED_CONFIRMATIONS = 3;
+
+    let isAddPinMode = false;
+    let pendingCoords = null;
+
+    let customActivities = [];
+    try {
+      customActivities = JSON.parse(localStorage.getItem(customActivitiesKey) || "[]");
+    } catch (_) {
+      customActivities = [];
+    }
+
+    let confirmedByMe = [];
+    try {
+      confirmedByMe = JSON.parse(localStorage.getItem(confirmationsKey) || "[]");
+    } catch (_) {
+      confirmedByMe = [];
+    }
+
+    const persistCustomActivities = () => {
+      try {
+        localStorage.setItem(customActivitiesKey, JSON.stringify(customActivities));
+      } catch (_) {}
+    };
+
+    const persistConfirmedByMe = () => {
+      try {
+        localStorage.setItem(confirmationsKey, JSON.stringify(confirmedByMe));
+      } catch (_) {}
+    };
+
+    const getVerificationMeta = (act) => {
+      const count = Math.max(0, Number(act.confirmations) || 0);
+      const isVerified = count >= REQUIRED_CONFIRMATIONS;
+      return {
+        count,
+        isVerified,
+        label: isVerified
+          ? `✓ Vérifié (${count}/${REQUIRED_CONFIRMATIONS})`
+          : `🔍 À vérifier (${count}/${REQUIRED_CONFIRMATIONS})`
+      };
+    };
+
+    const syncDeleteButtonVisibility = (labelEl, isVerified) => {
+      const delBtn = labelEl.querySelector(".delete-custom-poi-btn");
+      if (delBtn) {
+        delBtn.hidden = Boolean(isVerified);
+      }
+    };
+
+    let addModalBackdrop = document.getElementById("add-poi-modal-backdrop");
+    if (!addModalBackdrop) {
+      addModalBackdrop = document.createElement("div");
+      addModalBackdrop.id = "add-poi-modal-backdrop";
+      addModalBackdrop.className = "region-modal-backdrop";
+      addModalBackdrop.hidden = true;
+      addModalBackdrop.innerHTML = `
+        <div class="region-modal-card poi-modal-card" role="dialog" aria-modal="true" aria-labelledby="add-poi-title">
+          <div class="region-modal-header">
+            <div>
+              <h3 id="add-poi-title">➕ Ajouter un lieu sur la carte</h3>
+              <p class="region-panel-sub" id="add-poi-coords">Coordonnées : —</p>
+            </div>
+            <button type="button" class="region-close-btn" id="add-poi-close" aria-label="Fermer">✕</button>
+          </div>
+          <form id="add-poi-form" class="poi-form">
+            <label class="poi-field">
+              <span>Titre de l'activité / du lieu *</span>
+              <input type="text" id="poi-title-input" required placeholder="Ex. Crique cachée, Marché local...">
+            </label>
+            <div class="poi-row-2">
+              <label class="poi-field">
+                <span>Région / Zone</span>
+                <select id="poi-state-select"></select>
+              </label>
+              <label class="poi-field">
+                <span>Sous-lieu (optionnel)</span>
+                <select id="poi-subplace-select"></select>
+              </label>
+            </div>
+            <div class="poi-row-2">
+              <label class="poi-field">
+                <span>Thème</span>
+                <select id="poi-theme-select">
+                  <option value="activite">🚤 Activités & Excursions</option>
+                  <option value="rando">🥾 Randonnées</option>
+                  <option value="parc">🌿 Parcs & Nature</option>
+                  <option value="point-de-vue">🌄 Points de vue</option>
+                  <option value="monument">🏛️ Monuments & Culture</option>
+                  <option value="marche">🧺 Marchés & Gastronomie</option>
+                </select>
+              </label>
+              <label class="poi-field">
+                <span>Budget estimé (€ / pers)</span>
+                <input type="number" id="poi-price-input" min="0" step="1" value="0" placeholder="0 = Gratuit">
+              </label>
+            </div>
+            <div class="poi-row-2">
+              <label class="poi-field">
+                <span>Durée</span>
+                <input type="text" id="poi-duration-input" placeholder="Ex. 2h, Demi-journée">
+              </label>
+              <label class="poi-field">
+                <span>Accès / Départ</span>
+                <input type="text" id="poi-transport-input" placeholder="Ex. À pied, Bateau, Voiture">
+              </label>
+            </div>
+            <label class="poi-field">
+              <span>Notes / Résumé</span>
+              <textarea id="poi-summary-input" rows="2" placeholder="Ce qu'il ne faut pas rater, bon plan..."></textarea>
+            </label>
+            <div class="poi-actions">
+              <button type="button" class="modal-bulk-btn" id="add-poi-cancel">Annuler</button>
+              <button type="submit" class="poi-submit-btn">Enregistrer le lieu</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(addModalBackdrop);
+    }
+
+    const poiCoordsEl = document.getElementById("add-poi-coords");
+    const poiForm = document.getElementById("add-poi-form");
+    const poiTitleInput = document.getElementById("poi-title-input");
+    const poiStateSelect = document.getElementById("poi-state-select");
+    const poiSubplaceSelect = document.getElementById("poi-subplace-select");
+    const poiThemeSelect = document.getElementById("poi-theme-select");
+    const poiPriceInput = document.getElementById("poi-price-input");
+    const poiDurationInput = document.getElementById("poi-duration-input");
+    const poiTransportInput = document.getElementById("poi-transport-input");
+    const poiSummaryInput = document.getElementById("poi-summary-input");
+
+    const shortcutsGroup = document.querySelector(".panel-shortcuts-group");
+    let addModeBtn = document.getElementById("toggle-add-poi-mode");
+    if (shortcutsGroup && !addModeBtn) {
+      addModeBtn = document.createElement("button");
+      addModeBtn.type = "button";
+      addModeBtn.id = "toggle-add-poi-mode";
+      addModeBtn.className = "panel-shortcut-btn";
+      addModeBtn.textContent = "➕ Ajouter";
+      shortcutsGroup.appendChild(addModeBtn);
+    }
+
+    const setAddPinMode = (enabled) => {
+      isAddPinMode = Boolean(enabled);
+      if (addModeBtn) {
+        addModeBtn.classList.toggle("is-active", isAddPinMode);
+        addModeBtn.textContent = isAddPinMode ? "📍 Clique sur la carte..." : "➕ Ajouter";
+      }
+      if (realMapEl) {
+        realMapEl.classList.toggle("is-picking-location", isAddPinMode);
+      }
+      if (isAddPinMode && mapLabelEl) {
+        mapLabelEl.textContent = "Mode ajout : clique sur la carte à l'endroit souhaité";
+      } else if (!isAddPinMode && typeof syncMapWithFilters === "function") {
+        syncMapWithFilters();
+      }
+    };
+
+    addModeBtn?.addEventListener("click", () => {
+      isPanelMinimized = false;
+      showMapInPanel = true;
+      syncPanelShortcutsUI();
+      setAddPinMode(!isAddPinMode);
+    });
+
+    const populateSubplaceOptions = (sectionId, selectedSubId = "") => {
+      if (!poiSubplaceSelect) return;
+      const sec = document.getElementById(sectionId);
+      const subs = sec
+        ? Array.from(sec.querySelectorAll(".subplace-group[data-subplace], .island-subgroup[data-island]"))
+        : [];
+
+      const options = [`<option value="">— Zone générale —</option>`];
+      subs.forEach((sub) => {
+        const id = sub.getAttribute("data-subplace") || sub.getAttribute("data-island") || "";
+        const label =
+          sub.getAttribute("data-subplace-label") ||
+          sub.querySelector(".subplace-heading, .island-heading")?.textContent?.trim() ||
+          id;
+        if (id) {
+          options.push(`<option value="${escapeAttr(id)}">${escapeAttr(label)}</option>`);
+        }
+      });
+
+      poiSubplaceSelect.innerHTML = options.join("");
+      if (selectedSubId) poiSubplaceSelect.value = selectedSubId;
+    };
+
+    const openAddPoiModal = (lat, lng) => {
+      pendingCoords = {
+        lat: Number(lat.toFixed(5)),
+        lng: Number(lng.toFixed(5))
+      };
+
+      if (poiCoordsEl) {
+        poiCoordsEl.textContent = `Coordonnées : ${pendingCoords.lat}, ${pendingCoords.lng}`;
+      }
+      if (poiTitleInput) poiTitleInput.value = "";
+      if (poiPriceInput) poiPriceInput.value = "0";
+      if (poiDurationInput) poiDurationInput.value = "";
+      if (poiTransportInput) poiTransportInput.value = "";
+      if (poiSummaryInput) poiSummaryInput.value = "";
+
+      if (poiStateSelect) {
+        poiStateSelect.innerHTML = destinationSections
+          .map((sec) => {
+            const label =
+              sec.getAttribute("data-map-label") ||
+              sec.querySelector("h3")?.textContent?.trim() ||
+              sec.id;
+            return `<option value="${escapeAttr(sec.id)}">${escapeAttr(label)}</option>`;
+          })
+          .join("");
+
+        const defaultSec =
+          activeState !== "all" ? activeState : destinationSections[0]?.id || "";
+        poiStateSelect.value = defaultSec;
+        populateSubplaceOptions(
+          defaultSec,
+          activeSubplace !== "all" ? activeSubplace : ""
+        );
+      }
+
+      addModalBackdrop.hidden = false;
+      addModalBackdrop.classList.add("is-open");
+      document.body.classList.add("modal-open");
+      setTimeout(() => poiTitleInput?.focus(), 50);
+    };
+
+    const closeAddPoiModal = () => {
+      addModalBackdrop.hidden = true;
+      addModalBackdrop.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+      pendingCoords = null;
+      setAddPinMode(false);
+    };
+
+    poiStateSelect?.addEventListener("change", () => {
+      populateSubplaceOptions(poiStateSelect.value);
+    });
+
+    document.getElementById("add-poi-close")?.addEventListener("click", closeAddPoiModal);
+    document.getElementById("add-poi-cancel")?.addEventListener("click", closeAddPoiModal);
+    addModalBackdrop.addEventListener("click", (e) => {
+      if (e.target === addModalBackdrop) closeAddPoiModal();
+    });
+
+    const renderCustomActivityItem = (act) => {
+      const targetSection = document.getElementById(act.stateId) || destinationSections[0];
+      if (!targetSection) return;
+
+      if (targetSection.querySelector(`.activity-item[data-custom-id="${act.id}"]`)) return;
+
+      let container = targetSection;
+      if (act.subplaceId) {
+        const subEl = targetSection.querySelector(
+          `.subplace-group[data-subplace="${act.subplaceId}"], .island-subgroup[data-island="${act.subplaceId}"]`
+        );
+        if (subEl) container = subEl;
+      }
+
+      let themeGroup = container.querySelector(`.theme-group[data-theme="${act.theme}"]`);
+      if (!themeGroup) {
+        themeGroup = document.createElement("div");
+        themeGroup.className = "theme-group";
+        themeGroup.setAttribute("data-theme", act.theme);
+        themeGroup.innerHTML = `<h5 class="theme-title">${themeLabels[act.theme] || act.theme}</h5>`;
+        container.appendChild(themeGroup);
+      }
+
+      const meta = getVerificationMeta(act);
+      const alreadyConfirmed = confirmedByMe.includes(act.id);
+      const priceText = act.price === 0 ? "Gratuit" : `~${act.price} €/p`;
+
+      const labelEl = document.createElement("label");
+      labelEl.className = `check-item activity-item is-user-added ${meta.isVerified ? "is-verified-poi" : "is-unverified-poi"}`;
+      labelEl.setAttribute("data-custom-id", act.id);
+      labelEl.setAttribute("data-subplace", act.subplaceId || "");
+      labelEl.setAttribute("data-theme", act.theme);
+      labelEl.setAttribute("data-lat", String(act.lat));
+      labelEl.setAttribute("data-lng", String(act.lng));
+      labelEl.setAttribute("data-price", String(act.price));
+
+      labelEl.innerHTML = `
+        <input type="checkbox">
+        <div class="activity-content">
+          <div class="activity-title-row">
+            <span class="activity-title">${escapeAttr(act.title)}</span>
+            <div class="poi-item-actions">
+              <button
+                type="button"
+                class="verify-poi-btn ${meta.isVerified ? "is-verified" : ""} ${alreadyConfirmed ? "is-confirmed-by-me" : ""}"
+                title="${alreadyConfirmed ? "Déjà confirmé sur cet appareil" : "Confirmer ce lieu"}"
+              >
+                ${alreadyConfirmed ? `✓ Confirmé (${meta.count}/${REQUIRED_CONFIRMATIONS})` : `👍 Valider (${meta.count}/${REQUIRED_CONFIRMATIONS})`}
+              </button>
+              <button
+                type="button"
+                class="report-activity-btn"
+                title="Envoyer un message sur ce lieu"
+              >
+                🚩 Signaler
+              </button>
+              <button
+                type="button"
+                class="delete-custom-poi-btn"
+                title="Supprimer ce lieu ajouté"
+                ${meta.isVerified ? "hidden" : ""}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+          <div class="activity-details">
+            <p class="activity-summary">${escapeAttr(act.summary || "Lieu ajouté depuis la carte.")}</p>
+            <div class="activity-specs">
+              ${act.duration ? `<span class="activity-spec">⏱️ <strong>Temps :</strong> ${escapeAttr(act.duration)}</span>` : ""}
+              ${act.transport ? `<span class="activity-spec">🧭 <strong>Accès :</strong> ${escapeAttr(act.transport)}</span>` : ""}
+              <span class="activity-spec">💶 <strong>Budget :</strong> ${escapeAttr(priceText)}</span>
+              <span class="activity-spec">🛡️ <strong>Statut :</strong> ${escapeAttr(meta.label)}</span>
+            </div>
+          </div>
+          <div class="activity-meta">
+            <span class="activity-tag price-tag">${escapeAttr(priceText)}</span>
+            <span class="activity-tag verify-status-tag ${meta.isVerified ? "is-verified" : "is-unverified"}">${escapeAttr(meta.label)}</span>
+            ${act.duration ? `<span class="activity-tag duration-tag">⏱️ ${escapeAttr(act.duration)}</span>` : ""}
+            ${act.transport ? `<span class="activity-tag transport-tag">${escapeAttr(act.transport)}</span>` : ""}
+          </div>
+        </div>
+      `;
+
+      syncDeleteButtonVisibility(labelEl, meta.isVerified);
+
+      const verifyBtn = labelEl.querySelector(".verify-poi-btn");
+      verifyBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (confirmedByMe.includes(act.id)) {
+          return;
+        }
+
+        const targetAct = customActivities.find((item) => item.id === act.id);
+        if (!targetAct) return;
+
+        targetAct.confirmations = (Number(targetAct.confirmations) || 0) + 1;
+        confirmedByMe.push(act.id);
+
+        persistCustomActivities();
+        persistConfirmedByMe();
+
+        const nextMeta = getVerificationMeta(targetAct);
+        labelEl.classList.toggle("is-verified-poi", nextMeta.isVerified);
+        labelEl.classList.toggle("is-unverified-poi", !nextMeta.isVerified);
+        syncDeleteButtonVisibility(labelEl, nextMeta.isVerified);
+
+        verifyBtn.classList.add("is-confirmed-by-me");
+        verifyBtn.classList.toggle("is-verified", nextMeta.isVerified);
+        verifyBtn.textContent = `✓ Confirmé (${nextMeta.count}/${REQUIRED_CONFIRMATIONS})`;
+        verifyBtn.title = "Déjà confirmé sur cet appareil";
+
+        const statusTag = labelEl.querySelector(".verify-status-tag");
+        if (statusTag) {
+          statusTag.textContent = nextMeta.label;
+          statusTag.classList.toggle("is-verified", nextMeta.isVerified);
+          statusTag.classList.toggle("is-unverified", !nextMeta.isVerified);
+        }
+
+        const statusSpec = Array.from(labelEl.querySelectorAll(".activity-spec")).find((el) =>
+          el.textContent.includes("Statut :")
+        );
+        if (statusSpec) {
+          statusSpec.innerHTML = `🛡️ <strong>Statut :</strong> ${escapeAttr(nextMeta.label)}`;
+        }
+      });
+
+      labelEl.querySelector(".report-activity-btn")?.addEventListener("click", (e) => {
+        const currentAct = customActivities.find((item) => item.id === act.id) || act;
+        handleReportButtonClick(e, {
+          customId: act.id,
+          title: currentAct.title,
+          lat: currentAct.lat,
+          lng: currentAct.lng,
+          confirmations: currentAct.confirmations || 0
+        });
+      });
+
+      labelEl.querySelector(".delete-custom-poi-btn")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const currentAct = customActivities.find((item) => item.id === act.id);
+        if (currentAct && getVerificationMeta(currentAct).isVerified) {
+          return;
+        }
+        customActivities = customActivities.filter((item) => item.id !== act.id);
+        confirmedByMe = confirmedByMe.filter((id) => id !== act.id);
+        persistCustomActivities();
+        persistConfirmedByMe();
+        labelEl.remove();
+        if (typeof applyDestinationFilters === "function") applyDestinationFilters();
+      });
+
+      const box = labelEl.querySelector("input[type='checkbox']");
+      labelEl.addEventListener("click", (e) => {
+        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn")) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (box.checked) {
+          box.checked = false;
+          labelEl.classList.remove("is-done", "is-preview");
+          syncMapWithFilters();
+          updateFilterStatus();
+          return;
+        }
+
+        if (!labelEl.classList.contains("is-preview")) {
+          document.querySelectorAll(".activity-item.is-preview").forEach((el) => el.classList.remove("is-preview"));
+          labelEl.classList.add("is-preview");
+          focusActivityOnMap(labelEl);
+          scrollItemIntoMobileComfort(labelEl);
+        } else {
+          labelEl.classList.remove("is-preview");
+          box.checked = true;
+          labelEl.classList.add("is-done");
+          syncMapWithFilters();
+          updateFilterStatus();
+        }
+      });
+
+      themeGroup.appendChild(labelEl);
+    };
+
+    customActivities.forEach(renderCustomActivityItem);
+
+    poiForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!pendingCoords) return;
+      const title = poiTitleInput?.value?.trim();
+      if (!title) return;
+
+      const newAct = {
+        id: "poi_" + Date.now(),
+        title,
+        stateId: poiStateSelect?.value || destinationSections[0]?.id || "",
+        subplaceId: poiSubplaceSelect?.value || "",
+        theme: poiThemeSelect?.value || "activite",
+        price: Math.max(0, Number(poiPriceInput?.value) || 0),
+        duration: poiDurationInput?.value?.trim() || "",
+        transport: poiTransportInput?.value?.trim() || "",
+        summary: poiSummaryInput?.value?.trim() || "",
+        lat: pendingCoords.lat,
+        lng: pendingCoords.lng,
+        confirmations: 0
+      };
+
+      customActivities.push(newAct);
+      persistCustomActivities();
+      renderCustomActivityItem(newAct);
+      closeAddPoiModal();
+
+      if (typeof applyDestinationFilters === "function") {
+        applyDestinationFilters();
+      }
+    });
+
+    map.on("click", (e) => {
+      if (!isAddPinMode) return;
+      openAddPoiModal(e.latlng.lat, e.latlng.lng);
+    });
   }
 
   updateFilterStatus();
