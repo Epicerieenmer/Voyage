@@ -1727,3 +1727,15 @@ body.modal-open {
 .report-submit-btn:hover {
   background: #b91c1c;
 }
+/* Masquage strict des grilles et panneaux de navigation Continent -> Sous-continent -> Pays */
+.visitor-countries-grid[hidden],
+.visitor-region-panel[hidden],
+#my-trips-continents-grid[hidden],
+#my-trips-subcontinents-panel[hidden],
+#my-trips-countries-panel[hidden],
+#visitor-continents-grid[hidden],
+#visitor-subcontinents-panel[hidden],
+#visitor-countries-panel[hidden],
+#travel-search-results[hidden] {
+  display: none !important;
+}

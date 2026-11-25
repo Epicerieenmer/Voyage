@@ -434,7 +434,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Bouton Masquer / Afficher la carte dans le panneau collant
   const mapBox = document.querySelector(".sticky-map-box");
   if (mapBox && mapLabelEl && !mapBox.querySelector(".map-header-bar")) {
     const headerBar = document.createElement("div");
@@ -461,7 +460,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeBudget = "all";
   let activeTheme = "all";
 
-  // Raccourcis d'affichage dans le panneau de destination
   let showMapInPanel = true;
   let showPriceInPanel = false;
   let showFiltersInPanel = false;
@@ -852,13 +850,13 @@ document.addEventListener("DOMContentLoaded", () => {
     subplaceBarEl.hidden = false;
     subplaceBarEl.innerHTML = `
       <button type="button" class="filter-pill ${activeSubplace === "all" ? "is-active" : ""}" data-subplace="all">
-        ${allLabel}
+        ${escapeAttr(allLabel)}
       </button>
       ${places
         .map(
           (p) => `
-            <button type="button" class="filter-pill ${activeSubplace === p.id ? "is-active" : ""}" data-subplace="${p.id}">
-              ${p.label}
+            <button type="button" class="filter-pill ${activeSubplace === p.id ? "is-active" : ""}" data-subplace="${escapeAttr(p.id)}">
+              ${escapeAttr(p.label)}
             </button>
           `
         )
@@ -1175,15 +1173,29 @@ document.addEventListener("DOMContentLoaded", () => {
         .map(([name]) => name);
     };
 
+    const setTravelPanelsVisibility = (step) => {
+      const showContinents = step === "continents";
+      const showSubcontinents = step === "subcontinents";
+      const showCountries = step === "countries";
+
+      whereTravelContinentsGrid.hidden = !showContinents;
+      whereTravelContinentsGrid.style.display = showContinents ? "" : "none";
+
+      if (whereTravelSubcontinentsPanel) {
+        whereTravelSubcontinentsPanel.hidden = !showSubcontinents;
+        whereTravelSubcontinentsPanel.style.display = showSubcontinents ? "" : "none";
+        if (!showSubcontinents) whereTravelSubcontinentsPanel.innerHTML = "";
+      }
+
+      whereTravelCountriesPanel.hidden = !showCountries;
+      whereTravelCountriesPanel.style.display = showCountries ? "" : "none";
+      if (!showCountries) whereTravelCountriesPanel.innerHTML = "";
+    };
+
     const renderWhereTravelView = () => {
       if (travelStep === "continents" || !activeTravelContinent) {
-        if (whereTravelSubcontinentsPanel) {
-          whereTravelSubcontinentsPanel.hidden = true;
-          whereTravelSubcontinentsPanel.innerHTML = "";
-        }
-        whereTravelCountriesPanel.hidden = true;
-        whereTravelCountriesPanel.innerHTML = "";
-        whereTravelContinentsGrid.hidden = false;
+        travelStep = "continents";
+        setTravelPanelsVisibility("continents");
 
         const continents = getTravelContinents();
         whereTravelContinentsGrid.innerHTML = continents
@@ -1213,6 +1225,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (searchResultsEl) {
               searchResultsEl.hidden = true;
+              searchResultsEl.style.display = "none";
               searchResultsEl.innerHTML = "";
             }
             const chosenContinent = btn.getAttribute("data-travel-continent");
@@ -1227,14 +1240,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (travelStep === "subcontinents") {
-        whereTravelContinentsGrid.hidden = true;
-        whereTravelCountriesPanel.hidden = true;
-        whereTravelCountriesPanel.innerHTML = "";
+        setTravelPanelsVisibility("subcontinents");
 
         if (whereTravelSubcontinentsPanel) {
           const subs = getTravelSubcontinents(activeTravelContinent);
           const emoji = travelContinentEmojis[activeTravelContinent] || "🌐";
-          whereTravelSubcontinentsPanel.hidden = false;
           whereTravelSubcontinentsPanel.innerHTML = `
             <div class="countries-view-header">
               <button type="button" class="back-continents-btn" id="travel-back-to-continents">
@@ -1282,12 +1292,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      whereTravelContinentsGrid.hidden = true;
-      if (whereTravelSubcontinentsPanel) {
-        whereTravelSubcontinentsPanel.hidden = true;
-        whereTravelSubcontinentsPanel.innerHTML = "";
-      }
-      whereTravelCountriesPanel.hidden = false;
+      setTravelPanelsVisibility("countries");
 
       const emoji = travelContinentEmojis[activeTravelContinent] || "🌐";
       const countries = getTravelCountries(activeTravelContinent, activeTravelSubcontinent);
@@ -1357,6 +1362,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const restoreTravelView = () => {
         searchResultsEl.hidden = true;
+        searchResultsEl.style.display = "none";
         searchResultsEl.innerHTML = "";
         if (clearBtn) clearBtn.hidden = true;
         renderWhereTravelView();
@@ -1381,10 +1387,16 @@ document.addEventListener("DOMContentLoaded", () => {
           .slice(0, 12);
 
         whereTravelContinentsGrid.hidden = true;
+        whereTravelContinentsGrid.style.display = "none";
         whereTravelCountriesPanel.hidden = true;
-        if (whereTravelSubcontinentsPanel) whereTravelSubcontinentsPanel.hidden = true;
+        whereTravelCountriesPanel.style.display = "none";
+        if (whereTravelSubcontinentsPanel) {
+          whereTravelSubcontinentsPanel.hidden = true;
+          whereTravelSubcontinentsPanel.style.display = "none";
+        }
 
         searchResultsEl.hidden = false;
+        searchResultsEl.style.display = "";
 
         if (matches.length === 0) {
           searchResultsEl.innerHTML = `
@@ -1755,18 +1767,33 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    const setEtToiPanelsVisibility = (step) => {
+      const showContinents = step === "continents";
+      const showSubcontinents = step === "subcontinents";
+      const showCountries = step === "countries";
+
+      if (etToiContinentsGrid) {
+        etToiContinentsGrid.hidden = !showContinents;
+        etToiContinentsGrid.style.display = showContinents ? "" : "none";
+      }
+      if (etToiSubcontinentsPanel) {
+        etToiSubcontinentsPanel.hidden = !showSubcontinents;
+        etToiSubcontinentsPanel.style.display = showSubcontinents ? "" : "none";
+        if (!showSubcontinents) etToiSubcontinentsPanel.innerHTML = "";
+      }
+      if (etToiCountriesPanel) {
+        etToiCountriesPanel.hidden = !showCountries;
+        etToiCountriesPanel.style.display = showCountries ? "" : "none";
+        if (!showCountries) etToiCountriesPanel.innerHTML = "";
+      }
+    };
+
     const renderEtToiView = (focusCountry = null) => {
       if (etToiStep === "continents" || !activeEtToiContinent) {
-        if (etToiSubcontinentsPanel) {
-          etToiSubcontinentsPanel.hidden = true;
-          etToiSubcontinentsPanel.innerHTML = "";
-        }
-        if (etToiCountriesPanel) {
-          etToiCountriesPanel.hidden = true;
-          etToiCountriesPanel.innerHTML = "";
-        }
+        etToiStep = "continents";
+        setEtToiPanelsVisibility("continents");
+
         if (etToiContinentsGrid) {
-          etToiContinentsGrid.hidden = false;
           const continents = getEtToiContinents();
           etToiContinentsGrid.innerHTML = continents
             .map((continent) => {
@@ -1803,17 +1830,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (etToiStep === "subcontinents") {
-        if (etToiContinentsGrid) {
-          etToiContinentsGrid.hidden = true;
-        }
-        if (etToiCountriesPanel) {
-          etToiCountriesPanel.hidden = true;
-          etToiCountriesPanel.innerHTML = "";
-        }
+        setEtToiPanelsVisibility("subcontinents");
+
         if (etToiSubcontinentsPanel) {
           const subs = getEtToiSubcontinents(activeEtToiContinent);
           const emoji = travelContinentEmojis[activeEtToiContinent] || "🌐";
-          etToiSubcontinentsPanel.hidden = false;
           etToiSubcontinentsPanel.innerHTML = `
             <div class="countries-view-header">
               <button type="button" class="back-continents-btn" id="et-back-to-continents">
@@ -1864,20 +1885,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (etToiContinentsGrid) {
-        etToiContinentsGrid.hidden = true;
-      }
-      if (etToiSubcontinentsPanel) {
-        etToiSubcontinentsPanel.hidden = true;
-        etToiSubcontinentsPanel.innerHTML = "";
-      }
+      setEtToiPanelsVisibility("countries");
 
       const entries = getMapEntriesForCurrentState();
       const emoji = travelContinentEmojis[activeEtToiContinent] || "🌐";
       const hasSubs = getEtToiSubcontinents(activeEtToiContinent).length > 0;
 
       if (etToiCountriesPanel) {
-        etToiCountriesPanel.hidden = false;
         etToiCountriesPanel.innerHTML = `
           <div class="countries-view-header">
             <button type="button" class="back-continents-btn" id="et-back-from-countries">
@@ -1998,7 +2012,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return { sent: false };
   };
 
-    let reportModalBackdrop = document.getElementById("report-poi-modal-backdrop");
+  let reportModalBackdrop = document.getElementById("report-poi-modal-backdrop");
   if (!reportModalBackdrop) {
     reportModalBackdrop = document.createElement("div");
     reportModalBackdrop.id = "report-poi-modal-backdrop";
@@ -2135,8 +2149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => reportMessageInput?.focus(), 50);
   };
 
-
-  // Ajout du bouton "Signaler" sur les activités existantes de la page
   document.querySelectorAll(".activity-item:not(.is-user-added)").forEach((item, idx) => {
     const contentEl = item.querySelector(".activity-content");
     const titleEl = item.querySelector(".activity-title");
