@@ -107,21 +107,40 @@ document.addEventListener("DOMContentLoaded", () => {
     parc: "🌿",
     "point-de-vue": "🌄",
     monument: "🏛️",
+    culture: "🗿",
     marche: "🧺",
-    activite: "🚤"
+    lagon: "🏝️",
+    plongee: "🤿",
+    activite: "🚤",
+    hebergement: "🛶"
   };
 
   const themeLabels = {
     rando: "🥾 Randonnées",
     parc: "🌿 Parcs & Nature",
     "point-de-vue": "🌄 Points de vue",
-    monument: "🏛️ Monuments & Culture",
+    monument: "🏛️ Monuments",
+    culture: "🗿 Culture & Traditions",
     marche: "🧺 Marchés & Gastronomie",
-    activite: "🚤 Activités & Excursions"
+    lagon: "🏝️ Lagons & Motu",
+    plongee: "🤿 Plongée & Faune marine",
+    activite: "🚤 Activités & Excursions",
+    hebergement: "🛶 Logistique & Hébergement"
   };
 
   if (dynamicSectionsMount && destData && Array.isArray(destData.archipels)) {
-    const themeOrder = ["rando", "parc", "point-de-vue", "monument", "marche", "activite"];
+    const themeOrder = [
+      "rando",
+      "parc",
+      "point-de-vue",
+      "monument",
+      "culture",
+      "marche",
+      "lagon",
+      "plongee",
+      "activite",
+      "hebergement"
+    ];
 
     dynamicSectionsMount.innerHTML = destData.archipels
       .map((arch) => {
@@ -220,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let updateFilterStatus = () => {};
   let focusActivityOnMap = () => {};
   let syncPanelShortcutsUI = () => {};
+  let updateCountrySummaryPercentage = () => {};
   let previewedActivityEl = null;
 
   const scrollItemIntoMobileComfort = (item) => {
@@ -229,10 +249,101 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
   };
 
-  // 3. Sauvegarde & logique à 2 clics sur les activités des pages destinations
+  // 3. Sauvegarde, logique à 2 clics & pourcentage dans le résumé de la destination
   const pageKey = "checklist_" + window.location.pathname;
+  const ratingsStorageKey = "ratings_5_" + window.location.pathname;
   const activityItems = Array.from(document.querySelectorAll(".activity-item"));
   const checkboxes = Array.from(document.querySelectorAll(".check-item input[type='checkbox']"));
+
+  const readRatingsMap = () => {
+    try {
+      return JSON.parse(localStorage.getItem(ratingsStorageKey) || "{}");
+    } catch (_) {
+      return {};
+    }
+  };
+
+  const getActivityRatingKey = (item, fallbackIndex = 0) => {
+    const customId = item.getAttribute("data-custom-id");
+    if (customId) return `custom_${customId}`;
+    const actId = item.getAttribute("data-activity-id");
+    if (actId) return `act_${actId}`;
+    const title = normalizeText(item.querySelector(".activity-title")?.textContent || `item_${fallbackIndex}`);
+    const lat = item.getAttribute("data-lat") || "";
+    const lng = item.getAttribute("data-lng") || "";
+    return `item_${fallbackIndex}_${title.slice(0, 28)}_${lat}_${lng}`;
+  };
+
+  const computeCountryCompletionPercent = () => {
+    const allItems = Array.from(document.querySelectorAll(".activity-item"));
+    if (allItems.length === 0) return 0;
+
+    const ratingsMap = readRatingsMap();
+    let scoreSum = 0;
+
+    allItems.forEach((item, idx) => {
+      const cb = item.querySelector("input[type='checkbox']");
+      const isDone = Boolean(cb?.checked);
+      const key = getActivityRatingKey(item, idx);
+      const stars = Number(ratingsMap[key]) || 0;
+
+      const itemScore = isDone ? 1 : stars > 0 ? (stars / 5) * 0.5 : 0;
+      scoreSum += itemScore;
+    });
+
+    return Math.round((scoreSum / allItems.length) * 100);
+  };
+
+  updateCountrySummaryPercentage = () => {
+    const pct = computeCountryCompletionPercent();
+    const allItems = Array.from(document.querySelectorAll(".activity-item"));
+    const checkedCount = allItems.filter((el) => el.querySelector("input[type='checkbox']")?.checked).length;
+
+    const ratingsMap = readRatingsMap();
+    const ratedValues = allItems
+      .map((el, idx) => Number(ratingsMap[getActivityRatingKey(el, idx)]) || 0)
+      .filter((v) => v > 0);
+
+    const avgStars =
+      ratedValues.length > 0
+        ? (ratedValues.reduce((acc, v) => acc + v, 0) / ratedValues.length).toFixed(1)
+        : null;
+
+    const overviewEl = document.querySelector(".country-overview-box");
+    if (overviewEl) {
+      let summaryBadge = overviewEl.querySelector(".country-completion-summary");
+      if (!summaryBadge) {
+        summaryBadge = document.createElement("div");
+        summaryBadge.className = "country-completion-summary";
+        summaryBadge.innerHTML = `
+          <div class="country-completion-header">
+            <span class="country-completion-label">Progression du guide</span>
+            <strong class="country-completion-value">0%</strong>
+          </div>
+          <div class="trip-progress-track">
+            <div class="trip-progress-fill" style="width: 0%"></div>
+          </div>
+          <small class="country-completion-meta"></small>
+        `;
+        overviewEl.prepend(summaryBadge);
+      }
+
+      const valEl = summaryBadge.querySelector(".country-completion-value");
+      const fillEl = summaryBadge.querySelector(".trip-progress-fill");
+      const metaEl = summaryBadge.querySelector(".country-completion-meta");
+
+      if (valEl) valEl.textContent = `${pct}%`;
+      if (fillEl) fillEl.style.width = `${pct}%`;
+      if (metaEl) {
+        const avgPart = avgStars ? ` · ★ ${avgStars}/5 (${ratedValues.length} avis)` : "";
+        metaEl.textContent = `${checkedCount}/${allItems.length} faite(s)${avgPart}`;
+      }
+    }
+
+    document.querySelectorAll("[data-country-pct], #country-completion-pct").forEach((el) => {
+      el.textContent = `${pct}%`;
+    });
+  };
 
   const persistCheckboxes = () => {
     localStorage.setItem(pageKey, JSON.stringify(checkboxes.map((cb) => cb.checked)));
@@ -273,7 +384,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       item.addEventListener("click", (e) => {
-        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn")) return;
+        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn, .star-rate-btn")) {
+          return;
+        }
         e.preventDefault();
         e.stopPropagation();
 
@@ -287,6 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
           persistCheckboxes();
           syncMapWithFilters();
           updateFilterStatus();
+          updateCountrySummaryPercentage();
           return;
         }
 
@@ -308,6 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
           persistCheckboxes();
           syncMapWithFilters();
           updateFilterStatus();
+          updateCountrySummaryPercentage();
         }
       });
     });
@@ -611,32 +726,39 @@ document.addEventListener("DOMContentLoaded", () => {
     stateMarkersLayer.clearLayers();
     activityMarkersLayer.clearLayers();
 
-    if (activeState === "all") {
-      allSections.forEach((sec) => {
-        const lat = Number(sec.getAttribute("data-lat"));
-        const lng = Number(sec.getAttribute("data-lng"));
-        if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+    allSections.forEach((sec) => {
+      if (activeState !== "all" && sec.id === activeState) return;
 
-        const isVisited = sec.getAttribute("data-state-visited") === "true";
-        const label = sec.getAttribute("data-map-label") || sec.querySelector("h3")?.textContent?.trim() || sec.id;
+      const lat = Number(sec.getAttribute("data-lat"));
+      const lng = Number(sec.getAttribute("data-lng"));
+      if (Number.isNaN(lat) || Number.isNaN(lng)) return;
 
-        const pointMarker = L.circleMarker([lat, lng], {
-          radius: isTabletOrMobileViewport() ? 8 : 7,
-          fillColor: isVisited ? "#16a34a" : "#0f766e",
-          color: "#ffffff",
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.95
-        })
-          .bindTooltip(`${label} (cliquer pour voir les ${ITEM_LABEL_LOWER}s et activités)`, { direction: "top" })
-          .addTo(stateMarkersLayer);
+      const isVisited = sec.getAttribute("data-state-visited") === "true";
+      const label = sec.getAttribute("data-map-label") || sec.querySelector("h3")?.textContent?.trim() || sec.id;
+      const isOverview = activeState === "all";
 
-        pointMarker.on("click", () => {
-          const targetBtn = document.querySelector(`.state-pills [data-state="${sec.id}"]`);
-          if (targetBtn) targetBtn.click();
-        });
+      const pointMarker = L.circleMarker([lat, lng], {
+        radius: isOverview
+          ? isTabletOrMobileViewport() ? 8 : 7
+          : isTabletOrMobileViewport() ? 7 : 6,
+        fillColor: isVisited ? "#16a34a" : "#0f766e",
+        color: "#ffffff",
+        weight: 2,
+        opacity: isOverview ? 1 : 0.78,
+        fillOpacity: isOverview ? 0.95 : 0.65
+      })
+        .bindTooltip(`${label} (cliquer pour afficher les ${ITEM_LABEL_LOWER}s et activités)`, { direction: "top" })
+        .addTo(stateMarkersLayer);
+
+      pointMarker.on("click", () => {
+        activeState = sec.id;
+        activeSubplace = "all";
+        isPanelMinimized = false;
+        applyDestinationFilters({ scrollStateToStart: true, scrollSubplaceToStart: true });
       });
+    });
 
+    if (activeState === "all") {
       if (mapLabelEl) {
         mapLabelEl.textContent = `Lieu : Vue d'ensemble (clique sur un(e) ${GROUP_LABEL_LOWER} ou un point)`;
       }
@@ -688,40 +810,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const allCoordsToFit = [];
 
-    if (activeSubplace === "all") {
-      allSubplacesInSec.forEach((sub) => {
-        const subId = getSubplaceId(sub);
-        const subLat = Number(sub.getAttribute("data-lat"));
-        const subLng = Number(sub.getAttribute("data-lng"));
-        if (Number.isNaN(subLat) || Number.isNaN(subLng)) return;
+    allSubplacesInSec.forEach((sub) => {
+      const subId = getSubplaceId(sub);
+      const subLat = Number(sub.getAttribute("data-lat"));
+      const subLng = Number(sub.getAttribute("data-lng"));
+      if (Number.isNaN(subLat) || Number.isNaN(subLng)) return;
 
-        const subLabel =
-          sub.getAttribute("data-subplace-label") ||
-          sub
-            .querySelector(".subplace-heading, .island-heading")
-            ?.textContent?.replace(/^🏝️\s*|^📍\s*/, "")
-            .trim() ||
-          subId;
+      const subLabel =
+        sub.getAttribute("data-subplace-label") ||
+        sub
+          .querySelector(".subplace-heading, .island-heading")
+          ?.textContent?.replace(/^🏝️\s*|^📍\s*/, "")
+          .trim() ||
+        subId;
 
+      if (activeSubplace === "all") {
         allCoordsToFit.push([subLat, subLng]);
+      }
 
-        const islandMarker = L.circleMarker([subLat, subLng], {
-          radius: isTabletOrMobileViewport() ? 8 : 7,
-          fillColor: "#0284c7",
-          color: "#ffffff",
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.95
-        })
-          .bindTooltip(`${subLabel} (cliquer pour filtrer)`, { direction: "top" })
-          .addTo(stateMarkersLayer);
+      const isCurrentSub = activeSubplace !== "all" && subId === activeSubplace;
+      if (isCurrentSub) return;
 
-        islandMarker.on("click", () => {
-          activeSubplace = subId;
-          applyDestinationFilters({ scrollSubplaceToStart: true });
-        });
+      const islandMarker = L.circleMarker([subLat, subLng], {
+        radius: isTabletOrMobileViewport() ? 8 : 7,
+        fillColor: "#0284c7",
+        color: "#ffffff",
+        weight: 2,
+        opacity: activeSubplace === "all" ? 1 : 0.85,
+        fillOpacity: activeSubplace === "all" ? 0.95 : 0.72
+      })
+        .bindTooltip(`${subLabel} (cliquer pour afficher ses activités)`, { direction: "top" })
+        .addTo(stateMarkersLayer);
+
+      islandMarker.on("click", () => {
+        activeSubplace = subId;
+        applyDestinationFilters({ scrollSubplaceToStart: true });
       });
-    }
+    });
 
     const visibleActivities = Array.from(
       selectedSection.querySelectorAll(".activity-item[data-price][data-lat][data-lng]")
@@ -918,7 +1043,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedFilters = JSON.parse(localStorage.getItem(filterStorageKey) || "{}");
 
     const validBudgets = new Set(["all", "free", "50", "100"]);
-    const validThemes = new Set(["all", "rando", "parc", "point-de-vue", "monument", "marche", "activite"]);
+    const validThemes = new Set([
+      "all",
+      "rando",
+      "parc",
+      "point-de-vue",
+      "monument",
+      "culture",
+      "marche",
+      "lagon",
+      "plongee",
+      "activite",
+      "hebergement"
+    ]);
 
     activeState = "all";
     activeSubplace = "all";
@@ -1006,6 +1143,7 @@ document.addEventListener("DOMContentLoaded", () => {
       syncPanelShortcutsUI();
       syncMapWithFilters();
       updateFilterStatus();
+      updateCountrySummaryPercentage();
       if (map) {
         requestAnimationFrame(() => map.invalidateSize());
       }
@@ -1036,6 +1174,96 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     applyDestinationFilters();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedSectionId = urlParams.get("section");
+    const requestedSubplaceId = urlParams.get("subplace");
+    const requestedPlaceLabel = urlParams.get("place");
+
+    if (requestedSectionId || requestedSubplaceId || requestedPlaceLabel) {
+      let matchedSection = requestedSectionId
+        ? document.getElementById(requestedSectionId)
+        : null;
+
+      let matchedSubplaceEl = null;
+      let matchedActivityEl = null;
+
+      const normPlace = normalizeText(requestedPlaceLabel);
+
+      if (normPlace) {
+        matchedActivityEl = activityItems.find((item) => {
+          const titleText = normalizeText(item.querySelector(".activity-title")?.textContent || "");
+          const subLabel = normalizeText(item.getAttribute("data-subplace-label") || "");
+          return titleText === normPlace || titleText.includes(normPlace) || subLabel === normPlace;
+        }) || null;
+      }
+
+      if (matchedActivityEl && !matchedSection) {
+        matchedSection = matchedActivityEl.closest("section[id]");
+      }
+
+      if (!matchedSection && normPlace) {
+        matchedSection =
+          destinationSections.find((sec) => {
+            const secTitle = normalizeText(
+              sec.getAttribute("data-map-label") || sec.querySelector("h3")?.textContent || sec.id
+            );
+            return secTitle.includes(normPlace);
+          }) || null;
+      }
+
+      if (matchedSection) {
+        const candidateSubId =
+          requestedSubplaceId ||
+          matchedActivityEl?.getAttribute("data-subplace") ||
+          "";
+
+        if (candidateSubId) {
+          matchedSubplaceEl = matchedSection.querySelector(
+            `.subplace-group[data-subplace="${candidateSubId}"], .island-subgroup[data-island="${candidateSubId}"]`
+          );
+        }
+
+        if (!matchedSubplaceEl && normPlace) {
+          matchedSubplaceEl =
+            Array.from(
+              matchedSection.querySelectorAll(".subplace-group[data-subplace], .island-subgroup[data-island]")
+            ).find((sub) => {
+              const subLabel = normalizeText(
+                sub.getAttribute("data-subplace-label") ||
+                  sub.querySelector(".subplace-heading, .island-heading")?.textContent ||
+                  ""
+              );
+              return subLabel.includes(normPlace);
+            }) || null;
+        }
+
+        activeState = matchedSection.id;
+        activeSubplace = matchedSubplaceEl
+          ? getSubplaceId(matchedSubplaceEl)
+          : candidateSubId || "all";
+        isPanelMinimized = false;
+        showMapInPanel = true;
+
+        applyDestinationFilters({ scrollStateToStart: true, scrollSubplaceToStart: true });
+
+        setTimeout(() => {
+          const targetEl = matchedActivityEl || matchedSubplaceEl || matchedSection;
+          if (matchedActivityEl) {
+            activityItems.forEach((other) => other.classList.remove("is-preview"));
+            previewedActivityEl = matchedActivityEl;
+            matchedActivityEl.classList.add("is-preview");
+            focusActivityOnMap(matchedActivityEl);
+          }
+
+          if (targetEl) {
+            const panelHeight = document.querySelector(".sticky-top-panel")?.offsetHeight || 0;
+            const targetY = targetEl.getBoundingClientRect().top + window.scrollY - panelHeight - 18;
+            window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+          }
+        }, 180);
+      }
+    }
   }
 
   document.querySelectorAll(".place-mention[data-lat][data-lng]").forEach((mention) => {
@@ -1092,7 +1320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Antarctique": "🇦🇶"
   };
 
-  // 6. Bloc 1 ("Où voyages-tu ?") : Continent -> Sous-continent -> Pays (filtré sur ready: true)
+  // 6. Bloc 1 ("Où voyages-tu ?") : Continent -> Sous-continent -> Pays
   const whereTravelContinentsGrid = document.getElementById("my-trips-continents-grid");
   const whereTravelSubcontinentsPanel = document.getElementById("my-trips-subcontinents-panel");
   const whereTravelCountriesPanel = document.getElementById("my-trips-countries-panel");
@@ -1121,22 +1349,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return `destinations/${slug}.html`;
     };
 
-    const openCountryDestination = async (countryName) => {
+    const openCountryDestination = async (countryName, targetInfo = null) => {
       if (!countryName) return;
 
       const customUrl = VISITOR_REGIONS_DATA[countryName]?.url;
-      const targetUrl = customUrl || getDestinationUrl(countryName);
+      const baseUrl = customUrl || getDestinationUrl(countryName);
       const fallbackUrl = `destinations/en-construction.html?pays=${encodeURIComponent(countryName)}`;
 
+      const appendTargetParams = (url) => {
+        if (!targetInfo) return url;
+        const params = new URLSearchParams();
+        if (targetInfo.targetSectionId) params.set("section", targetInfo.targetSectionId);
+        if (targetInfo.targetSubplaceId) params.set("subplace", targetInfo.targetSubplaceId);
+        if (targetInfo.title && targetInfo.kind !== "country") params.set("place", targetInfo.title);
+        const queryString = params.toString();
+        if (!queryString) return url;
+        return `${url}${url.includes("?") ? "&" : "?"}${queryString}`;
+      };
+
       try {
-        const response = await fetch(targetUrl, { method: "HEAD" });
+        const response = await fetch(baseUrl, { method: "HEAD" });
         if (response.ok) {
-          window.location.href = targetUrl;
+          window.location.href = appendTargetParams(baseUrl);
           return;
         }
       } catch (_) {}
 
-      window.location.href = fallbackUrl;
+      window.location.href = appendTargetParams(fallbackUrl);
     };
 
     const getTravelContinents = () => {
@@ -1365,7 +1604,12 @@ document.addEventListener("DOMContentLoaded", () => {
         searchInputEl.parentElement.appendChild(clearBtn);
       }
 
+      let activeSearchIndex = -1;
+      let currentSearchItems = [];
+
       const restoreTravelView = () => {
+        activeSearchIndex = -1;
+        currentSearchItems = [];
         searchResultsEl.hidden = true;
         searchResultsEl.style.display = "none";
         searchResultsEl.innerHTML = "";
@@ -1373,24 +1617,212 @@ document.addEventListener("DOMContentLoaded", () => {
         renderWhereTravelView();
       };
 
+      const buildRichSearchEntries = () => {
+        const entries = [];
+        const seenKeys = new Set();
+
+        const pushUnique = (item) => {
+          const key = normalizeText(`${item.kind}|${item.title}|${item.country}|${item.parent}`);
+          if (!item.title || seenKeys.has(key)) return;
+          seenKeys.add(key);
+          entries.push(item);
+        };
+
+        Object.entries(VISITOR_REGIONS_DATA).forEach(([countryName, entry]) => {
+          if (!entry) return;
+          const isReady = hasReadySheet(entry);
+          const flag = entry.flag || "🏳️";
+          const continent = entry.continent || "";
+          const subcontinent = entry.subcontinent || "";
+
+          pushUnique({
+            kind: "country",
+            badge: "Pays",
+            priority: 100,
+            title: countryName,
+            icon: flag,
+            meta: [subcontinent, continent, !isReady ? "Checklist" : ""].filter(Boolean).join(" · "),
+            country: countryName,
+            ready: isReady,
+            raw: entry
+          });
+
+          const subList =
+            entry.regions || entry.places || entry.states || entry.islands || entry.items || [];
+
+          if (Array.isArray(subList)) {
+            subList.forEach((subItem) => {
+              const label =
+                typeof subItem === "string"
+                  ? subItem
+                  : subItem?.label || subItem?.name || subItem?.title || "";
+              if (!label) return;
+
+              pushUnique({
+                kind: "region",
+                badge: "Région / Zone",
+                priority: 80,
+                title: label,
+                parent: countryName,
+                icon: flag,
+                meta: [countryName, subcontinent].filter(Boolean).join(" · "),
+                country: countryName,
+                ready: isReady,
+                raw: subItem
+              });
+            });
+          }
+        });
+
+        const loadedDestData =
+          typeof DESTINATION_PAGE_DATA !== "undefined"
+            ? DESTINATION_PAGE_DATA
+            : typeof POLYNESIE_FRANCAISE_DATA !== "undefined"
+              ? POLYNESIE_FRANCAISE_DATA
+              : null;
+
+        if (loadedDestData && Array.isArray(loadedDestData.archipels)) {
+          const destCountryName =
+            loadedDestData.country ||
+            loadedDestData.name ||
+            document.body.getAttribute("data-place-name") ||
+            "Destination";
+
+          const destEntry = VISITOR_REGIONS_DATA[destCountryName] || {};
+          const destFlag = destEntry.flag || "🗺️";
+          const destReady = Boolean(destEntry.ready || true);
+
+          loadedDestData.archipels.forEach((arch) => {
+            const archTitle = arch.title || arch.name || "";
+            if (archTitle) {
+              pushUnique({
+                kind: "province",
+                badge: loadedDestData.labels?.group || "Région / Archipel",
+                priority: 75,
+                title: archTitle,
+                parent: destCountryName,
+                icon: destFlag,
+                meta: destCountryName,
+                country: destCountryName,
+                ready: destReady,
+                targetSectionId: arch.id || ""
+              });
+            }
+
+            (arch.islands || []).forEach((isl) => {
+              const islLabel = isl.label || isl.name || "";
+              if (islLabel) {
+                pushUnique({
+                  kind: "island",
+                  badge: loadedDestData.labels?.item || "Île / Ville",
+                  priority: 70,
+                  title: islLabel,
+                  parent: archTitle || destCountryName,
+                  icon: "🏝️",
+                  meta: [archTitle, destCountryName].filter(Boolean).join(" · "),
+                  country: destCountryName,
+                  ready: destReady,
+                  targetSectionId: arch.id || "",
+                  targetSubplaceId: isl.id || ""
+                });
+              }
+
+              (isl.activities || []).forEach((act) => {
+                const actTitle = act.title || act.name || "";
+                if (!actTitle) return;
+
+                pushUnique({
+                  kind: "activity",
+                  badge: "Lieu / Activité",
+                  priority: 55,
+                  title: actTitle,
+                  parent: islLabel || archTitle || destCountryName,
+                  icon: themeIcons[act.theme] || "📍",
+                  meta: [islLabel, destCountryName].filter(Boolean).join(" · "),
+                  extraSearch: `${act.theme || ""} ${act.summary || ""} ${act.description || ""} ${act.transport || ""}`,
+                  country: destCountryName,
+                  ready: destReady,
+                  targetSectionId: arch.id || "",
+                  targetSubplaceId: isl.id || ""
+                });
+              });
+            });
+          });
+        }
+
+        return entries;
+      };
+
+      const searchCatalog = buildRichSearchEntries();
+
+      const scoreSearchItem = (item, fullQuery, tokens) => {
+        const normTitle = normalizeText(item.title);
+        const normMeta = normalizeText(item.meta);
+        const normExtra = normalizeText(item.extraSearch || "");
+        const combined = `${normTitle} ${normMeta} ${normExtra}`;
+
+        const allTokensMatch = tokens.every((tok) => combined.includes(tok));
+        if (!allTokensMatch) return -1;
+
+        let score = item.priority;
+
+        if (normTitle === fullQuery) score += 60;
+        else if (normTitle.startsWith(fullQuery)) score += 35;
+        else if (tokens.some((tok) => normTitle.startsWith(tok))) score += 20;
+        else if (normTitle.includes(fullQuery)) score += 12;
+
+        if (item.ready) score += 10;
+
+        return score;
+      };
+
+      const activateSearchResult = (item) => {
+        if (!item) return;
+
+        if (item.ready) {
+          openCountryDestination(item.country, item);
+          return;
+        }
+
+        const fallbackEntry = VISITOR_REGIONS_DATA[item.country];
+        if (fallbackEntry && typeof window.openEtToiCountryModal === "function") {
+          window.openEtToiCountryModal(item.country, fallbackEntry);
+          return;
+        }
+
+        openCountryDestination(item.country, item);
+      };
+
+      const highlightActiveSearchButton = () => {
+        const buttons = Array.from(searchResultsEl.querySelectorAll("[data-search-idx]"));
+        buttons.forEach((btn, idx) => {
+          const isSel = idx === activeSearchIndex;
+          btn.classList.toggle("is-active", isSel);
+          if (isSel) {
+            btn.scrollIntoView({ block: "nearest" });
+          }
+        });
+      };
+
       const renderSearchResults = (rawQuery) => {
         if (clearBtn) clearBtn.hidden = !rawQuery;
-        const query = normalizeText(rawQuery);
+        const fullQuery = normalizeText(rawQuery);
+        const tokens = fullQuery.split(/\s+/).filter(Boolean);
+        activeSearchIndex = -1;
 
-        if (!query) {
+        if (!tokens.length) {
           restoreTravelView();
           return;
         }
 
-        const matches = Object.entries(VISITOR_REGIONS_DATA)
-          .filter(([country, entry]) => {
-            if (!hasReadySheet(entry)) return false;
-            const hay = normalizeText(
-              `${country} ${entry.continent || ""} ${entry.subcontinent || ""}`
-            );
-            return hay.includes(query);
-          })
-          .slice(0, 12);
+        const matches = searchCatalog
+          .map((item) => ({ item, score: scoreSearchItem(item, fullQuery, tokens) }))
+          .filter((entry) => entry.score >= 0)
+          .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title, "fr"))
+          .slice(0, 16)
+          .map((entry) => entry.item);
+
+        currentSearchItems = matches;
 
         whereTravelContinentsGrid.hidden = true;
         whereTravelContinentsGrid.style.display = "none";
@@ -1406,38 +1838,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (matches.length === 0) {
           searchResultsEl.innerHTML = `
-            <p class="search-empty-msg">Aucune destination trouvée pour « ${escapeAttr(rawQuery)} ».</p>
+            <p class="search-empty-msg">Aucun pays, région, île, ville ou lieu trouvé pour « ${escapeAttr(rawQuery)} ».</p>
           `;
           return;
         }
 
         searchResultsEl.innerHTML = matches
-          .map(([country, entry]) => {
-            const flag = entry.flag || "🏳️";
-            const sub = entry.subcontinent || entry.continent || "";
+          .map((item, idx) => {
             return `
               <button
                 type="button"
-                class="visitor-bubble"
-                data-search-country="${escapeAttr(country)}"
+                class="visitor-bubble search-result-bubble"
+                data-search-idx="${idx}"
               >
-                <span>${flag} ${escapeAttr(country)}${sub ? ` · <small style="opacity:.72">${escapeAttr(sub)}</small>` : ""}</span>
+                <span class="search-result-main">
+                  <span>${escapeAttr(item.icon)} <strong>${escapeAttr(item.title)}</strong></span>
+                  <small class="search-result-meta">
+                    <span class="search-kind-badge">${escapeAttr(item.badge)}</span>
+                    ${item.meta ? ` · ${escapeAttr(item.meta)}` : ""}
+                  </small>
+                </span>
                 <span class="visitor-bubble-percent">→</span>
               </button>
             `;
           })
           .join("");
 
-        searchResultsEl.querySelectorAll("[data-search-country]").forEach((btn) => {
+        searchResultsEl.querySelectorAll("[data-search-idx]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            const chosen = btn.getAttribute("data-search-country");
-            openCountryDestination(chosen);
+            const idx = Number(btn.getAttribute("data-search-idx"));
+            activateSearchResult(currentSearchItems[idx]);
           });
         });
       };
 
       searchInputEl.addEventListener("input", (e) => {
         renderSearchResults(e.target.value);
+      });
+
+      searchInputEl.addEventListener("keydown", (e) => {
+        if (searchResultsEl.hidden || currentSearchItems.length === 0) {
+          if (e.key === "Escape") {
+            searchInputEl.value = "";
+            restoreTravelView();
+          }
+          return;
+        }
+
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          activeSearchIndex = (activeSearchIndex + 1) % currentSearchItems.length;
+          highlightActiveSearchButton();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          activeSearchIndex =
+            (activeSearchIndex - 1 + currentSearchItems.length) % currentSearchItems.length;
+          highlightActiveSearchButton();
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          const chosen = currentSearchItems[activeSearchIndex >= 0 ? activeSearchIndex : 0];
+          activateSearchResult(chosen);
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          searchInputEl.value = "";
+          restoreTravelView();
+        }
       });
 
       clearBtn?.addEventListener("click", () => {
@@ -1450,7 +1915,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderWhereTravelView();
   }
 
-  // 7. Bloc 2 ("Et toi") : Continent -> Sous-continent -> Pays + carte + modale à cocher (tout affiché)
+  // 7. Bloc 2 ("Et toi") : Continent -> Sous-continent -> Pays + carte + modale à cocher
   const etToiMapEl = document.getElementById("visitor-world-map");
   const etToiMapLabelEl = document.getElementById("visitor-map-label");
   const etToiContinentsGrid = document.getElementById("visitor-continents-grid");
@@ -1738,6 +2203,8 @@ document.addEventListener("DOMContentLoaded", () => {
       renderEtToiView(countryName);
     };
 
+    window.openEtToiCountryModal = openEtToiModalForCountry;
+
     if (etToiModalClose) {
       etToiModalClose.addEventListener("click", closeEtToiModal);
     }
@@ -1981,7 +2448,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderEtToiView();
   }
 
-  // --- 8. Ajout depuis la carte, validation (3/3), masquage croix si vérifié & signalement masqué ---
+  // 8. Ajout depuis la carte, validation (3/3), masquage croix si vérifié & signalement masqué
   const REPORT_WEBHOOK_URL = "";
 
   const reportsStorageKey = "admin_poi_reports_v1";
@@ -2197,6 +2664,223 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // --- 9. Notation 5 étoiles & note communautaire dans le résumé de la destination ---
+  const COMMUNITY_API_URL = ""; // Ex. "https://mon-api.exemple.com/api/ratings" quand le serveur est en ligne
+
+  const initCommunityFiveStarRatings = ({ onLocalUpdate }) => {
+    const MAX_STARS = 5;
+    const pagePath = window.location.pathname;
+    const myVotesKey = ratingsStorageKey;
+    const localPoolKey = "community_local_pool_5_" + pagePath;
+
+    let myVotes = {};
+    let localPool = {};
+    try {
+      myVotes = JSON.parse(localStorage.getItem(myVotesKey) || "{}");
+      localPool = JSON.parse(localStorage.getItem(localPoolKey) || "{}");
+    } catch (_) {
+      myVotes = {};
+      localPool = {};
+    }
+
+    const saveLocalState = () => {
+      try {
+        localStorage.setItem(myVotesKey, JSON.stringify(myVotes));
+        localStorage.setItem(localPoolKey, JSON.stringify(localPool));
+      } catch (_) {}
+    };
+
+    const computeFallbackStats = () => {
+      const values = Object.values(localPool)
+        .map((entry) => Number(entry?.avg5) || 0)
+        .filter((v) => v > 0);
+      const totalVotes = Object.values(localPool).reduce(
+        (sum, entry) => sum + (Number(entry?.count) || 0),
+        0
+      );
+      const avg5 =
+        values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+
+      return {
+        avg5: Number(avg5.toFixed(1)),
+        count: totalVotes
+      };
+    };
+
+    const renderDestinationSummaryRating = (stats) => {
+      const overviewEl = document.querySelector(".country-overview-box");
+      if (!overviewEl) return;
+
+      const avgDisplay = stats.count > 0 ? `${stats.avg5.toFixed(1)} / ${MAX_STARS}` : `— / ${MAX_STARS}`;
+      const countDisplay =
+        stats.count > 0 ? `${stats.count} vote${stats.count > 1 ? "s" : ""}` : "Aucun vote";
+
+      let commBox = overviewEl.querySelector(".community-five-star-summary");
+      if (!commBox) {
+        commBox = document.createElement("div");
+        commBox.className = "community-five-star-summary";
+        commBox.innerHTML = `
+          <span class="community-star-icon">★</span>
+          <strong class="community-star-avg"></strong>
+          <span class="community-star-count"></span>
+        `;
+        overviewEl.prepend(commBox);
+      }
+
+      const avgEl = commBox.querySelector(".community-star-avg");
+      const cntEl = commBox.querySelector(".community-star-count");
+      if (avgEl) avgEl.textContent = avgDisplay;
+      if (cntEl) cntEl.textContent = `· Communauté (${countDisplay})`;
+    };
+
+    const sendVoteToServer = async ({ activityKey, rating }) => {
+      if (!COMMUNITY_API_URL) return null;
+      try {
+        const response = await fetch(COMMUNITY_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            page: pagePath,
+            activityKey,
+            rating,
+            maxStars: MAX_STARS
+          })
+        });
+        if (!response.ok) return null;
+        return await response.json();
+      } catch (_) {
+        return null;
+      }
+    };
+
+    const fetchDestinationStatsFromServer = async () => {
+      if (!COMMUNITY_API_URL) {
+        renderDestinationSummaryRating(computeFallbackStats());
+        return;
+      }
+      try {
+        const url = `${COMMUNITY_API_URL}?page=${encodeURIComponent(pagePath)}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Network response not ok");
+        const data = await response.json();
+        if (typeof data.destinationAvg5 === "number") {
+          renderDestinationSummaryRating({
+            avg5: data.destinationAvg5,
+            count: Number(data.destinationVoteCount) || 0
+          });
+        }
+      } catch (_) {
+        renderDestinationSummaryRating(computeFallbackStats());
+      }
+    };
+
+    const attachFiveStars = (item, idx = 0) => {
+      const contentEl = item.querySelector(".activity-content");
+      if (!contentEl || item.querySelector(".activity-star-rating")) return;
+
+      const actKey = getActivityRatingKey(item, idx);
+      let myStar = Math.max(0, Math.min(MAX_STARS, Number(myVotes[actKey]) || 0));
+
+      const box = document.createElement("div");
+      box.className = "activity-star-rating";
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", `Note sur ${MAX_STARS} étoiles`);
+
+      box.innerHTML = `
+        ${[1, 2, 3, 4, 5]
+          .map(
+            (starVal) => `
+              <button
+                type="button"
+                class="star-rate-btn"
+                data-star="${starVal}"
+                aria-label="${starVal} étoile${starVal > 1 ? "s" : ""}"
+                title="${starVal} / ${MAX_STARS}"
+              >★</button>
+            `
+          )
+          .join("")}
+        <span class="star-rate-value">${myStar > 0 ? `${myStar}/${MAX_STARS}` : ""}</span>
+      `;
+
+      const paint = (val) => {
+        box.querySelectorAll(".star-rate-btn").forEach((btn) => {
+          const s = Number(btn.getAttribute("data-star"));
+          btn.classList.toggle("is-filled", s <= val);
+        });
+        const valSpan = box.querySelector(".star-rate-value");
+        if (valSpan) {
+          valSpan.textContent = val > 0 ? `${val}/${MAX_STARS}` : "";
+        }
+      };
+
+      paint(myStar);
+
+      box.querySelectorAll(".star-rate-btn").forEach((btn) => {
+        btn.addEventListener("mouseenter", () => paint(Number(btn.getAttribute("data-star")) || 0));
+
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const clicked = Number(btn.getAttribute("data-star")) || 0;
+          myStar = myStar === clicked ? 0 : clicked;
+
+          if (myStar === 0) {
+            delete myVotes[actKey];
+            delete localPool[actKey];
+          } else {
+            myVotes[actKey] = myStar;
+            localPool[actKey] = { avg5: myStar, count: 1 };
+          }
+
+          saveLocalState();
+          paint(myStar);
+          renderDestinationSummaryRating(computeFallbackStats());
+          if (typeof onLocalUpdate === "function") onLocalUpdate();
+
+          const serverRes = await sendVoteToServer({
+            activityKey: actKey,
+            rating: myStar
+          });
+
+          if (serverRes && typeof serverRes.destinationAvg5 === "number") {
+            renderDestinationSummaryRating({
+              avg5: serverRes.destinationAvg5,
+              count: Number(serverRes.destinationVoteCount) || 0
+            });
+          }
+        });
+      });
+
+      box.addEventListener("mouseleave", () => paint(myStar));
+
+      const metaEl = contentEl.querySelector(".activity-meta");
+      if (metaEl) {
+        contentEl.insertBefore(box, metaEl);
+      } else {
+        contentEl.appendChild(box);
+      }
+    };
+
+    document.querySelectorAll(".activity-item").forEach((item, idx) => {
+      attachFiveStars(item, idx);
+    });
+
+    fetchDestinationStatsFromServer();
+
+    return {
+      attachFiveStars,
+      refreshStats: fetchDestinationStatsFromServer
+    };
+  };
+
+  const communityRatings = initCommunityFiveStarRatings({
+    onLocalUpdate: () => {
+      updateCountrySummaryPercentage();
+    }
+  });
+
   if (map && typeof L !== "undefined" && destinationSections.length > 0) {
     const customActivitiesKey = "custom_activities_" + window.location.pathname;
     const confirmationsKey = "poi_confirmed_ids_" + window.location.pathname;
@@ -2288,8 +2972,12 @@ document.addEventListener("DOMContentLoaded", () => {
                   <option value="rando">🥾 Randonnées</option>
                   <option value="parc">🌿 Parcs & Nature</option>
                   <option value="point-de-vue">🌄 Points de vue</option>
-                  <option value="monument">🏛️ Monuments & Culture</option>
+                  <option value="monument">🏛️ Monuments</option>
+                  <option value="culture">🗿 Culture & Traditions</option>
                   <option value="marche">🧺 Marchés & Gastronomie</option>
+                  <option value="lagon">🏝️ Lagons & Motu</option>
+                  <option value="plongee">🤿 Plongée & Faune marine</option>
+                  <option value="hebergement">🛶 Logistique & Hébergement</option>
                 </select>
               </label>
               <label class="poi-field">
@@ -2601,11 +3289,14 @@ document.addEventListener("DOMContentLoaded", () => {
         persistConfirmedByMe();
         labelEl.remove();
         if (typeof applyDestinationFilters === "function") applyDestinationFilters();
+        updateCountrySummaryPercentage();
       });
 
       const box = labelEl.querySelector("input[type='checkbox']");
       labelEl.addEventListener("click", (e) => {
-        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn")) return;
+        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn, .star-rate-btn")) {
+          return;
+        }
         e.preventDefault();
         e.stopPropagation();
 
@@ -2614,6 +3305,7 @@ document.addEventListener("DOMContentLoaded", () => {
           labelEl.classList.remove("is-done", "is-preview");
           syncMapWithFilters();
           updateFilterStatus();
+          updateCountrySummaryPercentage();
           return;
         }
 
@@ -2628,13 +3320,18 @@ document.addEventListener("DOMContentLoaded", () => {
           labelEl.classList.add("is-done");
           syncMapWithFilters();
           updateFilterStatus();
+          updateCountrySummaryPercentage();
         }
       });
 
+      if (communityRatings?.attachFiveStars) {
+        communityRatings.attachFiveStars(labelEl, customActivities.length);
+      }
       themeGroup.appendChild(labelEl);
     };
 
     customActivities.forEach(renderCustomActivityItem);
+    updateCountrySummaryPercentage();
 
     poiForm?.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -2665,6 +3362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof applyDestinationFilters === "function") {
         applyDestinationFilters();
       }
+      updateCountrySummaryPercentage();
     });
 
     map.on("click", (e) => {
@@ -2673,5 +3371,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  updateCountrySummaryPercentage();
   updateFilterStatus();
 });

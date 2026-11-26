@@ -1739,3 +1739,58 @@ body.modal-open {
 #travel-search-results[hidden] {
   display: none !important;
 }
+.activity-star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.star-rate-btn {
+  background: transparent;
+  border: none;
+  padding: 0 2px;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+.star-rate-btn:hover,
+.star-rate-btn.is-filled {
+  color: #f59e0b;
+}
+
+.star-rate-btn:hover {
+  transform: scale(1.15);
+}
+
+.star-rate-value {
+  margin-left: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.country-completion-summary {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.country-completion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.92rem;
+}
+
+.country-completion-meta {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.78rem;
+  color: #475569;
+}
