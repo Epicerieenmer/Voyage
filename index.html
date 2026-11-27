@@ -15,6 +15,28 @@
       <p class="subtitle">Mes retours d'expérience et itinéraires — et ta propre carte mentale des pays parcourus.</p>
     </header>
 
+         <!-- ENCADRÉ SAISON : phrase explicative + 12 mois + sous-continents -->
+    <div class="season-compass-bar" id="season-compass-bar" aria-label="Sous-continents à favoriser selon le mois">
+      <p class="season-intro-text">
+        Repère saisonnier : sélectionne un mois pour voir les sous-continents à favoriser.
+      </p>
+      <div class="season-months-row" id="season-compass-months" role="tablist" aria-label="Mois de l'année">
+        <button type="button" class="filter-pill season-month-pill" data-month="1">Jan</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="2">Fév</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="3">Mar</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="4">Avr</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="5">Mai</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="6">Juin</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="7">Juil</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="8">Août</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="9">Sep</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="10">Oct</button>
+        <button type="button" class="filter-pill season-month-pill is-active" data-month="11">Nov</button>
+        <button type="button" class="filter-pill season-month-pill" data-month="12">Déc</button>
+      </div>
+      <div class="season-zones-row" id="season-compass-zones" aria-live="polite"></div>
+    </div>
+
     <!-- BLOC 1 : OÙ VOYAGES-TU ? (continent -> sous-continent -> pays) -->
     <section class="home-block" aria-labelledby="my-trips-title">
       <div class="block-header">
@@ -92,7 +114,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="regions.data.js?v=3"defer></script>
-  <script src="app.js?v=3"defer></script>
+  <script src="regions.data.js?v=3" defer></script>
+  <script src="app.js?v=3" defer></script>
 </body>
 </html>

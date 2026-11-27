@@ -16,6 +16,20 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/[\u0300-\u036f]/g, "")
       .trim();
 
+  const buildGoogleMapsUrl = (title, subplaceLabel = "", regionLabel = "", countryLabel = "") => {
+    const cleanRegion = String(regionLabel || "")
+      .replace(/^Archipel\s*:\s*\d+\.\s*/i, "")
+      .replace(/^Région\s*:\s*\d+\.\s*/i, "")
+      .trim();
+
+    const parts = [title, subplaceLabel, cleanRegion, countryLabel]
+      .map((s) => String(s || "").trim())
+      .filter(Boolean);
+
+    const query = encodeURIComponent(parts.join(", "));
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  };
+
   // 1. Repositionner le bouton Accueil dans l'en-tête de destination
   const stickyNavEl = document.querySelector(".sticky-nav");
   const headerBlockEl = document.querySelector(".destination-header-block");
@@ -384,7 +398,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       item.addEventListener("click", (e) => {
-        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn, .star-rate-btn")) {
+        if (
+          e.target.closest(
+            ".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn, .star-rate-btn, .google-maps-link-btn"
+          )
+        ) {
           return;
         }
         e.preventDefault();
@@ -519,6 +537,108 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     refreshMapSize(120);
+  }
+  // Géolocalisation en direct sur la carte
+  let userLocationMarker = null;
+  let userAccuracyCircle = null;
+
+  const getDistanceKm = (lat1, lon1, lat2, lon2) => {
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  };
+
+  const findNearestActivity = (lat, lng) => {
+    let best = null;
+    document.querySelectorAll(".activity-item[data-lat][data-lng]").forEach((item) => {
+      const aLat = Number(item.getAttribute("data-lat"));
+      const aLng = Number(item.getAttribute("data-lng"));
+      if (Number.isNaN(aLat) || Number.isNaN(aLng)) return;
+      const dist = getDistanceKm(lat, lng, aLat, aLng);
+      const title = item.querySelector(".activity-title")?.textContent?.trim() || "Activité";
+      if (!best || dist < best.dist) {
+        best = { item, title, dist };
+      }
+    });
+    return best;
+  };
+
+  const locateUserOnMap = () => {
+    if (!map || typeof L === "undefined") return;
+    if (!("geolocation" in navigator)) {
+      if (mapLabelEl) mapLabelEl.textContent = "Géolocalisation non supportée sur cet appareil.";
+      return;
+    }
+
+    if (mapLabelEl) mapLabelEl.textContent = "📡 Recherche de ta position...";
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+
+        if (userLocationMarker) map.removeLayer(userLocationMarker);
+        if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
+
+        userAccuracyCircle = L.circle([lat, lng], {
+          radius: Math.min(accuracy || 50, 2000),
+          color: "#0284c7",
+          fillColor: "#38bdf8",
+          fillOpacity: 0.18,
+          weight: 1.5
+        }).addTo(map);
+
+        userLocationMarker = L.circleMarker([lat, lng], {
+          radius: 8,
+          fillColor: "#2563eb",
+          color: "#ffffff",
+          weight: 3,
+          opacity: 1,
+          fillOpacity: 1
+        })
+          .bindTooltip("📍 Tu es ici", { direction: "top" })
+          .addTo(map);
+
+        const nearest = findNearestActivity(lat, lng);
+        const nearestText = nearest
+          ? ` · Plus proche : ${nearest.title} (${nearest.dist.toFixed(1)} km)`
+          : "";
+
+        if (mapLabelEl) {
+          mapLabelEl.textContent = `📍 Position trouvée${nearestText}`;
+        }
+
+        isPanelMinimized = false;
+        showMapInPanel = true;
+        syncPanelShortcutsUI();
+        map.flyTo([lat, lng], 13, { duration: 0.6 });
+        refreshMapSize(80);
+      },
+      (err) => {
+        const msg =
+          err.code === 1
+            ? "Permission GPS refusée dans le navigateur."
+            : "Impossible de récupérer ta position pour le moment.";
+        if (mapLabelEl) mapLabelEl.textContent = `⚠️ ${msg}`;
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
+    );
+  };
+
+  const shortcutsGroupForGeo = document.querySelector(".panel-shortcuts-group");
+  if (shortcutsGroupForGeo && !document.getElementById("locate-me-btn")) {
+    const geoBtn = document.createElement("button");
+    geoBtn.type = "button";
+    geoBtn.id = "locate-me-btn";
+    geoBtn.className = "panel-shortcut-btn";
+    geoBtn.textContent = "🎯 Ma position";
+    geoBtn.title = "Centrer la carte sur ta position actuelle";
+    geoBtn.addEventListener("click", locateUserOnMap);
+    shortcutsGroupForGeo.appendChild(geoBtn);
   }
 
   let resizeTimer = null;
@@ -1462,16 +1582,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         whereTravelContinentsGrid.querySelectorAll("[data-travel-continent]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            if (searchInputEl) {
-              searchInputEl.value = "";
-              const clearBtn = searchInputEl.parentElement?.querySelector(".search-clear-btn");
-              if (clearBtn) clearBtn.hidden = true;
-            }
-            if (searchResultsEl) {
-              searchResultsEl.hidden = true;
-              searchResultsEl.style.display = "none";
-              searchResultsEl.innerHTML = "";
-            }
+                      if (searchInputEl) {
+            searchInputEl.value = "";
+            const clearBtn = searchInputEl.parentElement?.querySelector(".search-clear-btn");
+            if (clearBtn) clearBtn.hidden = true;
+          }
+          if (searchResultsEl) {
+            searchResultsEl.hidden = true;
+            searchResultsEl.style.display = "none";
+            searchResultsEl.innerHTML = "";
+          }
+
             const chosenContinent = btn.getAttribute("data-travel-continent");
             activeTravelContinent = chosenContinent;
             activeTravelSubcontinent = null;
@@ -2647,6 +2768,26 @@ document.addEventListener("DOMContentLoaded", () => {
       titleRow.appendChild(actionsBox);
     }
 
+    const sectionEl = item.closest("section[id]");
+    const subplaceLabel = item.getAttribute("data-subplace-label") || "";
+    const regionLabel =
+      sectionEl?.getAttribute("data-map-label") ||
+      sectionEl?.querySelector("h3")?.textContent?.trim() ||
+      "";
+    const countryLabel =
+      document.body.getAttribute("data-place-name") ||
+      (typeof DESTINATION_PAGE_DATA !== "undefined" ? DESTINATION_PAGE_DATA.country : "") ||
+      "";
+
+    const mapsBtn = document.createElement("a");
+    mapsBtn.className = "google-maps-link-btn";
+    mapsBtn.href = buildGoogleMapsUrl(titleEl.textContent.trim(), subplaceLabel, regionLabel, countryLabel);
+    mapsBtn.target = "_blank";
+    mapsBtn.rel = "noopener noreferrer";
+    mapsBtn.title = "Ouvrir cet endroit dans Google Maps";
+    mapsBtn.textContent = "📍 Google Maps";
+    actionsBox.appendChild(mapsBtn);
+
     const reportBtn = document.createElement("button");
     reportBtn.type = "button";
     reportBtn.className = "report-activity-btn";
@@ -2663,6 +2804,87 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   });
+   // Encadré saison : phrase + 12 mois + ligne de sous-continents
+  const seasonMonthsRow = document.getElementById("season-compass-months");
+  const seasonZonesRow = document.getElementById("season-compass-zones");
+
+  if (seasonMonthsRow && seasonZonesRow) {
+    const seasonalSubcontinentsByMonth = {
+      1: ["Amérique du Sud", "Océanie", "Asie du Sud-Est"],
+      2: ["Amérique du Sud", "Océanie", "Asie du Sud-Est"],
+      3: ["Asie du Sud-Est", "Amérique centrale", "Amérique du Nord"],
+      4: ["Europe du Sud", "Asie de l'Est", "Afrique du Nord"],
+      5: ["Europe du Sud", "Amérique du Sud", "Polynésie / Océanie"],
+      6: ["Europe de l'Ouest", "Amérique du Nord", "Afrique australe"],
+      7: ["Europe de l'Ouest", "Amérique du Nord", "Afrique australe"],
+      8: ["Europe du Nord", "Amérique du Nord", "Afrique australe"],
+      9: ["Europe du Sud", "Afrique australe", "Polynésie / Océanie"],
+      10: ["Asie du Sud-Est", "Amérique du Sud", "Afrique australe"],
+      11: ["Amérique du Sud", "Asie du Sud-Est", "Polynésie / Océanie"],
+      12: ["Amérique du Sud", "Asie du Sud-Est", "Océanie"]
+    };
+
+    const subcontinentContinentMap = {
+      "Amérique du Sud": "Amériques",
+      "Amérique centrale": "Amériques",
+      "Amérique du Nord": "Amériques",
+      "Asie du Sud-Est": "Asie",
+      "Asie de l'Est": "Asie",
+      "Europe du Sud": "Europe",
+      "Europe de l'Ouest": "Europe",
+      "Europe du Nord": "Europe",
+      "Afrique du Nord": "Afrique",
+      "Afrique australe": "Afrique",
+      "Océanie": "Océanie",
+      "Polynésie / Océanie": "Océanie"
+    };
+
+    const renderSeasonSubcontinents = (monthNum) => {
+      const month = Number(monthNum) || 11;
+      seasonMonthsRow.querySelectorAll("[data-month]").forEach((btn) => {
+        btn.classList.toggle("is-active", Number(btn.getAttribute("data-month")) === month);
+      });
+
+      const subcontinents = seasonalSubcontinentsByMonth[month] || [];
+      seasonZonesRow.innerHTML = subcontinents
+        .map((sub) => {
+          const parentCont = subcontinentContinentMap[sub] || "";
+          const emoji = travelContinentEmojis[parentCont] || "🧭";
+          return `<button type="button" class="season-zone-chip" data-season-sub="${escapeAttr(sub)}" data-season-continent="${escapeAttr(parentCont)}">${emoji} ${escapeAttr(sub)}</button>`;
+        })
+        .join("");
+
+      seasonZonesRow.querySelectorAll("[data-season-sub]").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const targetSub = chip.getAttribute("data-season-sub");
+          const parentCont = chip.getAttribute("data-season-continent");
+
+          if (parentCont) {
+            const contBtn = document.querySelector(`#my-trips-continents-grid [data-travel-continent="${parentCont}"]`);
+            if (contBtn) {
+              contBtn.click();
+              setTimeout(() => {
+                const subBtn = document.querySelector(`#my-trips-subcontinents-panel [data-travel-sub="${targetSub}"]`);
+                if (subBtn) {
+                  subBtn.click();
+                }
+              }, 40);
+            }
+          }
+        });
+      });
+    };
+
+    seasonMonthsRow.querySelectorAll("[data-month]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        renderSeasonSubcontinents(btn.getAttribute("data-month"));
+      });
+    });
+
+    const currentMonth = new Date().getMonth() + 1;
+    renderSeasonSubcontinents(currentMonth);
+  }
+
 
   // --- 9. Notation 5 étoiles & note communautaire dans le résumé de la destination ---
   const COMMUNITY_API_URL = ""; // Ex. "https://mon-api.exemple.com/api/ratings" quand le serveur est en ligne
@@ -3163,6 +3385,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const alreadyConfirmed = confirmedByMe.includes(act.id);
       const priceText = act.price === 0 ? "Gratuit" : `~${act.price} €/p`;
 
+      const targetSubLabel = act.subplaceId
+        ? targetSection.querySelector(
+            `.subplace-group[data-subplace="${act.subplaceId}"], .island-subgroup[data-island="${act.subplaceId}"]`
+          )?.getAttribute("data-subplace-label") || ""
+        : "";
+      const targetRegionLabel =
+        targetSection.getAttribute("data-map-label") ||
+        targetSection.querySelector("h3")?.textContent?.trim() ||
+        "";
+      const targetCountryLabel = document.body.getAttribute("data-place-name") || "";
+      const customMapsUrl = buildGoogleMapsUrl(
+        act.title,
+        targetSubLabel,
+        targetRegionLabel,
+        targetCountryLabel
+      );
+
       const labelEl = document.createElement("label");
       labelEl.className = `check-item activity-item is-user-added ${meta.isVerified ? "is-verified-poi" : "is-unverified-poi"}`;
       labelEl.setAttribute("data-custom-id", act.id);
@@ -3185,6 +3424,15 @@ document.addEventListener("DOMContentLoaded", () => {
               >
                 ${alreadyConfirmed ? `✓ Confirmé (${meta.count}/${REQUIRED_CONFIRMATIONS})` : `👍 Valider (${meta.count}/${REQUIRED_CONFIRMATIONS})`}
               </button>
+              <a
+                class="google-maps-link-btn"
+                href="${escapeAttr(customMapsUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Ouvrir cet endroit dans Google Maps"
+              >
+                📍 Google Maps
+              </a>
               <button
                 type="button"
                 class="report-activity-btn"
@@ -3294,7 +3542,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const box = labelEl.querySelector("input[type='checkbox']");
       labelEl.addEventListener("click", (e) => {
-        if (e.target.closest(".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn, .star-rate-btn")) {
+        if (
+          e.target.closest(
+            ".delete-custom-poi-btn, .verify-poi-btn, .report-activity-btn, .star-rate-btn, .google-maps-link-btn"
+          )
+        ) {
           return;
         }
         e.preventDefault();

@@ -1794,3 +1794,112 @@ body.modal-open {
   font-size: 0.78rem;
   color: #475569;
 }
+.google-maps-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0f766e;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.google-maps-link-btn:hover {
+  background: #ccfbf1;
+  transform: translateY(-1px);
+}
+/* --- ENCADRÉ SAISONNIER (PHRASE + 12 MOIS + SOUS-CONTINENTS) --- */
+.season-compass-bar {
+  width: 100%;
+  margin: 0 0 1.65rem;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #fffdf9 0%, #fff7ed 100%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.season-intro-text {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 550;
+  color: var(--muted);
+}
+
+.season-months-row,
+.season-zones-row {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  padding-bottom: 0.1rem;
+}
+
+.season-months-row::-webkit-scrollbar,
+.season-zones-row::-webkit-scrollbar {
+  display: none;
+}
+
+.season-month-pill {
+  padding: 0.36rem 0.78rem;
+  font-size: 0.82rem;
+  line-height: 1.15;
+  flex: 0 0 auto;
+}
+
+.season-zones-row {
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--border);
+}
+
+.season-zone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.85rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  background: #e6f7f5;
+  color: #095c5b;
+  border: 1px solid #99f6e4;
+  cursor: pointer;
+  flex: 0 0 auto;
+  box-shadow: 0 2px 6px rgba(14, 124, 123, 0.08);
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.season-zone-chip:hover {
+  background: #ccf3ee;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(14, 124, 123, 0.14);
+}
+
+@media (max-width: 640px) {
+  .season-compass-bar {
+    padding: 0.85rem 0.9rem;
+    border-radius: 16px;
+    margin-bottom: 1.2rem;
+  }
+
+  .season-intro-text {
+    font-size: 0.83rem;
+  }
+}
